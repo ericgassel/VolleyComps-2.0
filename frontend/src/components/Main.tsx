@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import Login from './Login';
 import Teams from './Teams';
-import AddData from './Teams';
+import AddData from './AddData';
 
 const Main = () => {
 return (         
