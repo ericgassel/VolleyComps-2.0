@@ -3,16 +3,19 @@ import React from 'react';
 import './styles.css'
 import Sidebar from './components/Sidebar';
 import MainRoutes from './Routes'
+import { AppProvider } from './context/appContext';
 
 const App: React.FC = () => {
   return (
-    <div className="app">
-     {/** Sidebar */}
-     <Sidebar/>
+    <AppProvider>
+      <div className="app">
+      {/** Sidebar */}
+      <Sidebar/>
 
-     {/** Inner container */}
-    <MainRoutes/>
-    </div>
+      {/** Inner container */}
+      <MainRoutes/>
+      </div>
+    </AppProvider>
   );
 }
 

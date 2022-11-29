@@ -8,7 +8,7 @@ const Login = () => {
 
 	const login = () => {
 		localStorage.setItem("user", JSON.stringify({role: "ADMIN"}))
-		navigate("/dashboard")
+		navigate("/home")
 	}
 
 	return (
