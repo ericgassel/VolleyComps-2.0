@@ -1,0 +1,47 @@
+.right {
+    float:right;
+}
+
+.left{
+    float:left
+}
+
+table button{
+  
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+   
+}
+
+table button:hover{
+    transform: translate(0px, 3px);
+    -webkit-transform: translate(0px, 3px);
+    box-shadow: 0px 1px 0px 0px;
+    background-color: #ddd;
+}
+
+button[type="rotationButton"] {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+}
+button[type = "rotationButton"]:hover{
+    transform: translate(0px, 3px);
+    -webkit-transform: translate(0px, 3px);
+    box-shadow: 0px 1px 0px 0px;
+    background-color: #ddd;
+}
+
