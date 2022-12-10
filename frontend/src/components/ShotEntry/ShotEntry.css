@@ -45,3 +45,7 @@ button[type = "rotationButton"]:hover{
     background-color: #ddd;
 }
 
+#playerOptions{
+    overflow-y:auto;
+    max-height: 150px;
+}
