@@ -1,0 +1,23 @@
+.right {
+    float:right;
+}
+
+.left{
+    float:left;
+}
+
+.padding { 
+    padding: 50px
+}
+
+.padding-small { 
+    padding: 25px
+}
+
+tr.spaceUnder>th.padding {
+    padding-bottom: 150px;
+  }
+#allRotations{
+    overflow-y:auto;
+    max-height: 150px;
+}

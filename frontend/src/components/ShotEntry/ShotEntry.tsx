@@ -14,9 +14,6 @@ let player_order : string[] = []
 //    - if button already selected, will deselect the button.
 //    - otherwise, selects the button and deselects all other buttons
 const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
-
-
-
     // selected a different button
     if (btn_name != btn_options[0] && btn_options[0] != "nothing"){
       let input = document.getElementById(btn_options[0]) as HTMLButtonElement;
@@ -83,6 +80,7 @@ const addShot = (btn_ids_toClear: string[]) => {
     let player = document.getElementById("player" + rotation_current_player) as HTMLButtonElement
     
     deleteSelectedPlayer(player.innerHTML);
+    //player.innerHTML is the player's number
     player_order.unshift(player.innerHTML);
     playerOptions(player_order);
     clearAllButtons(btn_ids_toClear);
@@ -147,25 +145,6 @@ const playerOptions = (player_nums: string[]) => {
     appended.append(line_break);
   }
 
-
-  
-
-
-
-
-  /*
-  let player_options = document.getElementById("playerOptions") as HTMLDivElement;
-  let html = "<table>";
-  for(let i = 0; i < 6; i++){
-    if (player_nums.length > i){
-      html += "<td><button id=player" + (i+1).toString() + " onClick{selectPlayer("+ (i+1).toString() + ")}>"+ player_nums[i].toString() +"</button></td>";
-    }
-  }
-  html += "</table>"
-  player_options.innerHTML = html;
-  let element = 
-  */
-
 }
 
 
@@ -218,10 +197,7 @@ const ShotEntry=() =>{
                 </tr>
 
             </table>
-            
 
-
-            
         </div>;
   }
 

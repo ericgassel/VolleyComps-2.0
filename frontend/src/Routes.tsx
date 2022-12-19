@@ -15,6 +15,7 @@ import Login from "./components/Login"
 import History from "./components/History"
 import Knights from "./components/Knights"
 import ShotEntry from "./components/ShotEntry/ShotEntry"
+import Rotations from "./components/Rotations/Rotations"
 
 import ProtectedRoutes from "./components/ProtectedRoutes"
 import PublicRoutes from "./components/PublicRoutes"
@@ -38,6 +39,7 @@ const MainRoutes = () => (
 				</Route>
 				<Route path="history" element={<History />} />
 				<Route path="ShotEntry" element={<ShotEntry/>}/>
+				<Route path="Rotations" element={<Rotations/>}/>
 			</Route>
 		</Route>
 
