@@ -5,23 +5,26 @@ import './Rotations.css';
 // represents the 6 players that are currently selected as part of the rotation
 let current_players_on_rotation : string[] = [];
 
-//represents the current selected player in the rotation
+//represents the current selected player in the rotation (by jersey number)
 let current_selected_player : string = "";
 
 // represents the 6 colors that can draw for the rotation
 let colors : string[]= ["red","orange","grey","maroon","blue","violet"];
 
-// represents the number of colors already used for the rotation
-let num_used_in_rotation : number = 0;
+// represents the colors not used by rotation yet
+let colors_available : string[] = ["blue","blue","blue","blue","blue","blue"];
 
 // the rotation that the user selects
-let current_rotation_selected: string = "";
+let current_rotation_selected: number = 0;
 
 // all rotations that exist for scouting report
 let all_existing_rotations : string[][] = [["8","24","12","92","36","88"],["1","2","3","4","5","6"],["99","88","77","66","55","44"]];
 
+// all colors/movements assigned to given player in all_existing_rotations
+let all_existing_rotation_movements : string[][] = [["","","","","",""],["","","","","",""],["","","","","",""]];
+
 // all players on the team
-let all_players : string[] = ["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"];
+let all_players : string[] = ["44","24","12","66","36","88","1","2","3","4","5","99","6","77","92","8","55"];
 
 // selected player to add to a rotation
 let add_rotation_player_selected : string= "";
@@ -39,12 +42,18 @@ const currentRotationButtons = (players: string[]) => {
     let appended : HTMLDivElement= document.getElementById("currentRotation") as HTMLDivElement;
     appended.innerHTML = "";
     current_players_on_rotation = [];
-    num_used_in_rotation = 0;
+    colors_available = [];
+    for (let i : number = 0; i < colors.length; i++) {
+        if (all_existing_rotation_movements[current_rotation_selected].indexOf(colors[i]) == -1){
+            colors_available.push(colors[i]);
+        }
+    }
     for(let i : number = 0; i < 3; i++){
         let element : HTMLButtonElement = document.createElement("button");
         element.id = "player" + players[i].toString();
         element.type = "rotationButton";
         element.innerHTML=players[i];
+        element.style.background = all_existing_rotation_movements[current_rotation_selected][i]
         element.onclick = () => buttonClickCurrentRotation(players[i].toString());
         appended.append(element);
         current_players_on_rotation.push(players[i]);
@@ -57,12 +66,13 @@ const currentRotationButtons = (players: string[]) => {
         element.id = "player" + players[i].toString();
         element.type = "rotationButton";
         element.innerHTML=players[i];
+        element.style.background = all_existing_rotation_movements[current_rotation_selected][i]
         element.onclick = () => buttonClickCurrentRotation(players[i].toString());
         appended.append(element); 
         current_players_on_rotation.push(players[i]);
     }
-    
 }
+
 // INPUT: selected player number from roster of all existing players
 // OUPTU: N/A
 //      - changes the color of the corresponding button when adding a new rotation.
@@ -127,6 +137,7 @@ const fillAddRotationWithCurrentlySelectedColors = () => {
         } 
     }
 }
+
 // INTPUT: spot in add rotation selection area
 // OUTPUT: N/A
 //      - sets the number for spot in the rotation that is the player number that is selected
@@ -139,6 +150,10 @@ const selectSpotInRotation = (spotInRotation : string) => {
    
 }
 
+// INPUT: N/A
+// OUTPUT: N/A
+//      - adds new rotation to the list of rotations if a valid rotation is selected.
+//      - used after pressing buttons "Add Rotation" -> "Add"
 const addNewRotation = () => {
     let count : number = 0;
     let rotation : string[] = [];
@@ -155,7 +170,7 @@ const addNewRotation = () => {
     
     if(count == 6){
         all_existing_rotations.push(rotation);
-        allRotationButtons(all_existing_rotations);
+        allRotationButtonsUpper(all_existing_rotations);
         currentRotationButtons(all_existing_rotations[all_existing_rotations.length - 1]);
     } else {
         alert("Invalid rotation selected.");
@@ -163,11 +178,10 @@ const addNewRotation = () => {
     
 }
 
-const cancelRotationEdit = () => {
-    }
 // INPUT: N/A
 // OUTPUT: N/A
-//      - creates space to add a new rotation.
+//      - generates HTML to add a new rotation.
+//      - changes buttons to reflect actions appropriate for adding rotation
 const addNewRotationButtonSelected = ()=>{
     // -----------------
     // change button actions and text for buttons with ids "AddButton" and "EditOrCancelButton"
@@ -176,7 +190,7 @@ const addNewRotationButtonSelected = ()=>{
     addButton.innerHTML = "Add";
     editOrCancelButton.innerHTML = "Cancel";
     addButton.onclick = addNewRotation;
-    editOrCancelButton.onclick = () => allRotationButtons(all_existing_rotations);
+    editOrCancelButton.onclick = () => allRotationButtonsUpper(all_existing_rotations);
     // ----------------
     // change paragraph html element with id "SelectRotationText" 
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
@@ -231,11 +245,114 @@ const addNewRotationButtonSelected = ()=>{
 
 } 
 
-const editASelectedRotation = (current_rotation : string) => {
-
+const editRotationConfirm = () => {
+    let count : number = 0;
+    let rotation : string[] = [];
+    for(let i : number = 0; i < 6; i++){
+        let rotationItem : HTMLButtonElement = document.getElementById("ele" + i.toString()) as HTMLButtonElement;
+        let itemWithSuccessColor : HTMLButtonElement = document.createElement("button");
+        itemWithSuccessColor.style.background = success_color;
+        if(rotationItem.style.background == itemWithSuccessColor.style.background){
+            count += 1;
+            rotation.push(rotationItem.innerHTML);
+        }
+    }
+    if(count == 6){
+        all_existing_rotations[current_rotation_selected] = rotation;
+        allRotationButtonsUpper(all_existing_rotations);
+        currentRotationButtons(all_existing_rotations[current_rotation_selected]);
+    } else {
+        alert("Invalid rotation selected.");
+    }
+    
 }
 
+// INPUT: index of where rotation is in all_existing_rotations
+// OUTPUT: N/A
+//      - generates HTML to edit rotation
+//      - changes buttons to reflect actions appropriate for editing rotation 
+const editASelectedRotation = (current_rotation : number) => {
+    let rotation : string[] = all_existing_rotations[current_rotation];
+    // -----------------
+    // change button actions and text for buttons with ids "AddButton" and "EditOrCancelButton"
+    let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
+    let editOrCancelButton : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
+    addButton.innerHTML = "Done";
+    editOrCancelButton.innerHTML = "Cancel";
+    addButton.onclick = editRotationConfirm;
+    editOrCancelButton.onclick = () => allRotationButtonsUpper(all_existing_rotations);
+    // ----------------
+    // change paragraph html element with id "SelectRotationText" 
+    let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
+    rotationText.innerHTML = "Select Players";
+    // ----------------
+    // change div element with id "allRotations" to have buttons for all possible players possible players
+    let divElement : HTMLDivElement = document.getElementById("allRotations") as HTMLDivElement;
+    divElement.innerHTML = "";
+    let k : number = 0;
+    while (k < all_players.length){
+        for(let i : number = k; i < 4+k; i++){
+        if (i < all_players.length){
+            let element = document.createElement("button");
+            // id is player[*player number*]
+            element.id = "player" + all_players[i];
+            element.type = "rotationButton";
+            element.innerHTML=all_players[i];
+            element.onclick = () => selectPlayer(all_players[i].toString());
+            divElement.append(element);
+        }}
+        k = k+4;
+        let lineBreak : HTMLBRElement = document.createElement("br");
+        lineBreak.innerHTML="</br>";
+        divElement.append(lineBreak);
+    }
+    // ----------------
+    // change div element with id "rotationToAdd" to have buttons that represent the rotation that will be added
+    let addDivRotation : HTMLDivElement = document.getElementById("rotationToAdd") as HTMLDivElement;
+    let lineBreak : HTMLElement = document.createElement("br");
+    lineBreak.innerHTML="</br>";
+    addDivRotation.append(lineBreak);
+    for(let i : number = 0; i < 3; i++){
+        let element : HTMLButtonElement = document.createElement("button");
+        element.id = "ele" + i.toString();
+        element.type = "rotationButton";
+        element.innerHTML=rotation[i].toString();
+        element.onclick = () => selectSpotInRotation(i.toString());
+        addDivRotation.append(element);
+        
+    }
+    
+    addDivRotation.append(lineBreak);
+    for(let i : number = 3; i < 6; i++){
+        let element : HTMLButtonElement= document.createElement("button");
+        element.id = "ele" + i.toString();
+        element.type = "rotationButton";
+        element.innerHTML=rotation[i].toString();
+        element.onclick = () => selectSpotInRotation(i.toString());
+        addDivRotation.append(element); 
+      
+    }
+    fillAddRotationWithCurrentlySelectedColors();
+}
+
+// INPUT: index of where rotation is in all_existing_rotations
+// OUTPUT: N/A
+//      - sets the current rotation buttons to represent the existing rotation
 const selectRotation = (selectedRotation : number) => {
+    current_selected_player = "";
+    // --------------------
+    // clear button formatting
+    for (let i : number = 0; i < all_existing_rotations.length; i++){
+        let button : HTMLButtonElement = document.getElementById("rotation" + i.toString()) as HTMLButtonElement;
+        button.style.background = "";
+    }
+    // --------------------
+    // set selected button to have red background
+    let rotationButton : HTMLButtonElement = document.getElementById("rotation" + selectedRotation.toString()) as HTMLButtonElement;
+    rotationButton.style.background = "red";
+    // --------------------
+    // change current_rotation_selected and update HTML
+    current_rotation_selected = selectedRotation;
     currentRotationButtons(all_existing_rotations[selectedRotation])
     
 }
@@ -244,10 +361,11 @@ const selectRotation = (selectedRotation : number) => {
 // OUTPUT: N/A
 //      - sets div delement with id "allRotations" to have all the possible added rotations.
 //      - also sets default button names for buttons with id "AddButton" and "EditOrCancelButton"
-const allRotationButtons = (allRotations : string[][]) => {
-    let allRotationNums : string[] = []
-    for (let i : number = 1; i<allRotations.length + 1; i++){
-        allRotationNums.push(i.toString());
+const allRotationButtonsUpper = (allRotations : string[][]) => {
+    
+    let allRotationNums : number[] = []
+    for (let i : number = 0; i<allRotations.length; i++){
+        allRotationNums.push(i);
     }
     // ----------------
     // set defaults for buttons with ids "AddButton" and "EditOrCancelButton"
@@ -272,10 +390,11 @@ const allRotationButtons = (allRotations : string[][]) => {
         for(let i : number = k; i < 3+k; i++){
             if (i < allRotationNums.length){
                 let element = document.createElement("button");
-                element.id = "rotation" + (i+1).toString();
+                element.id = "rotation" + i.toString();
                 element.type = "rotationButton";
-                element.innerHTML=allRotationNums[i];
-                element.onclick = () => selectRotation(parseInt(allRotationNums[i])-1);
+                element.innerHTML=(allRotationNums[i] + 1).toString();
+                // allRotationNums[i] is a number 1 to X where X is the number of rotations that exist
+                element.onclick = () => selectRotation(allRotationNums[i]);
                 appended.append(element);
                 
             }
@@ -285,6 +404,7 @@ const allRotationButtons = (allRotations : string[][]) => {
         lineBreak.innerHTML="</br>";
         appended.append(lineBreak);
   }
+  selectRotation(current_rotation_selected);
 }
 
 // INPUT: the player number of the current selected player
@@ -296,7 +416,7 @@ const buttonClickCurrentRotation = (number : string) => {
     let button : HTMLButtonElement = document.getElementById("player"+ number) as HTMLButtonElement;
     current_selected_player = number;
     if (button.style.background == ""){
-        button.style.background = colors[num_used_in_rotation];
+        button.style.background = colors_available[0];
     }
     
     button.style.border = "solid";
@@ -305,8 +425,8 @@ const buttonClickCurrentRotation = (number : string) => {
     for(let i : number = 0; i<current_players_on_rotation.length;i++){
         if (current_players_on_rotation[i] != number){
             let non_selected_player : HTMLButtonElement = document.getElementById("player"+ current_players_on_rotation[i]) as HTMLButtonElement;
-            if (num_used_in_rotation < 6) {
-                if (non_selected_player.style.background == colors[num_used_in_rotation]){
+            if (colors_available.length > 0) {
+                if (non_selected_player.style.background == colors_available[0]){
                     non_selected_player.style.background = "";
                 }
             }
@@ -323,27 +443,77 @@ const buttonClickCurrentRotation = (number : string) => {
 // OUTPUT: N/A
 //      - adds the drawn route to routes and sets new color for future players.
 const addRoute = () => {
-    let current_button : HTMLButtonElement = document.getElementById("player"+current_selected_player) as HTMLButtonElement;
-    // remove the button border
-    current_button.style.border = "none";
-    //add route to some list of routes for the rotation
-    //
-    // ------- TODO --------
-    //
-    // only move to next color if player has not had previous rotation drawn and color assigned.
-    if (current_button.style.background == colors[num_used_in_rotation]){
-        num_used_in_rotation += 1;
+    if (current_selected_player != "") {
+        let current_button : HTMLButtonElement = document.getElementById("player"+current_selected_player) as HTMLButtonElement;
+        
+        // remove the button border
+        current_button.style.border = "none";
+        // ------------------
+        // find index in rotation that is the spot of the player
+        let rotation : string[] = all_existing_rotations[current_rotation_selected];
+        let index : number = 0;
+        let stop : boolean = false;
+        for(let i : number = 0; i < rotation.length; i++){
+            if(rotation[i] == current_selected_player){
+                stop = true;
+            }
+            if (!stop){
+                index += 1;
+            }
+        }
+        all_existing_rotation_movements[current_rotation_selected][index] = current_button.style.backgroundColor;
+        //add route to some list of routes for the rotation
+        //
+        // ------- TODO --------
+        //
+        // only move to next color if player has not had previous rotation drawn and color assigned.
+        if (current_button.style.background == colors_available[0]){
+            colors_available.shift();
+        } 
+    } else {
+        alert("Please select a player.");
     }
+    
+
+
 
 }
-
-// INPUT: list of all players.
+// INTPUT: N/A
 // OUTPUT: N/A
-//      - Sets div section with id "allRotations" to set of buttons for which to choose 6 players for the rotation.
+//      - deletes the drawn route from routes
+const deleteRoute = () => {
+    if (current_selected_player != "") {
+        let current_button : HTMLButtonElement = document.getElementById("player"+current_selected_player) as HTMLButtonElement;
+        current_button.style.background = "";
+        // ------------------
+        // find index in rotation that is the spot of the player
+        let rotation : string[] = all_existing_rotations[current_rotation_selected];
+        let index : number = 0;
+        let stop : boolean = false;
+        for(let i : number = 0; i < rotation.length; i++){
+            if(rotation[i] == current_selected_player){
+                stop = true;
+            }
+            if (!stop){
+                index += 1;
+            }
+        }
+        all_existing_rotation_movements[current_rotation_selected][index] = "";
+        colors_available = [];
+        for (let i : number = 0; i < colors.length; i++) {
+            if (all_existing_rotation_movements[current_rotation_selected].indexOf(colors[i]) == -1){
+                colors_available.push(colors[i]);
+            }
+        }
 
+    } else {
+        alert("Please select a player.");
+    }
+}
+// HTML backbone
 function Rotations() {
   return (
-    <div onLoad={() => {currentRotationButtons(all_existing_rotations[0]); allRotationButtons(all_existing_rotations);}} >
+    <div onLoad={() => {currentRotationButtons(all_existing_rotations[0]); allRotationButtonsUpper(all_existing_rotations);}} >
         <h1>Rotations</h1>
         <div className='left'>
             <img src={Square} ></img>
@@ -366,7 +536,7 @@ function Rotations() {
                     <th >
                         
                         <button onClick={addRoute}>Add Route</button><br/>
-                        <button >Delete Route</button>
+                        <button onClick={deleteRoute}>Delete Route</button>
                     </th>
                     
                     <th >
