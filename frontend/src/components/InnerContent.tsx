@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import './InnerContent.css';
+import './TabStyles.css';
 
 const  InnerContent = () =>{
   return <div className='inner-content'>

@@ -1,9 +1,14 @@
 import React from 'react';
+import Rotation from './Rotation';
+import './TabStyles.css';
 
-const  RotationsTab=() =>{
-  return <div className='rotationsTab'>
-      <h2>Welcome to RotationStat page</h2>
-  </div>;
+const  RotationsTab = () => {
+  return (
+    <div className='rotationsTab'>
+      <Rotation />
+      <Rotation />
+    </div>
+  );
 }
 
 export default RotationsTab;
