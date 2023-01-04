@@ -190,7 +190,10 @@ const ShotEntry=() =>{
                     <br/>
                     <table>
                     <tr>
-                      <td><button>Switch to Rotations</button></td>
+                      <td>
+                        <a href='/Rotations'>
+                        <button>Switch to Rotations</button></a>
+                        </td>
                     </tr>
                     </table>
                 </div>
