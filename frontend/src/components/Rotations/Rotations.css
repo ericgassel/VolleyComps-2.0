@@ -21,3 +21,10 @@ tr.spaceUnder>th.padding {
     overflow-y:auto;
     max-height: 150px;
 }
+
+#show{
+    display: "block";
+}
+#hide{
+    display: "none";
+}

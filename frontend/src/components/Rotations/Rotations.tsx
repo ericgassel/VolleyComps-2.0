@@ -14,7 +14,7 @@ let colors : string[]= ["red","orange","grey","maroon","blue","violet"];
 // represents the colors not used by rotation yet
 let colors_available : string[] = ["blue","blue","blue","blue","blue","blue"];
 
-// the rotation that the user selects
+// the rotation that the user selects --> is the index of rotation in all_existing_rotations.
 let current_rotation_selected: number = 0;
 
 // all rotations that exist for scouting report
@@ -38,7 +38,7 @@ let too_many_color : string = "#C70039";
 // INPUT: list of players that are part of the current rotation
 // OUTPUT: N/A
 //      - sets the current rotation to those 6 players and establishes their onClick function to buttonClickCurrentRotation
-const currentRotationButtons = (players: string[]) => {
+const currentRotationButtonsLower = (players: string[]) => {
     let appended : HTMLDivElement= document.getElementById("currentRotation") as HTMLDivElement;
     appended.innerHTML = "";
     current_players_on_rotation = [];
@@ -170,8 +170,14 @@ const addNewRotation = () => {
     
     if(count == 6){
         all_existing_rotations.push(rotation);
+        all_existing_rotation_movements.push(["","","","","",""]);
+        current_rotation_selected = all_existing_rotations.length - 1;
         allRotationButtonsUpper(all_existing_rotations);
-        currentRotationButtons(all_existing_rotations[all_existing_rotations.length - 1]);
+        currentRotationButtonsLower(all_existing_rotations[all_existing_rotations.length - 1]);
+        // -----------------
+        // set default for display of lower table
+        let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
+        table.style.display = "";
     } else {
         alert("Invalid rotation selected.");
     }
@@ -183,6 +189,10 @@ const addNewRotation = () => {
 //      - generates HTML to add a new rotation.
 //      - changes buttons to reflect actions appropriate for adding rotation
 const addNewRotationButtonSelected = ()=>{
+    // -----------------
+    // set lower table to not display
+    let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
+    table.style.display = "none";
     // -----------------
     // change button actions and text for buttons with ids "AddButton" and "EditOrCancelButton"
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
@@ -245,6 +255,10 @@ const addNewRotationButtonSelected = ()=>{
 
 } 
 
+// INTPUT: N/A
+// OUTPUT: N/A
+//       - changes HTML for confirm of edit
+//       - changes rotation to reflect edited rotation
 const editRotationConfirm = () => {
     let count : number = 0;
     let rotation : string[] = [];
@@ -260,7 +274,11 @@ const editRotationConfirm = () => {
     if(count == 6){
         all_existing_rotations[current_rotation_selected] = rotation;
         allRotationButtonsUpper(all_existing_rotations);
-        currentRotationButtons(all_existing_rotations[current_rotation_selected]);
+        currentRotationButtonsLower(all_existing_rotations[current_rotation_selected]);
+        // ----------------
+        // change lower HTML to not display
+        let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
+        table.style.display = "";
     } else {
         alert("Invalid rotation selected.");
     }
@@ -281,6 +299,10 @@ const editASelectedRotation = (current_rotation : number) => {
     editOrCancelButton.innerHTML = "Cancel";
     addButton.onclick = editRotationConfirm;
     editOrCancelButton.onclick = () => allRotationButtonsUpper(all_existing_rotations);
+    // ----------------
+    // change lower HTML to not display
+    let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
+    table.style.display = "none";
     // ----------------
     // change paragraph html element with id "SelectRotationText" 
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
@@ -353,7 +375,7 @@ const selectRotation = (selectedRotation : number) => {
     // --------------------
     // change current_rotation_selected and update HTML
     current_rotation_selected = selectedRotation;
-    currentRotationButtons(all_existing_rotations[selectedRotation])
+    currentRotationButtonsLower(all_existing_rotations[selectedRotation])
     
 }
 
@@ -381,6 +403,10 @@ const allRotationButtonsUpper = (allRotations : string[][]) => {
     rotationText.innerHTML = "Select Rotation";
     let rotationToAdd : HTMLDivElement = document.getElementById("rotationToAdd") as HTMLDivElement;
     rotationToAdd.innerHTML = "";
+    // -----------------
+    // set default for display of lower table
+    let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
+    table.style.display = "";
     // -----------------
     // set div element with id "allRotations" to have all possible added rotations.
     let appended : HTMLDivElement= document.getElementById("allRotations") as HTMLDivElement;
@@ -513,7 +539,7 @@ const deleteRoute = () => {
 // HTML backbone
 function Rotations() {
   return (
-    <div onLoad={() => {currentRotationButtons(all_existing_rotations[0]); allRotationButtonsUpper(all_existing_rotations);}} >
+    <div onLoad={() => {currentRotationButtonsLower(all_existing_rotations[0]); allRotationButtonsUpper(all_existing_rotations);}} >
         <h1>Rotations</h1>
         <div className='left'>
             <img src={Square} ></img>
@@ -532,7 +558,7 @@ function Rotations() {
                         <div id="rotationToAdd" className='padding-small'></div>
                     </th>
                 </tr>
-                <tr>
+                <tr id="rotationTable">
                     <th >
                         
                         <button onClick={addRoute}>Add Route</button><br/>
