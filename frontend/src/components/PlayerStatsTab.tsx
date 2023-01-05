@@ -9,6 +9,11 @@ const  PlayerStatsTab = () =>{
     Number: 21,
     Name: 'Frieges'
   };
+  const notes = [
+    'Stronger OH that plays 6 rotations - does not get set on the BRA but is frequently set in SR & transition - keep an eye on her when FR!',
+    'LOVES to swing cross & send rollshots to over the block & to the off-blocker defender... Wing defenders & off-blocker D need to be ready! Always looks to swing line when hitting on the RS',
+    'Plays LB defense - is a decent defender & pretty good SR passer. IF you serve her, it needs to be when she is passing in Zone 6 & serving seams or short to get her out of the offense!'
+  ]
 
   return (
         <div className='playerStatsTab'>
@@ -19,7 +24,7 @@ const  PlayerStatsTab = () =>{
               <img src={require('../heatmap_zones.svg').default} alt='mySvgImage' />
             </div>
             <div className='chartCommentContainer'>
-              <div>Comments</div>
+              {notes.map((note, i) => <li key={i}>{note}</li>)}
             </div>
           </div>
 
