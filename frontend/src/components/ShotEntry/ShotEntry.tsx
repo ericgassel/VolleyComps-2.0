@@ -151,10 +151,13 @@ const playerOptions = (player_nums: string[]) => {
 }
 
 window.onload = function() {
-  playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
-  console.log("hello");
-  //console.log(window.location.href);    -- get URL and ID
-  createSvg();
+  if (window.location.href.includes("ShotEntry")){
+    playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
+    console.log("hello");
+    //console.log(window.location.href);    -- get URL and ID
+    createSvg();
+  }
+  
  }
 const ShotEntry=() =>{
     return <div className='ShotEntry'>
