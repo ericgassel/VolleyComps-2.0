@@ -38,7 +38,7 @@ const MainRoutes = () => (
 					<Route path="playsTab" element={<PlaysTab />} />
 				</Route>
 				<Route path="history" element={<History />} />
-				<Route path="ShotEntry" element={<ShotEntry/>}/>
+				<Route path="ShotEntry/:id" element={<ShotEntry/>}/>
 				<Route path="Rotations" element={<Rotations/>}/>
 			</Route>
 		</Route>

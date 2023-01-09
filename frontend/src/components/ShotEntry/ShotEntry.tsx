@@ -1,7 +1,8 @@
-import React from 'react';
-import Square from './square.png';
+import React from 'react'
+import Square from './square.png'
 import './ShotEntry.css';
-import {createSvg} from './ShotSVG';
+import {createSvg,addShotToSvg} from './ShotSVG'
+
 let rotation_current_player: string = "";
 let shot_type_current_button: string = "";
 let result_current_button: string = "";
@@ -76,9 +77,11 @@ const clearAllButtons = (btn_ids: string[]) => {
 } 
 
 const addShot = (btn_ids_toClear: string[]) => {
+
   if (rotation_current_player != "" && shot_type_current_button != "" && result_current_button != "") {
     let player = document.getElementById("player" + rotation_current_player) as HTMLButtonElement
-    
+    console.log(player.innerHTML);
+    addShotToSvg(shot_type_current_button,result_current_button,parseInt(player.innerHTML));
     deleteSelectedPlayer(player.innerHTML);
     //player.innerHTML is the player's number
     player_order.unshift(player.innerHTML);
@@ -140,24 +143,27 @@ const playerOptions = (player_nums: string[]) => {
       
     }
     k = k+4;
-    let line_break = document.createElement("br");
+    let line_break : HTMLElement= document.createElement("br");
     line_break.innerHTML="</br>";
     appended.append(line_break);
   }
 
 }
 
-
+window.onload = function() {
+  playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
+  console.log("hello");
+  //console.log(window.location.href);    -- get URL and ID
+  createSvg();
+ }
 const ShotEntry=() =>{
     return <div className='ShotEntry'>
-            <h1>Shot Entry</h1>
+
+            <h1 >Shot Entry</h1>
   
-            <div id = 'test'></div>
-            <table onLoad={() => {playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);createSvg();}}>
-              <tr>
-                <div className='left'>
-                  <div id='chart'></div>
-                </div>
+                  
+                  <div id='chart' className='left'></div>
+
                 <div className='right'>
 
                   <div id='playerOptions'>
@@ -167,39 +173,45 @@ const ShotEntry=() =>{
 
                     <br/>
                     <table>
+                      <tbody>
                     <tr>
                       <td><button id='serve' onClick={() => {btn_func("serve",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Serve</button></td>
                       <td><button id='shot' onClick={() => {btn_func("shot",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Shot</button></td>
                     </tr>
+                    </tbody>
                     </table>
                     <br/>
                     <table>
+                    <tbody>
                     <tr>
                       <td><button id='kill' onClick={() => {btn_func("kill",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Kill/Ace</button></td>
                       <td><button id='returned' onClick={() => {btn_func("returned",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Returned</button></td>
                       <td><button id='out' onClick={() => {btn_func("out",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Out</button></td>
                     </tr>
+                    </tbody>
                     </table>
                     <br/>
                     <table>
+                    <tbody>
                     <tr>
-                      <td><button id='addShot' onClick={() => {addShot(["serve","shot","kill","returned","out"])}}>ADD SHOT</button></td>
+                      <td><button id='addShot' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
                       <td><button id='undo' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
                     </tr>
+                    </tbody>
                     </table>
                     <br/>
                     <table>
+                    <tbody>
                     <tr>
                       <td>
                         <a href='/Rotations'>
                         <button>Switch to Rotations</button></a>
                         </td>
                     </tr>
+                    </tbody>
                     </table>
                 </div>
-                </tr>
 
-            </table>
 
         </div>;
   }
