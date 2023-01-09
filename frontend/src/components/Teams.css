@@ -1,0 +1,10 @@
+.teamsTitle {
+    /* display: flex; */
+    justify-content: space-between;
+}
+
+.options {
+    display: flex;
+    justify-content: space-evenly;
+    margin-left: 100px;
+}

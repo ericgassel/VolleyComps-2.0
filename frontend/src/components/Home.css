@@ -1,11 +1,9 @@
 .Home {
     text-align: center;
-    width: 100vw;
-    height: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #61dafb;
+    /* background-color: #61dafb; */
   }
   
   .heading {

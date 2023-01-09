@@ -6,11 +6,13 @@ import PlayerStatsTab from "./components/PlayerStatsTab"
 import TeamStatsTab from "./components/TeamStatsTab"
 import RotationsTab from "./components/RotationsTab"
 import PlaysTab from "./components/PlaysTab"
+import ManageTeam from './components/ManageTeam'
 
 
 import InnerContent from "./components/InnerContent"
 
 import Tabs from "./components/Tabs"
+import Teams from "./components/Teams"
 import Login from "./components/Login"
 import History from "./components/History"
 import Knights from "./components/Knights"
@@ -29,7 +31,8 @@ const MainRoutes = () => (
 				<Route path="/" element={<Navigate replace to="home" />} />
 				<Route path="home" element={<Home />} />
 				<Route path="knights" element={<Knights />} />
-				<Route path="teams" element={<Tabs />}>
+				<Route path="management/:teamName" element={<ManageTeam />} />
+				<Route path="teams" element={<Teams />}>
 					<Route path="/teams" element={<Navigate replace to="playerStatsTab" />} />
 					<Route path="playerStatsTab" element={<PlayerStatsTab />} />
 					<Route path="teamStatsTab" element={<TeamStatsTab />} />
