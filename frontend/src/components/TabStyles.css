@@ -1,0 +1,198 @@
+/* General Tab Styles */
+
+.inner-content {
+  width: 100%;
+  padding-top: 40px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.tabs {
+  width: 100%;
+  height: 70vh;
+}
+
+/* PlayerStatsTab Styles */
+
+.playerStatsTab {
+  border: 1px solid black ;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+
+.playerChartContainer {
+  border: 1px solid black ;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  margin: 1%;
+  padding: 1%;
+}
+
+.chartSVGContainer {
+  border: 1px solid black ;
+  margin-bottom: 1%;
+}
+
+.chartCommentContainer {
+  border: 1px solid black ;
+}
+
+.playersInfoContainer {
+  border: 1px solid black ;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  margin: 1%;
+  padding: 1%;
+}
+
+.selectedPlayerContainer {
+  border: 1px solid black;
+  height: 30%;
+  display: flex;
+  flex-direction: row;
+}
+
+.selectedPlayerInfoContainer {
+  border: 1px solid black;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.selectedPlayerImg {
+  height: 100%;
+}
+
+.teamRosterContainer {
+  border: 1px solid black;
+  height: 70%;
+  padding: 3%;
+}
+
+.teamRosterList {
+  padding: 2%;
+}
+
+/* TeamStatsTab Styles */
+
+.teamStatsTab {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+
+.bestPlayersContainer {
+  border: 1px solid black;
+  width: 35%;
+
+  }
+
+.bestPlayerStatsTable {
+  width: 100%;
+  border: 1px solid black;
+  /* table-layout: fixed; */
+  text-align: center;
+  margin-bottom: 3%;
+}
+
+.teamStatsContainer {
+  border: 1px solid black;
+  width: 65%;
+  display: flex;
+  /* justify-content: center; */
+  align-items: flex-start;
+
+}
+
+.teamStatsTable {
+  width: 100%;
+  border: 1px solid black;
+  /* table-layout: fixed; */
+  text-align: center;
+}
+
+.headerRow {
+  height: 5%;
+}
+
+th {
+  border: 1px solid black;
+}
+
+.teamStatsCell {
+  border: 1px solid black;
+}
+
+/* RotationsTab Styles */
+
+.rotationsTab {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+
+.RotationContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 50%;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.lineUpContainer {
+  width: 80%;
+  height: 15%;
+  border: 1px solid black;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.lineUpContainer > .playerNumber {
+  flex: 1 1 30%; /*grow | shrink | basis */
+}
+
+.playerNumber {
+  border: 1px solid black;
+  height: 49%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* cursor: pointer; */
+}
+
+.notesContainer {
+  width: 80%;
+  height: 15%;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rotationSVGContainer {
+  width: 90%;
+  height: 60%;
+  border: 1px solid black;
+}
+
+/* RotationsTab Styles */
+
+
+.playsTab {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}

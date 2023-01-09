@@ -1,10 +1,10 @@
 import React from 'react';
-import {Outlet} from 'react-router-dom'
+import { Outlet } from 'react-router-dom';
+import './TabStyles.css';
 
-const  InnerContent=() =>{
+const  InnerContent = () =>{
   return <div className='inner-content'>
       <Outlet/>
-   
   </div>;
 }
 
