@@ -1,7 +1,7 @@
-import React from 'react'
-import Square from './square.png'
+import React from 'react';
+import Square from './square.png';
 import './ShotEntry.css';
-
+import {createSvg} from './ShotSVG';
 let rotation_current_player: string = "";
 let shot_type_current_button: string = "";
 let result_current_button: string = "";
@@ -153,10 +153,10 @@ const ShotEntry=() =>{
             <h1>Shot Entry</h1>
   
             <div id = 'test'></div>
-            <table onLoad={() => playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"])}>
+            <table onLoad={() => {playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);createSvg();}}>
               <tr>
                 <div className='left'>
-                  <img src={Square} ></img>
+                  <div id='chart'></div>
                 </div>
                 <div className='right'>
 
