@@ -12,9 +12,11 @@ let data_graph : any[] = [{start_x: 50, start_y: 0, end_x: 30, end_y: 80, shot_t
 {start_x: 70, start_y: 0, end_x: 55, end_y: 85, shot_type: "attack", result: "kill"},
 {start_x: 68, start_y: 0, end_x: 55, end_y: 30, shot_type: "attack", result: "kill"}];
 
+// the current dateID for the page
+let current_date_ID : string = "";
 
-export const createSvg = () => {
-
+export const createSvg = (dateID : string) => {
+    current_date_ID = dateID;
     console.log("made it here!");
     let checkboxes : string = "";
     let chartItem : HTMLDivElement =  document.getElementById("chart") as HTMLDivElement;
@@ -78,6 +80,6 @@ export const addShotToSvg = (shot_type_selected: string, shot_result_selected: s
     console.log(shot_type_selected);
     data_graph.push({start_x: 20, start_y: 0, end_x: 70, end_y: 90, shot_type: shot_type_selected, result: shot_result_selected, player_num: 0});
     console.log(data_graph);
-    createSvg();
+    createSvg(current_date_ID);
 }
 

@@ -2,6 +2,8 @@ import React from 'react'
 import Square from './square.png'
 import './ShotEntry.css';
 import {createSvg,addShotToSvg} from './ShotSVG'
+import CalendarItem from './CalendarItem'
+import {addDates,hideCalendar} from './CalendarItem'
 
 let rotation_current_player: string = "";
 let shot_type_current_button: string = "";
@@ -150,24 +152,38 @@ const playerOptions = (player_nums: string[]) => {
 
 }
 
+// adds the calendar to the page if is on ShotEntry page
 window.onload = function() {
   if (window.location.href.includes("ShotEntry")){
-    playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
-    console.log("hello");
-    //console.log(window.location.href);    -- get URL and ID
-    createSvg();
+    addDates();
   }
   
  }
+
+// INPUT: dateID
+// OUTPUT: N/A
+//    - creates SVG on the page. Also shows shotEntry content and hides calendar content
+export const loadShotEntryContent = (dateID : string) => {
+    // -- would plug in players gotten from DB here --
+    playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
+    createSvg(dateID);
+    let chartDiv : HTMLDivElement = document.getElementById("chart") as HTMLDivElement;
+    chartDiv.className="left";
+    let dataDiv : HTMLDivElement = document.getElementById("dataEntry") as HTMLDivElement;
+    dataDiv.className="right";
+    hideCalendar();
+}
+
 const ShotEntry=() =>{
     return <div className='ShotEntry'>
+          
 
             <h1 >Shot Entry</h1>
-  
+            <CalendarItem />
                   
-                  <div id='chart' className='left'></div>
+                <div id='chart' className='left-hide'></div>
 
-                <div className='right'>
+                <div id = "dataEntry" className='right-hide'>
 
                   <div id='playerOptions'>
               

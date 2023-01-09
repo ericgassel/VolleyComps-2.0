@@ -6,6 +6,16 @@
     float:left
 }
 
+.right-hide {
+    float:right;
+    display: none;
+}
+
+.left-hide{
+    float:left;
+    display : none;
+}
+
 table button{
   
     background-color: #4CAF50; /* Green */
@@ -48,4 +58,26 @@ button[type = "rotationButton"]:hover{
 #playerOptions{
     overflow-y:auto;
     max-height: 150px;
+}
+
+.scrollable{
+    overflow-y: auto;
+}
+
+button[id = "calendarButton"]{
+    background-color: #4CAF50;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.inLine{
+    display: inline-block;
+    margin-right: 75px;
+}
+
+.calendarItem{
+    list-style-type: none;
+    margin:30px;
+    padding: 10px;
+    background-color: #EAF0F6;
 }
