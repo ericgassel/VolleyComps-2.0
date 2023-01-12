@@ -78,7 +78,7 @@ const Teams = () => {
             <tr key={key}>
               <td>{val.name}</td>
               <td> <Link to={`/management/${val.name}`}>Manage Team</Link></td>
-              <td><button>Scout Report</button></td>
+              <td><Link to={`/report/${val.name}`}>Scout Report</Link></td>
             </tr>
           )
         })}
@@ -86,12 +86,6 @@ const Teams = () => {
         </tbody>
       </table>
     </div>
-
-
-    {/** Tab navigation  */}
-    {/* <TavNav /> */}
-    {/** Tab inner content */}
-    {/* <Outlet /> */}
   </div>
 }
 

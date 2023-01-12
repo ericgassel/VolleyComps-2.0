@@ -6,7 +6,8 @@ import TavNav from "./TabNav"
 import './TabStyles.css';
 
 const Tabs = () => {
-	const [schoolName, setSchoolName] = useState('Concordia');
+	// Maybe use context to update school name when link is clicked and use the names afterward
+	const [schoolName, setSchoolName] = useState('St Olaf');
 	return (
 		<div className="tabs">
 			<h1>{schoolName}</h1>
