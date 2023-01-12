@@ -12,8 +12,27 @@ let data_graph : any[] = [{start_x: 50, start_y: 0, end_x: 30, end_y: 80, shot_t
 {start_x: 70, start_y: 0, end_x: 55, end_y: 85, shot_type: "attack", result: "kill"},
 {start_x: 68, start_y: 0, end_x: 55, end_y: 30, shot_type: "attack", result: "kill"}];
 
+let first_click = {x:0, y:0};
+let second_click = {x:0, y:0};
+
 // the current dateID for the page
 let current_date_ID : string = "";
+
+let x_scale = d3.scaleLinear()
+        .domain([0, 100])
+        .range([200, 700]);
+
+let y_scale = d3.scaleLinear()
+    .domain([0, 100])
+    .range([50, 650]);
+
+let x_scale_click = d3.scaleLinear()
+    .domain([700, 200])
+    .range([100, 0]);
+
+let y_scale_click = d3.scaleLinear()
+    .domain([650, 0])
+    .range([100, 0]);
 
 export const createSvg = (dateID : string) => {
     current_date_ID = dateID;
@@ -34,13 +53,6 @@ export const createSvg = (dateID : string) => {
     {
         data_graph = data_graph.filter(d => d.result === "kill")
     }
-    let x_scale = d3.scaleLinear()
-        .domain([0, 100])
-        .range([200, 700]);
-
-    let y_scale = d3.scaleLinear()
-        .domain([0, 100])
-        .range([50, 650]);
 
     svg.append("rect")
         .attr("id", "court")
@@ -71,14 +83,45 @@ export const createSvg = (dateID : string) => {
         let height = 500;
 
     svg.on("click", function() {
-        console.log(d3.pointer(svg.node));
+        let vals = d3.pointer(event, svg.node())
+        console.log(x_scale(x_scale_click(vals[0])));
+
+        if (first_click.x === 0) {
+            first_click.x = x_scale_click(vals[0]);
+            first_click.y = y_scale_click(vals[1]);
+            svg.append("circle")
+                .attr("id", "selected")
+                .attr("cx", vals[0])
+                .attr("cy", vals[1])
+                .attr("r", 20)
+                .attr("height", 500)
+                .attr("fill", "white")
+                .attr("stroke", "green")
+                .attr("stroke-width", 2);
+        }
+        else if (second_click.x === 0) {
+            second_click.x = x_scale_click(vals[0]);
+            second_click.y = y_scale_click(vals[1]);
+            svg.append("circle")
+                .attr("id", "selected")
+                .attr("cx", vals[0])
+                .attr("cy", vals[1])
+                .attr("r", 20)
+                .attr("height", 500)
+                .attr("fill", "white")
+                .attr("stroke", "red")
+                .attr("stroke-width", 2);
+
+
+        }
     })
 }
 
-
 export const addShotToSvg = (shot_type_selected: string, shot_result_selected: string, player_number_selected: number) => {
-    console.log(shot_type_selected);
-    data_graph.push({start_x: 20, start_y: 0, end_x: 70, end_y: 90, shot_type: shot_type_selected, result: shot_result_selected, player_num: 0});
+    console.log(first_click.x);
+    data_graph.push({start_x: first_click.x, start_y: first_click.y, end_x: second_click.x, end_y: second_click.y, shot_type: shot_type_selected, result: shot_result_selected, player_num: 0});
+    first_click = {x:0, y:0};
+    second_click = {x:0, y:0};
     console.log(data_graph);
     createSvg(current_date_ID);
 }
