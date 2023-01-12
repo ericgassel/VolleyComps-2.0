@@ -191,6 +191,10 @@ const addNewRotation = () => {
         // set default for display of lower table
         let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
         table.style.display = "";
+        // -----------------
+        // set default for display of left html elements
+        let htmlItems : HTMLTableElement = document.getElementById("leftSide") as HTMLTableElement;
+        htmlItems.style.display = "";
     } else {
         alert("Invalid rotation selected.");
     }
@@ -206,6 +210,10 @@ const addNewRotationButtonSelected = ()=>{
     // set lower table to not display
     let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
     table.style.display = "none";
+    // ----------------
+    // change left element to not display
+    let leftElement : HTMLDivElement = document.getElementById("leftSide") as HTMLDivElement;
+    leftElement.style.display = "none";
     // -----------------
     // change button actions and text for buttons with ids "AddButton" and "EditOrCancelButton"
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
@@ -219,6 +227,7 @@ const addNewRotationButtonSelected = ()=>{
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
     rotationText.innerHTML = "Select Players";
     // ----------------
+
     // change div element with id "allRotations" to have buttons for all possible players possible players
     let divElement : HTMLDivElement = document.getElementById("allRotations") as HTMLDivElement;
     divElement.innerHTML = "";
@@ -289,9 +298,14 @@ const editRotationConfirm = () => {
         allRotationButtonsUpper(all_existing_rotations);
         currentRotationButtonsLower(all_existing_rotations[current_rotation_selected]);
         // ----------------
-        // change lower HTML to not display
+        // change lower HTML to display
         let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
         table.style.display = "";
+        // ----------------
+        // change left HTML to display
+        let leftHTML : HTMLTableElement = document.getElementById("leftSide") as HTMLTableElement;
+        leftHTML.style.display = "";
+
     } else {
         alert("Invalid rotation selected.");
     }
@@ -318,11 +332,12 @@ const editASelectedRotation = (current_rotation : number) => {
     table.style.display = "none";
     // ----------------
     // change left element to not display
-    let leftElement : HTMLDivElement = document.getElementById("") as HTMLDivElement
+    let leftElement : HTMLDivElement = document.getElementById("leftSide") as HTMLDivElement;
+    leftElement.style.display = "none";
     // ----------------
     // change paragraph html element with id "SelectRotationText" 
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
-    rotationText.innerHTML = "Select Players";
+    rotationText.innerHTML = "Editing Rotation " + (current_rotation_selected + 1).toString();
     // ----------------
     // change div element with id "allRotations" to have buttons for all possible players possible players
     let divElement : HTMLDivElement = document.getElementById("allRotations") as HTMLDivElement;
@@ -376,6 +391,7 @@ const editASelectedRotation = (current_rotation : number) => {
 // INPUT: index of where rotation is in all_existing_rotations
 // OUTPUT: N/A
 //      - sets the current rotation buttons to represent the existing rotation
+//      - sets notes for current rotation
 const selectRotation = (selectedRotation : number) => {
     current_selected_player = "";
     // --------------------
@@ -395,7 +411,11 @@ const selectRotation = (selectedRotation : number) => {
     // --------------------
     // change the rotation notes text
     let rotationNotes : HTMLHeadingElement = document.getElementById("rotationNotesText") as HTMLHeadingElement;
-    rotationNotes.innerText = "Rotation " + (current_rotation_selected + 1).toString() + " Extra Info"
+    rotationNotes.innerHTML = "Rotation " + (current_rotation_selected + 1).toString() + " Extra Info"
+    let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
+    additionalNotes.innerHTML = all_existing_additional_notes[current_rotation_selected];
+    let blockingScheme : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
+    blockingScheme.innerHTML = all_existing_blocking_schemes[current_rotation_selected];
     
 }
 
@@ -403,6 +423,7 @@ const selectRotation = (selectedRotation : number) => {
 // OUTPUT: N/A
 //      - sets div delement with id "allRotations" to have all the possible added rotations.
 //      - also sets default button names for buttons with id "AddButton" and "EditOrCancelButton"
+//      - also displays all main html page elements
 const allRotationButtonsUpper = (allRotations : string[][]) => {
     
     let allRotationNums : number[] = []
@@ -427,6 +448,10 @@ const allRotationButtonsUpper = (allRotations : string[][]) => {
     // set default for display of lower table
     let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
     table.style.display = "";
+    // -----------------
+    // set default for display of lower table
+    let leftHTML : HTMLTableElement = document.getElementById("leftSide") as HTMLTableElement;
+    leftHTML.style.display = "";
     // -----------------
     // set div element with id "allRotations" to have all possible added rotations.
     let appended : HTMLDivElement= document.getElementById("allRotations") as HTMLDivElement;
@@ -561,7 +586,10 @@ const deleteRoute = () => {
 // OUTPUT: N/A
 //      - saves the additional notes and blocking scheme for the rotation
 const saveNotes = () => {
-
+    let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
+    all_existing_additional_notes[current_rotation_selected] = additionalNotes.innerHTML;
+    let blockingScheme : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
+    all_existing_blocking_schemes[current_rotation_selected] = blockingScheme.innerHTML;
 }
 
 // adds the appropriate items to the page if Rotations is loaded
@@ -578,7 +606,7 @@ function Rotations() {
   return (
     <div>
         <h1>Rotations</h1>
-        <div className='left'>
+        <div className='left' id="leftSide">
             <div id='chart'></div>
 
             <h2 id="rotationNotesText">Rotation {current_rotation_selected + 1} Extra Info</h2>
