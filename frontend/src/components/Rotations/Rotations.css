@@ -28,3 +28,38 @@ tr.spaceUnder>th.padding {
 #hide{
     display: "none";
 }
+.notesField{
+    height: 50px;
+    width: 150px;
+    font-family: 'Rubik', sans-serif;
+    margin-left: 50px;
+}
+.inLine{
+    display: inline-block;
+    margin-right: 75px;
+}
+
+button[class="saveButton"] {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+}
+button[class = "saveButton"]:hover{
+    transform: translate(0px, 3px);
+    -webkit-transform: translate(0px, 3px);
+    box-shadow: 0px 1px 0px 0px;
+    background-color: #ddd;
+}
+
+table[class="rotationTable"] {
+    border: 2px solid forestgreen;
+    width: 600px;
+    height: 200px;
+    margin-top: 100px;
+  }

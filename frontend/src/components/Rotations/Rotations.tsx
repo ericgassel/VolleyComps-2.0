@@ -1,6 +1,7 @@
 import React from 'react'
 import Square from './square.png'
 import './Rotations.css';
+import {createSvg,addShotToSvg} from './RotationsSVG'
 
 // represents the 6 players that are currently selected as part of the rotation
 let current_players_on_rotation : string[] = [];
@@ -34,6 +35,18 @@ let success_color : string =  "#FFC300";
 
 // color that is used when more than one player is selected for adding new rotation.
 let too_many_color : string = "#C70039";
+
+// list of items for each rotation which stores serve/recieve text box info.
+// each item of list is list of format: *Primary*, *Secondary*, *Tertiary*
+let all_existing_serve_options : string[][] = [["","",""],["","",""],["","",""]]
+
+// list of items for each rotation which stores Transition text box info.
+// each item of list is list of format: *Primary*, *Secondary*, *Tertiary*
+let all_existing_transition_options : string[][] = [["","",""],["","",""],["","",""]]
+
+let all_existing_additional_notes : string[] = ["","",""]
+
+let all_existing_blocking_schemes : string[] = ["", "" , ""]
 
 // INPUT: list of players that are part of the current rotation
 // OUTPUT: N/A
@@ -304,6 +317,9 @@ const editASelectedRotation = (current_rotation : number) => {
     let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
     table.style.display = "none";
     // ----------------
+    // change left element to not display
+    let leftElement : HTMLDivElement = document.getElementById("") as HTMLDivElement
+    // ----------------
     // change paragraph html element with id "SelectRotationText" 
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
     rotationText.innerHTML = "Select Players";
@@ -376,6 +392,10 @@ const selectRotation = (selectedRotation : number) => {
     // change current_rotation_selected and update HTML
     current_rotation_selected = selectedRotation;
     currentRotationButtonsLower(all_existing_rotations[selectedRotation])
+    // --------------------
+    // change the rotation notes text
+    let rotationNotes : HTMLHeadingElement = document.getElementById("rotationNotesText") as HTMLHeadingElement;
+    rotationNotes.innerText = "Rotation " + (current_rotation_selected + 1).toString() + " Extra Info"
     
 }
 
@@ -536,17 +556,53 @@ const deleteRoute = () => {
         alert("Please select a player.");
     }
 }
+
+// INPUT: N/A
+// OUTPUT: N/A
+//      - saves the additional notes and blocking scheme for the rotation
+const saveNotes = () => {
+
+}
+
+// adds the appropriate items to the page if Rotations is loaded
+window.onload = function() {
+    if (window.location.href.includes("Rotations")){
+        currentRotationButtonsLower(all_existing_rotations[0]); 
+        allRotationButtonsUpper(all_existing_rotations);
+        createSvg("");
+    }
+    
+   }
 // HTML backbone
 function Rotations() {
   return (
-    <div onLoad={() => {currentRotationButtonsLower(all_existing_rotations[0]); allRotationButtonsUpper(all_existing_rotations);}} >
+    <div>
         <h1>Rotations</h1>
         <div className='left'>
-            <img src={Square} ></img>
+            <div id='chart'></div>
+
+            <h2 id="rotationNotesText">Rotation {current_rotation_selected + 1} Extra Info</h2>
+
+            <br/>
+            <div>
+                
+            <div className='inLine left'>
+                    Additional Notes:
+                    
+                    <textarea className='notesField' id="additionalNotes"></textarea>
+            </div>
+            <div>
+                    Blocking Scheme:
+                    
+                    <textarea className = 'notesField' id="blockingScheme"></textarea>
+            </div>
+            <br/><br/>
+            <button className='saveButton' onClick={saveNotes}>Save</button>
+            </div>
         </div>
         <div className='right' >
-            <table >
-                
+            <table className='rotationTable'>
+                <tbody>
                 <tr className='spaceUnder'>
                     <th >
                         <button id="AddButton"></button><br/>
@@ -558,17 +614,33 @@ function Rotations() {
                         <div id="rotationToAdd" className='padding-small'></div>
                     </th>
                 </tr>
-                <tr id="rotationTable">
+                <tr id="rotationTable" className='spaceUnder'>
                     <th >
-                        
                         <button onClick={addRoute}>Add Route</button><br/>
                         <button onClick={deleteRoute}>Delete Route</button>
                     </th>
                     
                     <th >
                         <div id="currentRotation"></div>
+                        <br/>
+                        <h3>Serve Recieve</h3>
+                        <div id="primaryServerRecieve">Primary <input></input></div>
+                        <div id="secondaryServerRecieve">Secondary <input></input></div>
+                        <div id="tertiaryServerRecieve">Tertiary <input></input></div> 
+                        <br/>
+                        <h3>Transition</h3>
+                        <div id="primaryTransition">Primary <input></input></div>
+                        <div id="secondaryTransition">Secondary <input></input></div>
+                        <div id="tertiaryTransition">Tertiary <input></input></div> 
+                        <button className='saveButton'>Save</button>
+
                     </th>
                 </tr>
+                <tr id="notesSection">
+                    
+
+                </tr>
+                </tbody>
             </table>
         </div>
     </div>

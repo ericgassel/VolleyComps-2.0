@@ -153,12 +153,13 @@ const playerOptions = (player_nums: string[]) => {
 }
 
 // adds the calendar to the page if is on ShotEntry page
-window.onload = function() {
+window.addEventListener("load", (event) => {
   if (window.location.href.includes("ShotEntry")){
+    console.log("adding Dates!");
     addDates();
+
   }
-  
- }
+});
 
 // INPUT: dateID
 // OUTPUT: N/A
@@ -191,43 +192,43 @@ const ShotEntry=() =>{
                  
 
                     <br/>
-                    <table>
+                    <table className='shotEntryTable'>
+                        <tbody>
+                      <tr>
+                        <td><button id='serve' onClick={() => {btn_func("serve",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Serve</button></td>
+                        <td><button id='shot' onClick={() => {btn_func("shot",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Shot</button></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                      <br/>
+                      <table className='shotEntryTable'>
                       <tbody>
-                    <tr>
-                      <td><button id='serve' onClick={() => {btn_func("serve",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Serve</button></td>
-                      <td><button id='shot' onClick={() => {btn_func("shot",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Shot</button></td>
-                    </tr>
-                    </tbody>
+                      <tr>
+                        <td><button id='kill' onClick={() => {btn_func("kill",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Kill/Ace</button></td>
+                        <td><button id='returned' onClick={() => {btn_func("returned",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Returned</button></td>
+                        <td><button id='out' onClick={() => {btn_func("out",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Out</button></td>
+                      </tr>
+                      </tbody>
                     </table>
                     <br/>
-                    <table>
-                    <tbody>
-                    <tr>
-                      <td><button id='kill' onClick={() => {btn_func("kill",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Kill/Ace</button></td>
-                      <td><button id='returned' onClick={() => {btn_func("returned",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Returned</button></td>
-                      <td><button id='out' onClick={() => {btn_func("out",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Out</button></td>
-                    </tr>
-                    </tbody>
+                    <table className='shotEntryTable'>
+                      <tbody>
+                      <tr>
+                        <td><button id='addShot' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
+                        <td><button id='undo' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
+                      </tr>
+                      </tbody>
                     </table>
                     <br/>
-                    <table>
-                    <tbody>
-                    <tr>
-                      <td><button id='addShot' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
-                      <td><button id='undo' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
-                    </tr>
-                    </tbody>
-                    </table>
-                    <br/>
-                    <table>
-                    <tbody>
-                    <tr>
-                      <td>
-                        <a href='/Rotations'>
-                        <button>Switch to Rotations</button></a>
-                        </td>
-                    </tr>
-                    </tbody>
+                    <table className='shotEntryTable'>
+                      <tbody>
+                      <tr>
+                        <td>
+                          <a href='/Rotations'>
+                          <button>Switch to Rotations</button></a>
+                          </td>
+                      </tr>
+                      </tbody>
                     </table>
                 </div>
 

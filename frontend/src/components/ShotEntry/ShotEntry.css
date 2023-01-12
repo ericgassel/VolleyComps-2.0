@@ -81,3 +81,10 @@ button[id = "calendarButton"]{
     padding: 10px;
     background-color: #EAF0F6;
 }
+
+table[class="shotEntryTable"]{
+    width: auto;
+    height: auto;
+    margin-top: auto;
+    border: none;
+}
