@@ -43,7 +43,7 @@ const MainRoutes = () => (
 				</Route>
 				<Route path="history" element={<History />} />
 				<Route path="ShotEntry/:id" element={<ShotEntry/>}/>
-				<Route path="Rotations" element={<Rotations/>}/>
+				<Route path="Rotations/:id" element={<Rotations/>}/>
 			</Route>
 		</Route>
 

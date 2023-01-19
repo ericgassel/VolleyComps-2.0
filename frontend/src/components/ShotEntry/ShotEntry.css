@@ -84,7 +84,24 @@ button[id = "calendarButton"]{
 
 table[class="shotEntryTable"]{
     width: auto;
+    nav-down:auto;
     height: auto;
     margin-top: auto;
     border: none;
+}
+::-webkit-datetime-edit { padding: 1em; }
+::-webkit-datetime-edit-text {padding: 0 0.3em;}
+
+input[type="date"]{
+    font-family: 'Rubik', sans-serif;
+    text-align:center;
+    margin-bottom: 20px;
+}
+
+div[class="playerOptions"]{
+    margin-top: 50;
+}
+
+#dateOfShots{
+    margin-bottom: 5px;
 }

@@ -2,15 +2,28 @@ import React from 'react'
 import Square from './square.png'
 import './ShotEntry.css';
 import {createSvg,addShotToSvg} from './ShotSVG'
-import CalendarItem from './CalendarItem'
-import {addDates,hideCalendar} from './CalendarItem'
+import { create } from 'd3';
+
 
 let rotation_current_player: string = "";
 let shot_type_current_button: string = "";
 let result_current_button: string = "";
-let player_order : string[] = []
+let player_order : string[] = [];
 
+// TODO:
+// add calendar item at the top of the page instead of calendar as seperate page thing.
+// defaults to the current date
 
+// also might want to add notes during shot entry
+//  - ability to go to the scouting report from shot entry?
+
+// INPUT: date object
+// OUTPUT: date string of D(D)/M(M)/YYYY
+//    - () in output means that may or may not return with digit there
+//    - for example, could return 1/13/2023, 5/1/2023, or 12/30/2023
+const getDateString = (date : Date) : string => {
+  return (date.getMonth() + 1).toString() + "/" + (date.getDate() + 1).toString() + "/" + date.getFullYear();
+}
 
 // INPUT: button name for which user clicks
 // OUTPUT: N/A
@@ -81,9 +94,11 @@ const clearAllButtons = (btn_ids: string[]) => {
 const addShot = (btn_ids_toClear: string[]) => {
 
   if (rotation_current_player != "" && shot_type_current_button != "" && result_current_button != "") {
-    let player = document.getElementById("player" + rotation_current_player) as HTMLButtonElement
-    console.log(player.innerHTML);
+    let player = document.getElementById("player" + rotation_current_player) as HTMLButtonElement;
+
+
     addShotToSvg(shot_type_current_button,result_current_button,parseInt(player.innerHTML));
+
     deleteSelectedPlayer(player.innerHTML);
     //player.innerHTML is the player's number
     player_order.unshift(player.innerHTML);
@@ -152,40 +167,56 @@ const playerOptions = (player_nums: string[]) => {
 
 }
 
+// INPUT: N/A
+// OUTPUT: N/A
+//    - changes SVG to reflect date selected by date selector
+const changeSVG = () => {
+  let dateItem : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
+  let date : Date = new Date(dateItem.value);
+  createSvg(getDateString(date));
+}
+
 // adds the calendar to the page if is on ShotEntry page
 window.addEventListener("load", (event) => {
   if (window.location.href.includes("ShotEntry")){
-    console.log("adding Dates!");
-    addDates();
+    playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
+    let today : Date = new Date();
+    createSvg(getDateString(today));
+    let dateElement : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
+    // set default value to date element
+    dateElement.valueAsDate = today;
 
+    //add event listener to date input
+    dateElement.addEventListener('change',changeSVG)
   }
 });
 
-// INPUT: dateID
-// OUTPUT: N/A
-//    - creates SVG on the page. Also shows shotEntry content and hides calendar content
-export const loadShotEntryContent = (dateID : string) => {
-    // -- would plug in players gotten from DB here --
-    playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
-    createSvg(dateID);
-    let chartDiv : HTMLDivElement = document.getElementById("chart") as HTMLDivElement;
-    chartDiv.className="left";
-    let dataDiv : HTMLDivElement = document.getElementById("dataEntry") as HTMLDivElement;
-    dataDiv.className="right";
-    hideCalendar();
+// INTPUT: N/A
+// OUTPUT: returns url path to get to rotations page
+const getRotationsURL = () : string => {
+  let url : string = window.location.href;
+  let id : string = url.substring(url.lastIndexOf("/") + 1);
+
+  return "/Rotations/" + id;
 }
+
 
 const ShotEntry=() =>{
     return <div className='ShotEntry'>
           
-
+          
             <h1 >Shot Entry</h1>
-            <CalendarItem />
-                  
-                <div id='chart' className='left-hide'></div>
+            
+            
+           
+                <div id='chart' className='left'></div>
+                
 
-                <div id = "dataEntry" className='right-hide'>
-
+                <div id = "dataEntry" className='right'>
+                  <p id='dateOfShots'>Date of Shot:</p>
+                <input type="date" id='dateInput'></input>
+                  <br/>
+                  <p>Shot Info:</p>
                   <div id='playerOptions'>
               
                    </div>
@@ -219,12 +250,13 @@ const ShotEntry=() =>{
                       </tr>
                       </tbody>
                     </table>
+                    
                     <br/>
                     <table className='shotEntryTable'>
                       <tbody>
                       <tr>
                         <td>
-                          <a href='/Rotations'>
+                          <a href={getRotationsURL()}>
                           <button>Switch to Rotations</button></a>
                           </td>
                       </tr>

@@ -86,6 +86,70 @@ const currentRotationButtonsLower = (players: string[]) => {
     }
 }
 
+// INPUT: N/A
+// OUTPUT: N/A
+//      - sets all different note pieces on the page with corresponding saved info
+const setNotes = () : void=> {
+    
+    let primaryServerRecieve : HTMLInputElement = document.getElementById("primaryServerRecieve") as HTMLInputElement;
+    let secondaryServerRecieve : HTMLInputElement = document.getElementById("secondaryServerRecieve") as HTMLInputElement;
+    let tertiaryServerRecieve : HTMLInputElement = document.getElementById("tertiaryServerRecieve") as HTMLInputElement;
+    
+    primaryServerRecieve.value = all_existing_serve_options[current_rotation_selected][0];
+    secondaryServerRecieve.value = all_existing_serve_options[current_rotation_selected][1];
+    tertiaryServerRecieve.value = all_existing_serve_options[current_rotation_selected][2];
+    
+    let primaryTransition : HTMLInputElement = document.getElementById("primaryTransition") as HTMLInputElement;
+    let secondaryTransition : HTMLInputElement = document.getElementById("secondaryTransition") as HTMLInputElement;
+    let tertiaryTransition : HTMLInputElement = document.getElementById("tertiaryTransition") as HTMLInputElement;
+    
+    primaryTransition.value = all_existing_transition_options[current_rotation_selected][0];
+    secondaryTransition.value = all_existing_transition_options[current_rotation_selected][1];
+    tertiaryTransition.value = all_existing_transition_options[current_rotation_selected][2];
+    
+    let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
+    let blockingNotes : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
+    additionalNotes.value = all_existing_additional_notes[current_rotation_selected];
+    blockingNotes.value = all_existing_blocking_schemes[current_rotation_selected];
+
+    let extraNotesHeader : HTMLHeadingElement = document.getElementById("rotationNotesText") as HTMLHeadingElement;
+    extraNotesHeader.innerText = "Rotation " +  (current_rotation_selected + 1).toString() +  " Extra Info";
+
+
+}
+
+// INPUT: N/A
+// OUTPUT: N/A
+//      - saves all transition and serve notes for the selected rotation
+const saveTransitionServeNotes = () => {
+    let primaryServerRecieve : HTMLInputElement = document.getElementById("primaryServerRecieve") as HTMLInputElement;
+    let secondaryServerRecieve : HTMLInputElement = document.getElementById("secondaryServerRecieve") as HTMLInputElement;
+    let tertiaryServerRecieve : HTMLInputElement = document.getElementById("tertiaryServerRecieve") as HTMLInputElement;
+    
+    all_existing_serve_options[current_rotation_selected][0] = primaryServerRecieve.value;
+    all_existing_serve_options[current_rotation_selected][1] = secondaryServerRecieve.value;
+    all_existing_serve_options[current_rotation_selected][2] = tertiaryServerRecieve.value;
+
+    let primaryTransition : HTMLInputElement = document.getElementById("primaryTransition") as HTMLInputElement;
+    let secondaryTransition : HTMLInputElement = document.getElementById("secondaryTransition") as HTMLInputElement;
+    let tertiaryTransition : HTMLInputElement = document.getElementById("tertiaryTransition") as HTMLInputElement;
+
+    all_existing_transition_options[current_rotation_selected][0] = primaryTransition.value;
+    all_existing_transition_options[current_rotation_selected][1] = secondaryTransition.value;
+    all_existing_transition_options[current_rotation_selected][2] = tertiaryTransition.value;
+
+}
+
+// INTPUT: N/A
+// OUTPUT: N/A
+//      - saves all additional notes and blocking scheme notes for the selected rotation
+const saveAddtionalAndBlockingNotes = () => {
+    let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
+    let blockingNotes : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
+    all_existing_additional_notes[current_rotation_selected] = additionalNotes.value;
+    all_existing_blocking_schemes[current_rotation_selected] = blockingNotes.value;
+}
+
 // INPUT: selected player number from roster of all existing players
 // OUPTU: N/A
 //      - changes the color of the corresponding button when adding a new rotation.
@@ -410,12 +474,7 @@ const selectRotation = (selectedRotation : number) => {
     currentRotationButtonsLower(all_existing_rotations[selectedRotation])
     // --------------------
     // change the rotation notes text
-    let rotationNotes : HTMLHeadingElement = document.getElementById("rotationNotesText") as HTMLHeadingElement;
-    rotationNotes.innerHTML = "Rotation " + (current_rotation_selected + 1).toString() + " Extra Info"
-    let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
-    additionalNotes.innerHTML = all_existing_additional_notes[current_rotation_selected];
-    let blockingScheme : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
-    blockingScheme.innerHTML = all_existing_blocking_schemes[current_rotation_selected];
+    setNotes();
     
 }
 
@@ -582,25 +641,26 @@ const deleteRoute = () => {
     }
 }
 
-// INPUT: N/A
-// OUTPUT: N/A
-//      - saves the additional notes and blocking scheme for the rotation
-const saveNotes = () => {
-    let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
-    all_existing_additional_notes[current_rotation_selected] = additionalNotes.innerHTML;
-    let blockingScheme : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
-    all_existing_blocking_schemes[current_rotation_selected] = blockingScheme.innerHTML;
-}
+
 
 // adds the appropriate items to the page if Rotations is loaded
 window.onload = function() {
     if (window.location.href.includes("Rotations")){
         currentRotationButtonsLower(all_existing_rotations[0]); 
         allRotationButtonsUpper(all_existing_rotations);
+        selectRotation(0);
         createSvg("");
     }
     
    }
+
+// INPUT: N/A
+// OUTPUT: returns the string of URL to get to Shot Entry page
+const getShotEntryURL = () : string => {
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    return "/ShotEntry/" + id;
+}
 // HTML backbone
 function Rotations() {
   return (
@@ -625,7 +685,7 @@ function Rotations() {
                     <textarea className = 'notesField' id="blockingScheme"></textarea>
             </div>
             <br/><br/>
-            <button className='saveButton' onClick={saveNotes}>Save</button>
+            <button className='saveButton' onClick={saveAddtionalAndBlockingNotes}>Save</button>
             </div>
         </div>
         <div className='right' >
@@ -652,24 +712,30 @@ function Rotations() {
                         <div id="currentRotation"></div>
                         <br/>
                         <h3>Serve Recieve</h3>
-                        <div id="primaryServerRecieve">Primary <input></input></div>
-                        <div id="secondaryServerRecieve">Secondary <input></input></div>
-                        <div id="tertiaryServerRecieve">Tertiary <input></input></div> 
+                        <div>Primary <input type='text' id="primaryServerRecieve"></input></div>
+                        <div>Secondary <input type='text' id="secondaryServerRecieve"></input></div>
+                        <div>Tertiary <input type='text' id="tertiaryServerRecieve"></input></div> 
                         <br/>
                         <h3>Transition</h3>
-                        <div id="primaryTransition">Primary <input></input></div>
-                        <div id="secondaryTransition">Secondary <input></input></div>
-                        <div id="tertiaryTransition">Tertiary <input></input></div> 
-                        <button className='saveButton'>Save</button>
+                        <div>Primary <input type='text' id="primaryTransition"></input></div>
+                        <div>Secondary <input type='text' id="secondaryTransition"></input></div>
+                        <div>Tertiary <input type='text' id="tertiaryTransition"></input></div> 
+                        <button className='saveButton' onClick={saveTransitionServeNotes}>Save</button>
 
                     </th>
                 </tr>
+                
                 <tr id="notesSection">
                     
 
                 </tr>
                 </tbody>
+                
             </table>
+            <a href={getShotEntryURL()}>
+            <button id='switchShotEntry'>Switch to ShotEntry</button>
+            </a>
+            
         </div>
     </div>
   )
