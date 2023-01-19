@@ -4,13 +4,21 @@ import { Action } from "../action/action";
 
 type State = {
     error: Error | AxiosError;
-    data: any;
+    api_base_url: string;
+    roster: any;
+    schedule: any;
+    spray_chart: any;
+    rotations: any;
 }
 
 // -- Global react state managed by React Context API --
-const initialState = {
+let initialState = {
     error: null,
-    data: {}
+    roster: [],
+    schedule: [],
+    spray_chart: [],
+    rotations: [],
+    api_base_url: "http://cs400volleyball.mathcs.carleton.edu:5000"
 }
 
 type AppDispatch = Dispatch<Action>
@@ -24,23 +32,40 @@ type AppDispatch = Dispatch<Action>
 
 const appReducer = (state: any, action: Action) => {
     switch (action.type) {
-
-        case "success": {
+        case "roster_success": {
             const { data } = action;
             return {
               ...state,
-              data: action.data
+              roster: data
             }
         }
-
+        case "rotation_success": {
+          const { data } = action;
+          return {
+            ...state,
+            rotations: data
+          }
+        }
+        case "schedule_success": {
+        const { data } = action;
+        return {
+          ...state,
+          schedule: data
+          }
+        }
+        case "spray_chart_success": {
+          const { data } = action;
+          return {
+            ...state,
+            spray_chart: data
+          }
+        }
         case "error": {
             return {
               ...state,
-              loading: false,
               error: action.error,
             };
-          }
-
+        }
         default:
             throw new Error(`Unhandled action`);
     }
