@@ -439,12 +439,17 @@ const allRotationButtonsUpper = (allRotations : string[][]) => {
 // OUTPUT: N/A
 //      - Sets the boarder around the player button. Also sets the background color of selected player if player does not have any
 //          already added rotational movements.
+declare global {
+    var current_color: string;
+}
+
 const buttonClickCurrentRotation = (number : string) => {
    
     let button : HTMLButtonElement = document.getElementById("player"+ number) as HTMLButtonElement;
     current_selected_player = number;
     if (button.style.background == ""){
         button.style.background = colors_available[0];
+        globalThis.current_color = colors_available[0];
     }
     
     button.style.border = "solid";

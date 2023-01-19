@@ -25,8 +25,9 @@ let x_scale_click = d3.scaleLinear()
 let y_scale_click = d3.scaleLinear()
     .domain([650, 0])
     .range([100, 0]);
-    
-let rotation : Array<Array<number>> = [];
+
+let new_rotation : Array<Array<number>> = [];
+let rotation : Array<Array<Array<number>>> = [];
 
 export const createRotSvg = (dateID : string) => {
     
@@ -55,19 +56,22 @@ export const createRotSvg = (dateID : string) => {
         .attr("stroke-width", 2);
 
     let data = [];
-    for (let i = 0; i < rotation.length; i++)
+    for (let j =0; j < rotation.length;j++)
     {
-        data.push({"x": rotation[i][0], "y":rotation[i][0]});
-        console.log(rotation);
-        svg.append("rect")
-        .attr("id", "court")
-        .attr("x", rotation[i][0])
-        .attr("y", rotation[i][1])
-        .attr("width", 4)
-        .attr("height", 4)
-        .attr("fill", "black")
-        .attr("stroke", "black")
-        .attr("stroke-width", 2);
+        for (let i = 0; i < rotation[j].length; i++)
+        {
+            data.push({"x": rotation[j][i][0], "y":rotation[j][i][0]});
+            console.log(rotation);
+            svg.append("rect")
+            .attr("id", "court")
+            .attr("x", rotation[j][i][0])
+            .attr("y", rotation[j][i][1])
+            .attr("width", 4)
+            .attr("height", 4)
+            .attr("fill", rotation[j][i][2])
+            .attr("stroke", rotation[j][i][2])
+            .attr("stroke-width", 2);
+        }
     }
 
 
@@ -85,19 +89,27 @@ export const createRotSvg = (dateID : string) => {
 */
     
     svg.on("pointerdown", function() {
-        rotation = [];
+        new_rotation = [];
         point_tracking = true;
     })
     svg.on("pointermove", function() {
         if (point_tracking) {
             let vals = d3.pointer(event, svg.node());
-            rotation.push(vals);
-            console.log(x_scale(x_scale_click(vals[0])))
+            console.log(vals)
+            let to_add : Array<any> = []
+            if(typeof globalThis.current_color !== "undefined")
+            {
+            to_add.push(vals[0])
+            to_add.push(vals[1])
+            to_add.push(globalThis.current_color)
+            }
+            new_rotation.push(to_add);
         }
     })
     svg.on("pointerup", function() {
         console.log(rotation)
         point_tracking = false;
+        rotation.push(new_rotation);
         addRotationToSVG(8);
     })
 }
