@@ -644,7 +644,7 @@ const deleteRoute = () => {
 
 
 // adds the appropriate items to the page if Rotations is loaded
-window.onload = function() {
+window.addEventListener("load", (event) => {
     if (window.location.href.includes("Rotations")){
         currentRotationButtonsLower(all_existing_rotations[0]); 
         allRotationButtonsUpper(all_existing_rotations);
@@ -652,7 +652,7 @@ window.onload = function() {
         createSvg("");
     }
     
-   }
+   });
 
 // INPUT: N/A
 // OUTPUT: returns the string of URL to get to Shot Entry page
