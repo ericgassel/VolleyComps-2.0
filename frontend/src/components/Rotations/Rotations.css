@@ -32,7 +32,7 @@ tr.spaceUnder>th.padding {
     height: 50px;
     width: 150px;
     font-family: 'Rubik', sans-serif;
-    margin-left: 50px;
+    margin-left: 40px;
 }
 .inLine{
     display: inline-block;
@@ -59,9 +59,10 @@ button[class = "saveButton"]:hover{
 
 table[class="rotationTable"] {
     border: 2px solid forestgreen;
-    width: 600px;
-    height: 200px;
-    margin-top: 100px;
+    width: 400px;
+    height: 300px;
+    position: relative;
+    top: 0px;
   }
 
 

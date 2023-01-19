@@ -79,7 +79,7 @@ const Teams = () => {
               <td>{val.name}</td>
               <td> <Link to={`/management/${val.id}`}>Manage Team</Link></td>
               <td><Link to={`/report/${val.id}`}>Scout Report</Link></td>
-              <td><Link to={`/ShotEntry/${val.id}`}>Add Report</Link></td>
+              <td><a href={`/ShotEntry/${val.id}`}>Add Report</a></td>
             </tr>
           )
         })}
@@ -89,5 +89,7 @@ const Teams = () => {
     </div>
   </div>
 }
-
+// from Michael:
+//    Please leave the a tag above instead of whatever the Link thing is doing.
+//    the Link does not cause page to load which needs to happen for shotEntry page.
 export default Teams

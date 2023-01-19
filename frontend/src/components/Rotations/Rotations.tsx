@@ -10,7 +10,7 @@ let current_players_on_rotation : string[] = [];
 let current_selected_player : string = "";
 
 // represents the 6 colors that can draw for the rotation
-let colors : string[]= ["red","orange","grey","maroon","blue","violet"];
+let colors : string[] = ["red","orange","grey","maroon","blue","violet"];
 
 // represents the colors not used by rotation yet
 let colors_available : string[] = ["blue","blue","blue","blue","blue","blue"];
@@ -667,7 +667,7 @@ function Rotations() {
     <div>
         <h1>Rotations</h1>
         <div className='left' id="leftSide">
-            <div id='chart'></div>
+            <div id='chart' className='left'></div>
 
             <h2 id="rotationNotesText">Rotation {current_rotation_selected + 1} Extra Info</h2>
 
