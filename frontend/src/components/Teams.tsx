@@ -10,11 +10,11 @@ import "./table.css"
 import ManageTeam from './ManageTeam'
 
 const teamData = [
-  { name: "St.Olaf", location: "Northfield, MN", score: "3:2" },
-  { name: "Crown College", location: "Northfield, MN", score: "3:0" },
-  { name: "Concordia", location: "St.Paul, MN", score: "3:1"},
-  { name: "Augusburg University", location: "Minneapolis, MN", score: "3:1"},
-  { name: "Unniversity of Minnesota", location: "St.Paul, MN", score: "3:1"},
+  { id: 1,  name: "St.Olaf", location: "Northfield, MN", score: "3:2" },
+  { id: 2, name: "Crown College", location: "Northfield, MN", score: "3:0" },
+  { id: 3, name: "Concordia", location: "St.Paul, MN", score: "3:1"},
+  { id: 4, name: "Augusburg University", location: "Minneapolis, MN", score: "3:1"},
+  { id: 5, name: "Unniversity of Minnesota", location: "St.Paul, MN", score: "3:1"},
 ]
 
 const Teams = () => {
@@ -77,8 +77,9 @@ const Teams = () => {
           return (
             <tr key={key}>
               <td>{val.name}</td>
-              <td> <Link to={`/management/${val.name}`}>Manage Team</Link></td>
-              <td><Link to={`/report/${val.name}`}>Scout Report</Link></td>
+              <td> <Link to={`/management/${val.id}`}>Manage Team</Link></td>
+              <td><Link to={`/report/${val.id}`}>Scout Report</Link></td>
+              <td><Link to={`/ShotEntry/${val.id}`}>Add Report</Link></td>
             </tr>
           )
         })}

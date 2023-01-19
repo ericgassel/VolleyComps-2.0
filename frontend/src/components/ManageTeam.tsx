@@ -5,7 +5,7 @@ import AddModal from './AddModal'
 
 const ManageTeam = () => {
 
-    let {teamName} = useParams()
+    let {teamID} = useParams()
 
     const onSubmitForm = (event: any) => {
         event.preventDefault(event);
@@ -26,11 +26,11 @@ const ManageTeam = () => {
       };
 
     const teamData = [
-        { name: "St.Olaf", location: "Northfield, MN", score: "3:2" },
-        { name: "Crown College", location: "Northfield, MN", score: "3:0" },
-        { name: "Concordia", location: "St.Paul, MN", score: "3:1"},
-        { name: "Augusburg University", location: "Minneapolis, MN", score: "3:1"},
-        { name: "Unniversity of Minnesota", location: "St.Paul, MN", score: "3:1"},
+      { id: 1,  name: "St.Olaf", location: "Northfield, MN", score: "3:2" },
+      { id: 2, name: "Crown College", location: "Northfield, MN", score: "3:0" },
+      { id: 3, name: "Concordia", location: "St.Paul, MN", score: "3:1"},
+      { id: 4, name: "Augusburg University", location: "Minneapolis, MN", score: "3:1"},
+      { id: 5, name: "Unniversity of Minnesota", location: "St.Paul, MN", score: "3:1"},
     ]
 
     const members = [
@@ -41,7 +41,7 @@ const ManageTeam = () => {
         {name: "Tokyo", backNumber: 2},
     ]
 
-    let targetTeam: any = teamData.find(val => val.name === teamName);
+    let targetTeam: any = teamData.find(val => val.id === Number(teamID));
 
     return <div>
         <h1>{targetTeam.name}</h1>

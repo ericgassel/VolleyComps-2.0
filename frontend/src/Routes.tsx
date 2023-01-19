@@ -32,10 +32,10 @@ const MainRoutes = () => (
 				<Route path="/" element={<Navigate replace to="home" />} />
 				<Route path="home" element={<Home />} />
 				<Route path="knights" element={<Knights />} />
-				<Route path="management/:teamName" element={<ManageTeam />} />
+				<Route path="management/:teamID" element={<ManageTeam />} />
 				<Route path="teams" element={<Teams />} />
-				<Route path="report/:teamName" element={<Tabs />}>
-					<Route path="/report/:teamName" element={<Navigate replace to="playerStatsTab" />} />
+				<Route path="report/:teamID" element={<Tabs />}>
+					<Route path="/report/:teamID" element={<Navigate replace to="playerStatsTab" />} />
 					<Route path="playerStatsTab" element={<PlayerStatsTab />} />
 					<Route path="teamStatsTab" element={<TeamStatsTab />} />
 					<Route path="rotationsTab" element={<RotationsTab />} />
