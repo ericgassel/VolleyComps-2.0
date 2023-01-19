@@ -196,10 +196,16 @@ window.addEventListener("load", (event) => {
 const getRotationsURL = () : string => {
   let url : string = window.location.href;
   let id : string = url.substring(url.lastIndexOf("/") + 1);
-
   return "/Rotations/" + id;
 }
 
+// INPUT: N/A
+// OUTPUT: returns string of URL to get to scouting report
+const getScountingReportURL = () : string => {
+  let url : string = window.location.href;
+  let id : string = url.substring(url.lastIndexOf("/") + 1);
+  return "/report/" + id + "/playerStatsTab";
+}
 
 const ShotEntry=() =>{
     return <div className='ShotEntry'>
@@ -242,8 +248,10 @@ const ShotEntry=() =>{
                       </tbody>
                     </table>
                     <br/>
+
                     <table className='shotEntryTable'>
                       <tbody>
+                        
                       <tr>
                         <td><button id='addShot' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
                         <td><button id='undo' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
@@ -258,6 +266,8 @@ const ShotEntry=() =>{
                         <td>
                           <a href={getRotationsURL()}>
                           <button>Switch to Rotations</button></a>
+                          <a href={getScountingReportURL()}>
+                          <button>Scouting Report</button></a>
                           </td>
                       </tr>
                       </tbody>

@@ -661,6 +661,16 @@ const getShotEntryURL = () : string => {
     let id : string = url.substring(url.lastIndexOf("/") + 1);
     return "/ShotEntry/" + id;
 }
+
+// INPUT: N/A
+// OUTPUT: returns string of URL to get to scouting report
+const getScountingReportURL = () : string => {
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    return "/report/" + id + "/playerStatsTab";
+  }
+
+
 // HTML backbone
 function Rotations() {
   return (
@@ -732,9 +742,13 @@ function Rotations() {
                 </tbody>
                 
             </table>
+            <a href={getScountingReportURL()}>
+            <button id='switchShotEntry'>Scouting Report</button>
+            </a>
             <a href={getShotEntryURL()}>
             <button id='switchShotEntry'>Switch to ShotEntry</button>
             </a>
+            
             
         </div>
     </div>
