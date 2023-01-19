@@ -6,21 +6,21 @@ export const navigationItems = {
         text: 'home',
         
       },
-      {
-        name: 'Carleton Knights ',
-        to: '/knights', 
-        text:'carletonKnights'
-      },
+      // {
+      //   name: 'Carleton Knights ',
+      //   to: '/knights', 
+      //   text:'carletonKnights'
+      // },
       {
         name: 'Teams ',
         to: '/teams', 
         text:'teams'
       },
-      {
-        name: 'History (Archived) ',
-        to: '/history', 
-        text:'history'
-      },
+      // {
+      //   name: 'History (Archived) ',
+      //   to: '/history', 
+      //   text:'history'
+      // },
     ], 
     footer: [], 
     
