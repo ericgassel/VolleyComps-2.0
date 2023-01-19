@@ -1,6 +1,7 @@
 import React from 'react'
 import Square from './square.png'
 import './Rotations.css';
+import {createRotSvg,addRotationToSVG} from './RotationsSVG'
 
 // represents the 6 players that are currently selected as part of the rotation
 let current_players_on_rotation : string[] = [];
@@ -39,6 +40,7 @@ let too_many_color : string = "#C70039";
 // OUTPUT: N/A
 //      - sets the current rotation to those 6 players and establishes their onClick function to buttonClickCurrentRotation
 const currentRotationButtonsLower = (players: string[]) => {
+    createRotSvg("test");
     let appended : HTMLDivElement= document.getElementById("currentRotation") as HTMLDivElement;
     appended.innerHTML = "";
     current_players_on_rotation = [];
@@ -541,9 +543,7 @@ function Rotations() {
   return (
     <div onLoad={() => {currentRotationButtonsLower(all_existing_rotations[0]); allRotationButtonsUpper(all_existing_rotations);}} >
         <h1>Rotations</h1>
-        <div className='left'>
-            <img src={Square} ></img>
-        </div>
+        <div id='chart' className='left'></div>
         <div className='right' >
             <table >
                 
@@ -571,7 +571,11 @@ function Rotations() {
                 </tr>
             </table>
         </div>
+        <div className='left'>
+            <img src={Square} ></img>
+        </div>
     </div>
+    
   )
 }
 
