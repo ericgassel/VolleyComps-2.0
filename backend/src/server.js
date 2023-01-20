@@ -2,27 +2,26 @@
  const {google} = require("googleapis");
  const url = require("url");
  const crypto = require("crypto");
- const fs = require("fs")
+ const fs = require("fs");
+ const cors = require("cors");
+ const {PythonShell} = require('python-shell');
 
  const app = express();
  app.use(express.json());
+ app.use(cors());
 
  const auth = new google.auth.GoogleAuth({
     keyFile: "src/api_credentials.json",
     scopes: "https://www.googleapis.com/auth/spreadsheets"
  })
 
- //create client instance for auth
  const client = auth.getClient();
-
- //instance of Google Sheets API
  const googleSheets = google.sheets({version: "v4", auth: client});
-
- //dummyId = "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM";
 
  app.get("/", async (req, res) =>{
     res.status(200).send("Hello there. check out /help for help."); 
  })
+
  app.get("/help", async (req, res) =>{
     fs.readFile('src/README.md', 'utf8', (err, data) => {
         if (err) {
@@ -35,65 +34,19 @@
 })
 
 
+ app.post("/newteam/:teamname", async (req, res) =>{
+    const teamname = req.params.teamname
+    var spreadsheetId = ""
 
- //NOT WORKING
- app.post("/newteam", async (req, res) =>{
-    //create new spreadsheet for new team, and return the spreadsheet id
+    const options = {
+        scriptPath: 'src',
+        args: [teamname]
+      };
 
-    // const teamName = req.body.teamName
-    
-    // const request = {
-    //     resource: {
-    //         properties:{
-    //             title: teamName
-    //         },
-    //         sheets: [
-    //             {properties:{title: "Roster"}},
-    //             {properties:{title: "Schedule"}},
-    //             {properties:{title: "Spray Chart"}},
-    //             {properties:{title: "Rotations"}},
-    //             {properties:{title: "Stats"}}
-    //         ]
-    //     }
-    // }
-    
-    // try{
-    //     const spreadsheet = await googleSheets.spreadsheets.create({
-    //         auth,
-    //         request,
-    //     });
-    //     console.log(spreadsheet.data)
-    // } catch (error){
-    //     console.error(error)
-    // }
-
-    const spreadsheet = await googleSheets.spreadsheets.create({
-        auth,
-        resource: {
-            properties: {
-                title: 'My New Spreadsheet'
-            }
-        },
-        fields: 'spreadsheetId',
-    })
-    console.log(spreadsheet.data)
-
-    console.log(spreadsheet.data.spreadsheetId)
-
-    const spreadsheetId = spreadsheet.data.spreadsheetId
-
-    const response = await googleSheets.permissions.create({
-        resource: {
-            type: "user",
-            role: "writer",
-            emailAddress: "gassele@carleton.edu"
-        },
-        fileId: spreadsheetId,
-        sendNotificationEmail: true
+    PythonShell.run('create-spreadsheet.py', options, function (err, results) {
+        if (err) throw err;
+        res.status(200).json({"spreadsheet_id": results})
     });
-
-    res.status(200).json({"spreadsheetId": spreadsheet.data.spreadsheetId})
-
  })
 
  app.get("/data/:spreadsheetId/:sheet", async (req, res) =>{
@@ -130,15 +83,12 @@
     } catch(error){
         res.status(500).send(error);
     }
-    return;
-
 })
 
 
 
 app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
 
-    //write row(s) to spreadsheet
     const spreadsheetId = req.params.spreadsheetId
     const sheet = req.params.sheet
     var data = req.body.data
@@ -166,9 +116,6 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     } catch (error){
         res.status(500).json(error)
     }
-
-    return
-
  })
 
  function uniqueId(){
@@ -201,25 +148,6 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     }
     return JSON.stringify(jsonData);
 }
-
-async function shareSpreadsheet(googlesheets, spreadsheetId) {
-        const response = await googlesheets.spreadsheets.batchUpdate({
-            spreadsheetId: spreadsheetId,
-            resource: {
-                requests: [
-                    {
-                        addPermission: {
-                            type: "user",
-                            role: "writer",
-                            emailAddress: "gassele@carleton.edu"
-                        }
-                    }
-                ]
-            }
-        });
-        console.log(response.data);
-}
-
 
  // const writeRouter = require("./routes/write");
 

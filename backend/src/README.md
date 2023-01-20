@@ -1,6 +1,9 @@
 # Backend API Documentation
 
-The API currently connects to port 5000 on our server and can be accessed at http://cs400volleyball.mathcs.carleton.edu:5000.
+The API currently connects to port 5000 on our server and can be accessed at 
+`http://cs400volleyball.mathcs.carleton.edu:5000`.
+
+You must be connected to eduroam or the Carleton VPN to access this API. 
 
 ## Running the API locally
 
@@ -15,7 +18,7 @@ The data base is composed of separate Google Sheets files that each represent on
 Each Google Sheets contain the following five sheets "pages":
 
 - "roster"
-    - columns in roster: [player_id, name, number, height, position, class, note1, note2, note3, note4, note5]
+    - columns in roster: [player_id, name, number, height, position, class, notes]
 - "schedule"
     - columns in schedule: [team, date, home, location, outcome]
 - "spray_chart"
@@ -35,6 +38,20 @@ Each Google Sheets contain the following five sheets "pages":
 
 ### GET /help
 Loads this file.
+
+### POST /newteam/:teamname
+
+This endpoint creates a new team spread sheet with the title as the name passed in the path, and returns the spreadsheet id in the following JSON format:
+
+```
+{
+    "spreadsheet_id": [
+        "id"
+    ]
+}
+```
+
+Please note that this function is slow and may take ~10 seconds to complete.
 
 ### GET /data/:spreadsheetId/:sheet
 
@@ -80,7 +97,7 @@ the example API call "GET data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rost
         "height": "3'11",
         "position": "QB",
         "class": "Sr",
-        "note1": "Hits really hard!"
+        "notes": "Hits really hard!"
     },
     {
         "player_id": "12cbb76b774db5cd",
@@ -89,8 +106,7 @@ the example API call "GET data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rost
         "height": "5'7",
         "position": "MB",
         "class": "Sr",
-        "note1": "is kind of cool",
-        "note2": "runs out of bounds for no reason"
+        "notes": "is kind of cool /n runs out of bounds for no reason"
     }
 ]
 ```
@@ -149,8 +165,8 @@ and pass along the following in the body:
 ```
 {
     "data": [
-        ["Goofy Goober"	"60", "5'11", "OPP"	"Sr", "Hits really hard!"],
-        ["Sally Sample", "34", "5'7" "OH", "Jr", "great passer, looks to score off of set", "bad returner"]
+        ["Goofy Goober"	"60", "5'11", "OPP", "Sr", "Hits really hard!"],
+        ["Sally Sample", "34", "5'7" "OH", "Jr", "great passer, looks to score off of set /n bad returner"]
     ]
 }
 ```
@@ -163,7 +179,7 @@ For example, the response object for the example call made above would be:
 ```
     [
         ["3e8926e37d187359", "Goofy Goober"	"60", "5'11", "OPP"	"Sr", "Hits really hard!"],
-        ["025429f22a36965e", "Sally Sample", "34", "5'7" "OH", "Jr", "great passer, looks to score off of set", "bad returner"]
+        ["025429f22a36965e", "Sally Sample", "34", "5'7" "OH", "Jr", "great passer, looks to score off of set /n bad returner"]
     ]
 ```
 
@@ -176,7 +192,8 @@ notes:
     
 ---------------------------------------------------------------------------
 To be implemented:
-- creating a spreadsheet (current implementation of it fails)
+- an endpoint that returns a json object containing each team name and their spreadsheet ids
+- edit a column of a row (change a player's number, edit the notes, etc)
 - deleting a row given an id
 - deleting the contents of a page
 - filter by date
@@ -184,14 +201,14 @@ To be implemented:
 - can return multiple columns by request, along with the relavent unique ids
 ---------------------------------------------------------------------------
 
-PLEASE NOTE, there are usage limits for the google sheets API. Here is a quick overview:
+PLEASE NOTE, there are usage limits for the google sheets API (how frequently it can be used). Here is a quick overview:
 
 Read requests:
 - Per day per project:	Unlimited
 - Per minute per project:	300
 - Per minute per user per project:	60
 
-    Write requests:
+Write requests:
 - Per day per project:	Unlimited
 - Per minute per project:	300
 - Per minute per user per project:	60
