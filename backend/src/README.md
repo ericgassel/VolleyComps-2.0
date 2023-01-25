@@ -153,9 +153,8 @@ and that would return a JSON object as follows:
 ```
 
 notes:
-- for the "?col=" query, it is currently implemented such that it only returns that one column, and you cannot request mulitple columns. also, I understand it will be useful to have ids returned with the data. That is not currently implemented, but will be coming soon. 
-
-- for the "?col=" query, the variable you request must match the variable name in the database exactly. Variables can be found in the Database Design section.
+- if requesting multiple variables, separate them by commas
+- for the "?col=" query, the variables you request must match the variable name in the database exactly. Variables can be found in the Database Design section.
     
 
 
