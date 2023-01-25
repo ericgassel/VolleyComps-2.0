@@ -655,6 +655,9 @@ const deleteRoute = () => {
         deletePlayerRotation(parseInt(globalThis.current_selected_player));
         current_button.style.background = "";
         current_button.style.border = "none";
+        globalThis.current_color="";
+        globalThis.current_selected_player ="";
+        
         // ------------------
         // find index in rotation that is the spot of the player
         let rotation : string[] = all_existing_rotations[current_rotation_selected];
