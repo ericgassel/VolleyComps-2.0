@@ -59,7 +59,7 @@ button[class = "saveButton"]:hover{
 
 table[class="rotationTable"] {
     border: 2px solid forestgreen;
-    width: 400px;
+    width: 500px;
     height: 300px;
     position: relative;
     top: 0px;

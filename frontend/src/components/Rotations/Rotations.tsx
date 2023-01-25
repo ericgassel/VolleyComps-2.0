@@ -1,19 +1,29 @@
 import React from 'react'
 import Square from './square.png'
 import './Rotations.css';
-import {createSvg,addShotToSvg} from './RotationsSVG'
+import {createRotSvg,addRotationToSVG, deletePlayerRotation, newSelection, sendAndReset} from './RotationsSVG'
+
+declare global {
+    var current_color: string;
+    var current_selected_player : string;
+}
+
+
 
 // represents the 6 players that are currently selected as part of the rotation
 let current_players_on_rotation : string[] = [];
 
 //represents the current selected player in the rotation (by jersey number)
-let current_selected_player : string = "";
+globalThis.current_selected_player = "";
+
+// represents the current selected color in the rotation
+globalThis.current_color = "";
 
 // represents the 6 colors that can draw for the rotation
 let colors : string[] = ["red","orange","grey","maroon","blue","violet"];
 
 // represents the colors not used by rotation yet
-let colors_available : string[] = ["blue","blue","blue","blue","blue","blue"];
+let colors_available : string[] = ["red","orange","grey","maroon","blue","violet"];
 
 // the rotation that the user selects --> is the index of rotation in all_existing_rotations.
 let current_rotation_selected: number = 0;
@@ -51,7 +61,7 @@ let all_existing_blocking_schemes : string[] = ["", "" , ""]
 // INPUT: list of players that are part of the current rotation
 // OUTPUT: N/A
 //      - sets the current rotation to those 6 players and establishes their onClick function to buttonClickCurrentRotation
-const currentRotationButtonsLower = (players: string[]) => {
+const currentRotationButtonsLower = (players: string[]) : void => {
     let appended : HTMLDivElement= document.getElementById("currentRotation") as HTMLDivElement;
     appended.innerHTML = "";
     current_players_on_rotation = [];
@@ -89,7 +99,7 @@ const currentRotationButtonsLower = (players: string[]) => {
 // INPUT: N/A
 // OUTPUT: N/A
 //      - sets all different note pieces on the page with corresponding saved info
-const setNotes = () : void=> {
+const setNotes = () : void => {
     
     let primaryServerRecieve : HTMLInputElement = document.getElementById("primaryServerRecieve") as HTMLInputElement;
     let secondaryServerRecieve : HTMLInputElement = document.getElementById("secondaryServerRecieve") as HTMLInputElement;
@@ -121,7 +131,7 @@ const setNotes = () : void=> {
 // INPUT: N/A
 // OUTPUT: N/A
 //      - saves all transition and serve notes for the selected rotation
-const saveTransitionServeNotes = () => {
+const saveTransitionServeNotes = () : void => {
     let primaryServerRecieve : HTMLInputElement = document.getElementById("primaryServerRecieve") as HTMLInputElement;
     let secondaryServerRecieve : HTMLInputElement = document.getElementById("secondaryServerRecieve") as HTMLInputElement;
     let tertiaryServerRecieve : HTMLInputElement = document.getElementById("tertiaryServerRecieve") as HTMLInputElement;
@@ -143,7 +153,7 @@ const saveTransitionServeNotes = () => {
 // INTPUT: N/A
 // OUTPUT: N/A
 //      - saves all additional notes and blocking scheme notes for the selected rotation
-const saveAddtionalAndBlockingNotes = () => {
+const saveAddtionalAndBlockingNotes = () : void => {
     let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
     let blockingNotes : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
     all_existing_additional_notes[current_rotation_selected] = additionalNotes.value;
@@ -154,7 +164,7 @@ const saveAddtionalAndBlockingNotes = () => {
 // OUPTU: N/A
 //      - changes the color of the corresponding button when adding a new rotation.
 //      - sets add_rotation_player_selected to the currently selected player.
-const selectPlayer = (selectedPlayerNum : string) => {
+const selectPlayer = (selectedPlayerNum : string) : void=> {
     let selectedPlayer : HTMLButtonElement = document.getElementById("player" + selectedPlayerNum) as HTMLButtonElement;
     selectedPlayer.style.background =  "red";
     add_rotation_player_selected = selectedPlayerNum;
@@ -170,7 +180,7 @@ const selectPlayer = (selectedPlayerNum : string) => {
 // OUTPUT: N/A
 //         - sets all spots in the player selection area when adding/editing rotation players to different color
 //              if they are already selected.
-const fillAddRotationWithCurrentlySelectedColors = () => {
+const fillAddRotationWithCurrentlySelectedColors = () : void => {
     // --------------------
     // remove find which players and buttons are currently used
     let existingPlayers : string[] = [];
@@ -248,6 +258,10 @@ const addNewRotation = () => {
     if(count == 6){
         all_existing_rotations.push(rotation);
         all_existing_rotation_movements.push(["","","","","",""]);
+        all_existing_transition_options.push(["","",""]);
+        all_existing_blocking_schemes.push("");
+        all_existing_additional_notes.push("");
+        all_existing_serve_options.push(["","",""]);
         current_rotation_selected = all_existing_rotations.length - 1;
         allRotationButtonsUpper(all_existing_rotations);
         currentRotationButtonsLower(all_existing_rotations[all_existing_rotations.length - 1]);
@@ -457,7 +471,9 @@ const editASelectedRotation = (current_rotation : number) => {
 //      - sets the current rotation buttons to represent the existing rotation
 //      - sets notes for current rotation
 const selectRotation = (selectedRotation : number) => {
-    current_selected_player = "";
+    globalThis.current_selected_player = "";
+    // send data for 
+    sendAndReset(current_rotation_selected);
     // --------------------
     // clear button formatting
     for (let i : number = 0; i < all_existing_rotations.length; i++){
@@ -542,11 +558,17 @@ const allRotationButtonsUpper = (allRotations : string[][]) => {
 //      - Sets the boarder around the player button. Also sets the background color of selected player if player does not have any
 //          already added rotational movements.
 const buttonClickCurrentRotation = (number : string) => {
-   
+    // delete temporary data on SVG
+    newSelection();
     let button : HTMLButtonElement = document.getElementById("player"+ number) as HTMLButtonElement;
-    current_selected_player = number;
+    globalThis.current_selected_player = number;
     if (button.style.background == ""){
         button.style.background = colors_available[0];
+        globalThis.current_color = colors_available[0];
+    }
+    else
+    {
+        globalThis.current_color = button.style.background;
     }
     
     button.style.border = "solid";
@@ -573,9 +595,12 @@ const buttonClickCurrentRotation = (number : string) => {
 // OUTPUT: N/A
 //      - adds the drawn route to routes and sets new color for future players.
 const addRoute = () => {
-    if (current_selected_player != "") {
-        let current_button : HTMLButtonElement = document.getElementById("player"+current_selected_player) as HTMLButtonElement;
-        
+    if (globalThis.current_selected_player != "") {
+        let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
+        // move the temp drawn info on SVG to rotation storage
+        addRotationToSVG(parseInt(globalThis.current_selected_player));
+        // remove current_selected_player
+        globalThis.current_selected_player = "";
         // remove the button border
         current_button.style.border = "none";
         // ------------------
@@ -584,7 +609,7 @@ const addRoute = () => {
         let index : number = 0;
         let stop : boolean = false;
         for(let i : number = 0; i < rotation.length; i++){
-            if(rotation[i] == current_selected_player){
+            if(rotation[i] == globalThis.current_selected_player){
                 stop = true;
             }
             if (!stop){
@@ -592,11 +617,6 @@ const addRoute = () => {
             }
         }
         all_existing_rotation_movements[current_rotation_selected][index] = current_button.style.backgroundColor;
-        //add route to some list of routes for the rotation
-        //
-        // ------- TODO --------
-        //
-        // only move to next color if player has not had previous rotation drawn and color assigned.
         if (current_button.style.background == colors_available[0]){
             colors_available.shift();
         } 
@@ -612,8 +632,10 @@ const addRoute = () => {
 // OUTPUT: N/A
 //      - deletes the drawn route from routes
 const deleteRoute = () => {
-    if (current_selected_player != "") {
-        let current_button : HTMLButtonElement = document.getElementById("player"+current_selected_player) as HTMLButtonElement;
+    if (globalThis.current_selected_player != "") {
+        let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
+        // gets rid of player info on SVG
+        deletePlayerRotation(parseInt(globalThis.current_selected_player));
         current_button.style.background = "";
         // ------------------
         // find index in rotation that is the spot of the player
@@ -621,7 +643,7 @@ const deleteRoute = () => {
         let index : number = 0;
         let stop : boolean = false;
         for(let i : number = 0; i < rotation.length; i++){
-            if(rotation[i] == current_selected_player){
+            if(rotation[i] == globalThis.current_selected_player){
                 stop = true;
             }
             if (!stop){
@@ -649,10 +671,11 @@ window.addEventListener("load", (event) => {
         currentRotationButtonsLower(all_existing_rotations[0]); 
         allRotationButtonsUpper(all_existing_rotations);
         selectRotation(0);
-        createSvg("");
+        createRotSvg();
     }
     
    });
+
 
 // INPUT: N/A
 // OUTPUT: returns the string of URL to get to Shot Entry page
