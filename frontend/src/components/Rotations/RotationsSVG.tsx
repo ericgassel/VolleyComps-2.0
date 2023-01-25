@@ -151,7 +151,7 @@ export const sendAndReset = (rotationNumber : number) => {
     .then(result => result.json())
     
     console.log(response);
-
+    //test
 
 
 }
