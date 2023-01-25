@@ -472,6 +472,7 @@ const editASelectedRotation = (current_rotation : number) => {
 //      - sets notes for current rotation
 const selectRotation = (selectedRotation : number) => {
     globalThis.current_selected_player = "";
+    globalThis.current_color = "";
     // send data for 
     sendAndReset(current_rotation_selected);
     // --------------------
