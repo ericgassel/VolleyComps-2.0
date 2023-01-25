@@ -179,6 +179,18 @@ const changeSVG = () => {
 // adds the calendar to the page if is on ShotEntry page
 window.addEventListener("load", (event) => {
   if (window.location.href.includes("ShotEntry")){
+    // --------------
+    // get player numbers from data base
+    let response = fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+    })
+    
+
+    .then(result => result.json())
+    
+    console.log(response);
+
     playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
     let today : Date = new Date();
     createSvg(getDateString(today));
