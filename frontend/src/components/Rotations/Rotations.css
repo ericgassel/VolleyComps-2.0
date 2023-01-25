@@ -1,5 +1,6 @@
 .right {
     float:right;
+    /*background-image: url("https://d31kydh6n6r5j5.cloudfront.net/uploads/sites/158/2020/06/simplified-carleton-symbol.png");*/
 }
 
 .left{
@@ -79,3 +80,4 @@ table[class="rotationTable"] {
     margin: 4px 2px;
 
 }
+

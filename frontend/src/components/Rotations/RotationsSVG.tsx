@@ -120,14 +120,27 @@ export const createRotSvg = () => {
         console.log(rotation)
         point_tracking = false;
         rotation.push(new_rotation);
-        addRotationToSVG(8);
+        //addRotationToSVG(8);
     })
 }
 
 // called when route is added to SVG
 export const addRotationToSVG = (player_number_selected: number) => {
     // this should move temp 
+    // ---------
+    // adds a player to Dummy School
+    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ "data": [["TESTING123","5", "5'11", "OPP", "Sr", "Hits really hard!"]] })
+    })
+    .then(response => response.json())
+    .then(response => console.log(JSON.stringify(response)))
     createRotSvg();
+    console.log("should be added");
 }
 
 // to be called to delete all temporary data
@@ -141,12 +154,17 @@ export const deletePlayerRotation = (player_number_selected: number) => {
 }
 
 // this function will send all data to the API and reset the svg
-export const sendAndReset = (rotationNumber : number) => {
+export async function sendAndReset(rotationNumber : number) {
+    // gets all roster info
    // http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster
-    let response = fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster', {
+
+   //http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number
+   // gets all player numbers
+    let response = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
     })
+    
     //then() function is used to convert the posted contents to the website into json format
     .then(result => result.json())
     
