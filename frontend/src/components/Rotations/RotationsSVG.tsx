@@ -26,7 +26,7 @@ let y_scale_click = d3.scaleLinear()
     .domain([650, 0])
     .range([100, 0]);
 
-let new_rotation : Array<Array<any>> = [];
+let new_rotation : any = [];
 //let rotation : Array<Array<Array<number>>> = [];
 
 let rotation : any[] = [];
