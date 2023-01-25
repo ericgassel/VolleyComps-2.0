@@ -45,13 +45,23 @@ This endpoint creates a new team spread sheet with the title as the name passed 
 
 ```
 {
-    "spreadsheet_id": [
-        "id"
-    ]
+    "spreadsheet_id": "id"
 }
 ```
 
 Please note that this function is slow and may take ~10 seconds to complete.
+
+### GET /data/schools
+
+This endpoint returns one JSON object where the keys are the school names, and the values are the corresponding spreadsheet ids in the database (as shown below).
+
+```
+{
+    "Dummy_school": "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM",
+    "Harvard": "F4wPRgJIc1antzWAXFlCijM1D5DQnXIo3drLnXyzIxB9",
+    "Yale": "PRgJIc1aIo3drLnXyzIxB9ntzWAXFlCijM1D5DQnXF4w"
+}
+```
 
 ### GET /data/:spreadsheetId/:sheet
 
@@ -111,22 +121,34 @@ the example API call "GET data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rost
 ]
 ```
 
-#### Requesting a column (variable)
+#### Requesting by columns (variables)
 
-If you are only interested in one column (variable) of data in a sheet, you can request data from a specific column by adding a query to the end of the endpoint as follows: 
-`GET /data/:spreadsheetId/:sheet?col=variable`
+If you are only interested in certain columns (variables) in a sheet, you can request data from a sheet by columns by adding a query to the end of the endpoint as follows: 
+`GET /data/:spreadsheetId/:sheet?col=var1,var2,var3`
     
-For example, say you want just the list of player numbers from Dummy School, then you would call
-`GET /data/:spreadsheetId/:sheet?col=number`
+For example, say you want just the list of player names and their positions from Dummy School, then you would call
+`GET /data/:spreadsheetId/:sheet?col=name,position`
 
-and that would return an array as follows:
+and that would return a JSON object as follows:
 
 ```
 [
-    "1",
-    "12",
-    "60",
-    "34"
+    {
+        "name": "Sally Sample",
+        "position": "OH"
+    },
+    {
+        "name": "Esther Example",
+        "position": "OPP"
+    },
+    {
+        "name": "Fairy Fake",
+        "position": "DS"
+    },
+    {
+        "name": "Goofy Goober",
+        "position": "MB"
+    }
 ]
 ```
 
@@ -192,13 +214,11 @@ notes:
     
 ---------------------------------------------------------------------------
 To be implemented:
-- an endpoint that returns a json object containing each team name and their spreadsheet ids
 - edit a column of a row (change a player's number, edit the notes, etc)
 - deleting a row given an id
 - deleting the contents of a page
 - filter by date
 - stats sheet populated
-- can return multiple columns by request, along with the relavent unique ids
 ---------------------------------------------------------------------------
 
 PLEASE NOTE, there are usage limits for the google sheets API (how frequently it can be used). Here is a quick overview:

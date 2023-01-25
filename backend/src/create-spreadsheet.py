@@ -20,12 +20,14 @@ team_name = args.arg1
 
 #create new sheets
 sheet = client.create(team_name)
+sheet = client.open(team_name)
 
-sheet = client.open(team_name).add_worksheet(title="roster", rows = 10, cols = 10)
-sheet = client.open(team_name).add_worksheet(title="schedule", rows = 10, cols = 10)
-sheet = client.open(team_name).add_worksheet(title="spray_chart", rows = 10, cols = 10)
-sheet = client.open(team_name).add_worksheet(title="rotations", rows = 10, cols = 10)
-sheet = client.open(team_name).add_worksheet(title="stats", rows = 10, cols = 10)
+worksheet = sheet.worksheet("Sheet1")
+worksheet.update_title("roster")
+sheet.add_worksheet(title="schedule", rows = 1000, cols = 1000)
+sheet.add_worksheet(title="spray_chart", rows = 1000, cols = 1000)
+sheet.add_worksheet(title="rotations", rows = 1000, cols = 1000)
+sheet.add_worksheet(title="stats", rows = 1000, cols = 1000)
 
 sheet = client.open(team_name).worksheet("roster")
 sheet.append_rows([["player_id", "name", "number", "height", "position", "class", "notes"]])

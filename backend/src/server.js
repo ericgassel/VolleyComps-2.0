@@ -4,6 +4,7 @@
  const crypto = require("crypto");
  const fs = require("fs");
  const cors = require("cors");
+ const util = require('util');
  const {PythonShell} = require('python-shell');
 
  const app = express();
@@ -35,27 +36,67 @@
 
 
  app.post("/newteam/:teamname", async (req, res) =>{
+    const pyshell = util.promisify(PythonShell.run);
     const teamname = req.params.teamname
-    var spreadsheetId = ""
+    var new_spreadsheetId = ""
 
     const options = {
         scriptPath: 'src',
         args: [teamname]
       };
 
-    PythonShell.run('create-spreadsheet.py', options, function (err, results) {
-        if (err) throw err;
-        res.status(200).json({"spreadsheet_id": results})
-    });
- })
+    try{
+        const results = await pyshell('create-spreadsheet.py', options);
+        new_spreadsheetId = results[0];
+
+        googleSheets.spreadsheets.values.append({
+            auth,
+            spreadsheetId: "1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss",
+            range: "schools",
+            valueInputOption: "USER_ENTERED",
+            insertDataOption: "INSERT_ROWS",
+            resource: {
+                values: [[teamname, new_spreadsheetId]]
+            }
+        })
+        res.status(200).json({"spreadsheet_id": new_spreadsheetId})
+    } catch(error){
+        res.status(500).send(error);
+    }
+})
+
+
+
+
+ app.get("/data/schools", async (req,res) =>{
+    const spreadsheetId = "1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss"
+    
+    try{
+        const getRows = await googleSheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId,
+            range: "stats"
+        })
+
+        const jsonObject = createSchoolsJson(getRows.data.values)
+        
+        res.status(200).json(jsonObject);
+
+    } catch(error){
+        res.status(500).send(error);
+    }
+})
+
 
  app.get("/data/:spreadsheetId/:sheet", async (req, res) =>{
 
     const spreadsheetId = req.params.spreadsheetId
     const sheet = req.params.sheet
-    var col = ""
+    console.log(req.query.col)
+
+    var col = []
     if(req.query.col){
-        col = req.query.col
+        col = req.query.col.split(',');
     }
 
     try{
@@ -68,15 +109,19 @@
         const data = getRows.data.values
         const headers = data.shift()
     
-        if(col != ""){
-            const columnIndex = headers.indexOf(col)
-            const colData = (data.map(row => row[columnIndex]))
+        // if(req.query.col){
+        //     let colData = col.map((curr) => {
+        //         const columnIndex = headers.indexOf(curr)
+        //         if(columnIndex !== -1){
+        //             return data.map(row => row[columnIndex])
+        //         }
+        //     })
     
-            res.status(200).json(colData);
-            return;
-        }
+        //     res.status(200).json(colData);
+        //     return;
+        // }
     
-        const jsonObject = createJsonObject(headers, data);
+        const jsonObject = createJsonObject(headers, data, col);
         
         res.status(200).send(jsonObject);
 
@@ -137,17 +182,42 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     return newData;
  }
 
- function createJsonObject(headers, data) {
-    var jsonData = [];
-    for (let d of data) {
-        var obj = {};
-        for (let i = 0; i < headers.length; i++) {
-            obj[headers[i]] = d[i];
-        }
-        jsonData.push(obj);
+ function createJsonObject(headers, data, col) {
+    let indexes = []
+    if(col && col.length > 0) {
+        col.forEach(c => {
+            let index = headers.indexOf(c)
+            if(index !== -1)
+            {
+                indexes.push(index)
+            }
+        })
     }
-    return JSON.stringify(jsonData);
+    return data.reduce((acc, cur) => {
+        let obj = {}
+        indexes.forEach((i) => obj[headers[i]] = cur[i])
+        acc.push(obj)
+        return acc
+    }, [])
 }
+
+
+
+
+function createSchoolsJson(arr) {
+    return arr.reduce((acc, cur) => {
+        acc[cur[0]] = cur[1];
+        return acc;
+    }, {});
+}
+
+function filterDataByColumns(data, col) {
+    return data.filter(row => {
+      return col.some(c => row.includes(c))
+    });
+  }
+  
+
 
  // const writeRouter = require("./routes/write");
 
