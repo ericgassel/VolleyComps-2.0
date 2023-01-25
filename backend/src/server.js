@@ -75,7 +75,7 @@
         const getRows = await googleSheets.spreadsheets.values.get({
             auth,
             spreadsheetId,
-            range: "stats"
+            range: "schools"
         })
 
         const jsonObject = createSchoolsJson(getRows.data.values)
@@ -92,7 +92,6 @@
 
     const spreadsheetId = req.params.spreadsheetId
     const sheet = req.params.sheet
-    console.log(req.query.col)
 
     var col = []
     if(req.query.col){
@@ -108,19 +107,6 @@
 
         const data = getRows.data.values
         const headers = data.shift()
-    
-        // if(req.query.col){
-        //     let colData = col.map((curr) => {
-        //         const columnIndex = headers.indexOf(curr)
-        //         if(columnIndex !== -1){
-        //             return data.map(row => row[columnIndex])
-        //         }
-        //     })
-    
-        //     res.status(200).json(colData);
-        //     return;
-        // }
-    
         const jsonObject = createJsonObject(headers, data, col);
         
         res.status(200).send(jsonObject);
