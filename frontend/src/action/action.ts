@@ -30,7 +30,7 @@ export const updateCurrentTeam = (dispatch: any, teamData: {name:string; id:stri
 
 export const addMember = async (dispatch: any, memberData: string[], api: string) => {
   try {
-    let response: AxiosResponse = await axios.post(api, {data: memberData});
+    let response: AxiosResponse = await axios.post(api, {data: [memberData]});
     if (response.status == 200) {
       const fetchedData = response.data;
       let memberData = formatMember(fetchedData);
