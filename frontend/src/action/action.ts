@@ -1,12 +1,11 @@
 // Create actions for dispatch, receive data from API then dispatch
 import axios, { AxiosResponse, AxiosError } from "axios";
 
-
 export type Action = 
 | { type: "roster_success", data: any } 
 | { type: "schedule_success", data: any }
 | { type: "spray_chart_success", data: any }
-| { type:"rotation_success", data: any }
+| { type: "rotation_success", data: any }
 | { type: "error"; error: Error | AxiosError }
 
 export const ACTIONS = {
