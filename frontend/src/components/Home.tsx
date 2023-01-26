@@ -30,8 +30,8 @@ const Home=() =>{
           return (
             <tr key={key}>
               <td><Link to={`/management/${val.id}`}>{val.name}</Link></td>
-              <td><Link to={`/management/${val.id}`}>{val.location}</Link></td>
-              <td><Link to={`/management/${val.id}`}>{val.score}</Link></td>
+              <td>{val.location}</td>
+              <td>{val.score}</td>
             </tr>
           )
         })}
