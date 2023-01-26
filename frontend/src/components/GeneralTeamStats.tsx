@@ -16,21 +16,25 @@ const GeneralTeamStats = () => {
   return (
     <div className='teamStatsContainer'>
       <table className='teamStatsTable'>
-        <tr className='headerRow'>
-          {tableTitles.map((title, i) => <th key={i}>{title}</th>)}
-        </tr>
-        <tr>
-          {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
-        </tr>
-        <tr>
-          {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
-        </tr>
-        <tr>
-          {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
-        </tr>
-        <tr>
-          {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
-        </tr>
+        <thead>
+          <tr className='headerRow'>
+            {tableTitles.map((title, i) => <th key={i}>{title}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
+          </tr>
+          <tr>
+            {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
+          </tr>
+          <tr>
+            {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
+          </tr>
+          <tr>
+            {mockData.map((data, i) => <td className='teamStatsCell' key={i}>{data}</td>)}
+          </tr>
+        </tbody>
       </table>
     </div>
   )

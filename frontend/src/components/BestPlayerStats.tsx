@@ -43,15 +43,19 @@ const BlocksData = [
 const BestStatsTable = ({ title, playersData }: {title: string, playersData: (string | number)[][]}) => {
   return (
     <table className='bestPlayerStatsTable'>
+      <thead>
         <tr className='headerRow'>
-          {title}
+          <th>{title}</th>
         </tr>
+      </thead>
+      <tbody>
         {playersData.map((player, i) => 
           <tr key={i}>
             <td className='teamStatsCell'>{player[0]}</td>
             <td className='teamStatsCell'>{player[1]}</td>
           </tr>
         )}
+      </tbody>
       </table>
   )
 }
