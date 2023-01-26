@@ -2,12 +2,33 @@ import { AxiosError } from "axios";
 import React, { useReducer, createContext, useContext, Dispatch } from "react";
 import { Action } from "../action/action";
 
+type player = {
+  player_id: Number; 
+  class: string; 
+  height: string; 
+  name: string; 
+  number: string; 
+  position: string;
+  notes?: string | null
+}
+
+export type spray_line = {
+  player_id: Number;
+  type: string;
+  result: string;
+  start_x: Number;
+  start_y: Number;
+  end_x: Number;
+  end_y: Number;
+  date: string;
+}
+
 type State = {
     error: Error | AxiosError;
     api_base_url: string;
-    roster: any;
+    roster: player[];
     schedule: any;
-    spray_chart: any;
+    spray_chart: spray_line[];
     rotations: any;
 }
 
@@ -57,7 +78,7 @@ const appReducer = (state: any, action: Action) => {
           const { data } = action;
           return {
             ...state,
-            spray_chart: data
+            spray_chart: [...data]
           }
         }
         case "error": {
