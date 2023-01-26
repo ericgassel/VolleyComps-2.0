@@ -77,8 +77,8 @@ body{
     text-decoration: underline!important;
 }
 .tab-nav{
- margin-top:70px;
- margin-bottom:60px;   
+ margin-top: 20px;
+ margin-bottom: 20px;   
 }
 .tab-nav a{    
     color:#A2A2A2;
@@ -89,8 +89,8 @@ body{
 }
 
 .inner-content{
-    padding-top:70px;
-    padding-left:40px;
+    padding-top:30px;
+    padding-left:30px;
 }
 
 h1{

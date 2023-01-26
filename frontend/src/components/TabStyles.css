@@ -9,7 +9,7 @@
 
 .tabs {
   width: 100%;
-  height: 70vh;
+  height: 80vh;
 }
 
 /* PlayerStatsTab Styles */
@@ -29,15 +29,50 @@
   flex-direction: column;
   margin: 1%;
   padding: 1%;
+  position: relative;
 }
 
 .chartSVGContainer {
-  border: 1px solid black ;
-  margin-bottom: 1%;
+  border: 1px solid black;
+  height: 100%;
+  width: 100%;
 }
 
+/* sprayChartSVG */
+
+.sprayChartSVG {
+  width: 900;
+  height: 600;
+}
+
+.sprayChartRect {
+  /* x: 200;
+  y: 50; */
+  width: 500;
+  height: 500;
+  fill: white;
+  stroke: black;
+  stroke-width: 2;
+}
+/*  */
+
+
 .chartCommentContainer {
-  border: 1px solid black ;
+  margin-top: auto;
+  min-height: 20%;
+  display: flex;
+  flex-direction: column;
+}
+
+.commentTitle {
+  /* margin-top: auto; */
+}
+
+.commentContents {
+  border: 1px solid black;
+  margin-top: auto;
+  height: 100%;
+  padding: 2%;
 }
 
 .playersInfoContainer {
@@ -62,11 +97,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
+  padding-left: 7%;
 }
 
 .selectedPlayerImg {
   height: 100%;
+}
+
+.selectedPlayerInfoText {
+  margin: 2% 0 2% 0;
 }
 
 .teamRosterContainer {
@@ -77,6 +117,11 @@
 
 .teamRosterList {
   padding: 2%;
+}
+
+.playerName {
+  margin: 10px 0px 10px 0px;
+  cursor: pointer;
 }
 
 /* TeamStatsTab Styles */
@@ -91,7 +136,7 @@
 .bestPlayersContainer {
   border: 1px solid black;
   width: 35%;
-
+  overflow-y: scroll;
   }
 
 .bestPlayerStatsTable {
