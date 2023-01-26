@@ -176,18 +176,43 @@ const changeSVG = () => {
   createSvg(getDateString(date));
 }
 
+
+
+// INPUT: N/A
+// OUTPUT: a list of player number numbers
+//    - calls API and returns list of player numbers
+async function getPlayerNumbers() : Promise<string[]>{
+  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+    })
+    .then(result => result.json());
+
+    console.log(response);
+    let numbers : string[] = []
+    for (let i : number = 0; i < response.length; i++){
+      numbers.push(response[i].number.toString())
+    }
+    
+    return numbers;
+}
+
 // adds the calendar to the page if is on ShotEntry page
-window.addEventListener("load", (event) => {
+window.addEventListener("load", async (event) => {
   if (window.location.href.includes("ShotEntry")){
-    playerOptions(["12","13","4","9","32","76","43","21","82","7","3","59","42","54","45","99","0"]);
+    // set default value of date element
     let today : Date = new Date();
     createSvg(getDateString(today));
     let dateElement : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
-    // set default value to date element
     dateElement.valueAsDate = today;
 
     //add event listener to date input
     dateElement.addEventListener('change',changeSVG)
+
+    // get player numbers from data base
+    let playerNumbers : string[]  = await getPlayerNumbers();
+    playerOptions(playerNumbers);
+    
   }
 });
 

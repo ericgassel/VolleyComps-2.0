@@ -26,8 +26,10 @@ let y_scale_click = d3.scaleLinear()
     .domain([650, 0])
     .range([100, 0]);
 
-let new_rotation : Array<Array<number>> = [];
-let rotation : Array<Array<Array<number>>> = [];
+let new_rotation : any = [];
+//let rotation : Array<Array<Array<number>>> = [];
+
+let rotation : any[] = [];
 
 export const createRotSvg = () => {
     
@@ -52,21 +54,19 @@ export const createRotSvg = () => {
         .attr("stroke", "black")
         .attr("stroke-width", 2);
 
-    let data = [];
     for (let j =0; j < rotation.length;j++)
     {
         for (let i = 0; i < rotation[j].length; i++)
         {
-            data.push({"x": rotation[j][i][0], "y":rotation[j][i][0]});
             console.log(rotation);
             svg.append("rect")
             .attr("id", "court")
-            .attr("x", rotation[j][i][0])
-            .attr("y", rotation[j][i][1])
+            .attr("x", rotation[j][i].x)
+            .attr("y", rotation[j][i].y)
             .attr("width", 4)
             .attr("height", 4)
-            .attr("fill", rotation[j][i][2])
-            .attr("stroke", rotation[j][i][2])
+            .attr("fill", rotation[j][i].color)
+            .attr("stroke", rotation[j][i].color)
             .attr("stroke-width", 2);
         }
     }
@@ -95,12 +95,13 @@ export const createRotSvg = () => {
             if (point_tracking) {
                 let vals = d3.pointer(event, svg.node());
                 console.log(vals)
-                let to_add : Array<any> = []
+                let to_add : {x: number, y:number, color:string, player_number:string} = {x:0, y:0, color:"", player_number:""}
                 if(typeof globalThis.current_color !== "undefined")
                 {
-                to_add.push(vals[0])
-                to_add.push(vals[1])
-                to_add.push(globalThis.current_color)
+                to_add["x"] = vals[0]
+                to_add["y"] = vals[1]
+                to_add["color"] = globalThis.current_color
+                to_add["player_number"] = globalThis.current_selected_player
                 }
                 new_rotation.push(to_add);
 
@@ -119,34 +120,59 @@ export const createRotSvg = () => {
     svg.on("pointerup", function() {
         console.log(rotation)
         point_tracking = false;
-        rotation.push(new_rotation);
-        addRotationToSVG(8);
+        //addRotationToSVG(8);
     })
 }
 
 // called when route is added to SVG
 export const addRotationToSVG = (player_number_selected: number) => {
+    rotation.push(new_rotation);
     // this should move temp 
+    // ---------
+    // adds a player to Dummy School
+    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ "data": [["TESTING123","5", "5'11", "OPP", "Sr", "Hits really hard!"]] })
+    })
+    .then(response => response.json())
+    .then(response => console.log(JSON.stringify(response)))
     createRotSvg();
+    console.log("should be added");
 }
 
 // to be called to delete all temporary data
 export const newSelection = () => {
     // this will delete the temporary data (anything not added)
+    new_rotation = []
+    createRotSvg()
 }
 
 // to be called to delete from rotation data
 export const deletePlayerRotation = (player_number_selected: number) => {
     // removes player info from svg
+    console.log("deleting")
+    console.log(rotation[0])
+    rotation = rotation.filter(function(d) {return d[0].player_number.toString() !== player_number_selected.toString() })
+    console.log(rotation)
+    createRotSvg()
 }
 
 // this function will send all data to the API and reset the svg
-export const sendAndReset = (rotationNumber : number) => {
+export async function sendAndReset(rotationNumber : number) {
+    // gets all roster info
    // http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster
-    let response = fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster', {
+
+   //http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number
+   // gets all player numbers
+    let response = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
     })
+    
     //then() function is used to convert the posted contents to the website into json format
     .then(result => result.json())
     

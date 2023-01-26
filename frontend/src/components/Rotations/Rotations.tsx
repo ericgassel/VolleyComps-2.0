@@ -273,6 +273,10 @@ const addNewRotation = () => {
         // set default for display of left html elements
         let htmlItems : HTMLTableElement = document.getElementById("leftSide") as HTMLTableElement;
         htmlItems.style.display = "";
+        // -----------------
+        // set default for display of switch buttons
+        let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
+        htmlSwitchButtons.style.display="";
     } else {
         alert("Invalid rotation selected.");
     }
@@ -292,6 +296,10 @@ const addNewRotationButtonSelected = ()=>{
     // change left element to not display
     let leftElement : HTMLDivElement = document.getElementById("leftSide") as HTMLDivElement;
     leftElement.style.display = "none";
+    // -----------------
+    // set switch buttons to not display
+    let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
+    htmlSwitchButtons.style.display="none";
     // -----------------
     // change button actions and text for buttons with ids "AddButton" and "EditOrCancelButton"
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
@@ -383,6 +391,10 @@ const editRotationConfirm = () => {
         // change left HTML to display
         let leftHTML : HTMLTableElement = document.getElementById("leftSide") as HTMLTableElement;
         leftHTML.style.display = "";
+        // -----------------
+        // set default for display of switch buttons
+        let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
+        htmlSwitchButtons.style.display="";
 
     } else {
         alert("Invalid rotation selected.");
@@ -412,6 +424,10 @@ const editASelectedRotation = (current_rotation : number) => {
     // change left element to not display
     let leftElement : HTMLDivElement = document.getElementById("leftSide") as HTMLDivElement;
     leftElement.style.display = "none";
+    // -----------------
+    // change switch buttons to not display
+    let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
+    htmlSwitchButtons.style.display="none";
     // ----------------
     // change paragraph html element with id "SelectRotationText" 
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
@@ -638,6 +654,10 @@ const deleteRoute = () => {
         // gets rid of player info on SVG
         deletePlayerRotation(parseInt(globalThis.current_selected_player));
         current_button.style.background = "";
+        current_button.style.border = "none";
+        globalThis.current_color="";
+        globalThis.current_selected_player ="";
+        
         // ------------------
         // find index in rotation that is the spot of the player
         let rotation : string[] = all_existing_rotations[current_rotation_selected];
@@ -671,7 +691,7 @@ window.addEventListener("load", (event) => {
     if (window.location.href.includes("Rotations")){
         currentRotationButtonsLower(all_existing_rotations[0]); 
         allRotationButtonsUpper(all_existing_rotations);
-        selectRotation(0);
+       // selectRotation(0);
         createRotSvg();
     }
     
@@ -766,12 +786,14 @@ function Rotations() {
                 </tbody>
                 
             </table>
+            <div id='htmlSwitchButtons'>
             <a href={getScountingReportURL()}>
             <button id='switchShotEntry'>Scouting Report</button>
             </a>
             <a href={getShotEntryURL()}>
             <button id='switchShotEntry'>Switch to ShotEntry</button>
             </a>
+            </div>
             
             
         </div>
