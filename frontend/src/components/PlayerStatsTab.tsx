@@ -67,7 +67,7 @@ const PlayerStatsTab = () => {
     }
   }, [roster])
 
-  console.log('spray____chart:', spray_chart)
+  // console.log('spray____chart:', spray_chart)
 
   return (
     (roster && selectedPlayer ? (

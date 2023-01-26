@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {Outlet} from "react-router-dom"
 import {Link, useLocation} from 'react-router-dom'
+
+import { useAppContext, useAppDispatchContext } from '../context/appContext';
+import { getTeams, updateCurrentTeam } from '../action/action';
 
 import TavNav from "./TabNav"
 import AddModal from './AddModal'
@@ -9,13 +12,6 @@ import "./Teams.css"
 import "./table.css"
 import ManageTeam from './ManageTeam'
 
-const teamData = [
-  { id: 1,  name: "St.Olaf", location: "Northfield, MN", score: "3:2" },
-  { id: 2, name: "Crown College", location: "Northfield, MN", score: "3:0" },
-  { id: 3, name: "Concordia", location: "St.Paul, MN", score: "3:1"},
-  { id: 4, name: "Augusburg University", location: "Minneapolis, MN", score: "3:1"},
-  { id: 5, name: "Unniversity of Minnesota", location: "St.Paul, MN", score: "3:1"},
-]
 
 const Teams = () => {
 
@@ -33,7 +29,19 @@ const Teams = () => {
     setModalOpen(false);
   };
 
-  const location = useLocation()
+  const state = useAppContext();
+  const dispatch = useAppDispatchContext();
+
+  const {api_base_url, teams} = state;
+
+  let newAPI = `${api_base_url}/data/schools`
+
+  useEffect(() => {
+    getTeams(dispatch, newAPI);
+    
+  }, []);
+
+
 
   return <div className='Teams'>
 
@@ -71,15 +79,15 @@ const Teams = () => {
 
     <div className="Table">
       <table>
-        <tbody>
-
-        {teamData.map((val, key) => {
+        <tbody>        
+        
+        {teams.map((val:any, key:any) => {
           return (
             <tr key={key}>
               <td>{val.name}</td>
-              <td> <Link to={`/management/${val.id}`}>Manage Team</Link></td>
-              <td><Link to={`/report/${val.id}`}>Scout Report</Link></td>
-              <td><a href={`/ShotEntry/${val.id}`}>Add Report</a></td>
+              <td> <Link to={`/management/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Manage Team</Link></td>
+              <td><Link to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Scout Report</Link></td>
+              <td><a href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Add Report</a></td>
             </tr>
           )
         })}
