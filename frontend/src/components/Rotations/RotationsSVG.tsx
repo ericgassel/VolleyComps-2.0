@@ -33,7 +33,7 @@ let rotation : any[] = [];
 
 export const createRotSvg = () => {
     
-    console.log("Rotations SVG Loading");
+    
     let checkboxes : string = "";
     let chartItem : HTMLDivElement =  document.getElementById("chart") as HTMLDivElement;
     chartItem.innerHTML = "";
@@ -58,7 +58,7 @@ export const createRotSvg = () => {
     {
         for (let i = 0; i < rotation[j].length; i++)
         {
-            console.log(rotation);
+            
             svg.append("rect")
             .attr("id", "court")
             .attr("x", rotation[j][i].x)
@@ -139,9 +139,9 @@ export const addRotationToSVG = (player_number_selected: number) => {
     body: JSON.stringify({ "data": [["TESTING123","5", "5'11", "OPP", "Sr", "Hits really hard!"]] })
     })
     .then(response => response.json())
-    .then(response => console.log(JSON.stringify(response)))
+    
     createRotSvg();
-    console.log("should be added");
+    
 }
 
 // to be called to delete all temporary data
@@ -154,10 +154,9 @@ export const newSelection = () => {
 // to be called to delete from rotation data
 export const deletePlayerRotation = (player_number_selected: number) => {
     // removes player info from svg
-    console.log("deleting")
-    console.log(rotation[0])
+
     rotation = rotation.filter(function(d) {return d[0].player_number.toString() !== player_number_selected.toString() })
-    console.log(rotation)
+
     createRotSvg()
 }
 

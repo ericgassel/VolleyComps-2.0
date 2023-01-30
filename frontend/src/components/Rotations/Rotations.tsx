@@ -578,7 +578,9 @@ const buttonClickCurrentRotation = (number : string) => {
     // delete temporary data on SVG
     newSelection();
     let button : HTMLButtonElement = document.getElementById("player"+ number) as HTMLButtonElement;
+    
     globalThis.current_selected_player = number;
+
     if (button.style.background == ""){
         button.style.background = colors_available[0];
         globalThis.current_color = colors_available[0];
@@ -616,15 +618,13 @@ const addRoute = () => {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
         // move the temp drawn info on SVG to rotation storage
         addRotationToSVG(parseInt(globalThis.current_selected_player));
-        // remove current_selected_player
-        globalThis.current_selected_player = "";
-        // remove the button border
-        current_button.style.border = "none";
+        
         // ------------------
         // find index in rotation that is the spot of the player
         let rotation : string[] = all_existing_rotations[current_rotation_selected];
         let index : number = 0;
         let stop : boolean = false;
+        
         for(let i : number = 0; i < rotation.length; i++){
             if(rotation[i] == globalThis.current_selected_player){
                 stop = true;
@@ -633,10 +633,18 @@ const addRoute = () => {
                 index += 1;
             }
         }
+        
         all_existing_rotation_movements[current_rotation_selected][index] = current_button.style.backgroundColor;
+        
         if (current_button.style.background == colors_available[0]){
             colors_available.shift();
         } 
+        // remove current_selected_player
+        globalThis.current_selected_player = "";
+        // remove the button border
+        current_button.style.border = "none";
+        // remove the current color
+        globalThis.current_color="";
     } else {
         alert("Please select a player.");
     }
@@ -651,12 +659,7 @@ const addRoute = () => {
 const deleteRoute = () => {
     if (globalThis.current_selected_player != "") {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
-        // gets rid of player info on SVG
-        deletePlayerRotation(parseInt(globalThis.current_selected_player));
-        current_button.style.background = "";
-        current_button.style.border = "none";
-        globalThis.current_color="";
-        globalThis.current_selected_player ="";
+        
         
         // ------------------
         // find index in rotation that is the spot of the player
@@ -672,12 +675,21 @@ const deleteRoute = () => {
             }
         }
         all_existing_rotation_movements[current_rotation_selected][index] = "";
+        
         colors_available = [];
         for (let i : number = 0; i < colors.length; i++) {
             if (all_existing_rotation_movements[current_rotation_selected].indexOf(colors[i]) == -1){
                 colors_available.push(colors[i]);
             }
         }
+    
+        // gets rid of player info on SVG
+       
+        deletePlayerRotation(parseInt(globalThis.current_selected_player));
+        current_button.style.background = "";
+        current_button.style.border = "none";
+        globalThis.current_color="";
+        globalThis.current_selected_player ="";
 
     } else {
         alert("Please select a player.");
