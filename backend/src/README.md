@@ -268,8 +268,6 @@ If you don't want to delete all instances of a given player in a sheet, you can 
 
 You can do this by adding the query `recent`, so if you want to delete the most recent addition, you can call:
 `POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart?player_id=4f1162f40d063c5d&recent=1`
-
-### POST /clear/:spreadsheetId/:sheet/:
     
 ---------------------------------------------------------------------------
 To be implemented:
