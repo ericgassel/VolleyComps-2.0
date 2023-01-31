@@ -247,7 +247,7 @@ For example, if you wanted to delete information about a player from the Dummy S
 You can request to remove info about multiple players at once by adding additional ids separate by commas:
 `POST /delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?player_id=4a0607485855e088,8756f4fc30e954ec`
 
-##### Deleting from the rotations page
+#### Deleting from the rotations page
 
 There are two ways you can delete data from the rotations page: by `player_id` and `rotation_id`. You can delete by one of these, or *BOTH* of these. Here is an example of deleting by both of these:
 `POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations?player_id=5,6&rotation_id=f4c1f6fb561f4d72`
