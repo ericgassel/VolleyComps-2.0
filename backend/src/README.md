@@ -7,9 +7,25 @@ You must be connected to eduroam or the Carleton VPN to access this API.
 
 ## Running the API locally
 
-To run the API on your local machine, navigate to `VolleyComps-2.0/backend` and run the command `npm run start`.
+To run the API on your local machine, navigate to `VolleyComps-2.0/backend` and run the command `npm run start`. 
 
 Please note that connecting to the Google Sheets API will fail if you are running the API locally and connected to eduroam, as there are Carleton firewalls set up preventing this.
+
+You do *not* need to run this part to access the api already running on the server. This is just to run locally.
+
+## Accessing the API server
+Follow these steps: 
+1. Make sure you're connected to eduroam or the Carleton VPN.
+2. Enter our VM from the command line: `ssh username@cs400volleyball.mathcs.carleton.edu`
+3. Move to home directory `cd ..`
+4. Move into the API server directory `cd backend`
+5. The server is currently running in the background without a machine needing to be on. Attach to it sing tmux `tmux attach`
+6. To terminate the API program, press `ctrl-c` or `command-c` for mac
+7. To run the program again, type `npm run start`
+8. To exit tmux and leave the API server running, press `ctrl-b` (or `command-b`), then press `d` quickly after. 
+9. You should see the message `[detached (from session 0)]`. The server is running.
+
+You may need to adjust some commands for mac.
 
 ## Sheet Design
 
@@ -24,7 +40,7 @@ Each Google Sheets contain the following five sheets "pages":
 - "spray_chart"
     - columns in spray_chart: [player_id, type, result, start_x, start_y, end_x, end_y, date]
 - "rotations"
-    - columns in rotations: [player_id, rotation_id, a, b, c, date]
+    - columns in rotations: [rotation_id, player_id, line, additional, notes, blocking_scheme, serve_recieve, transition]
 - "stats"
     - not defined yet. waiting on what info will be provided from sam g
 
@@ -35,6 +51,10 @@ Each Google Sheets contain the following five sheets "pages":
 - "sheet" is how you will specify which sheet you want to post data to. There are only five valid sheets, and they can be found in the "Sheet Design" section.
 
 ## Implemented Endpoints
+
+### GET /  (root)
+
+Health check route. Access the root to see if the API is up and running. 
 
 ### GET /help
 Loads this file.
@@ -210,12 +230,49 @@ notes:
 - when sending data to a sheet, you must send data in the same order of the variables in the columns outlined in the Sheet Design section. For example, when posting to "spray_chart", you must send the following data in this exact order: [type, result, start_x, start_y, end_x, end_y, date]
 
 - the backend will generate unique ids for players, shots, and rotations
+
+### POST /delete/:spreadsheetId/:sheet
+
+Calling this endpoint with no specified ids clears the content of a specified sheet (page) in a team's spreadsheet except for the first row (column headers). I forsee this being useful in updating stats page.
+
+*IMPORANT*: This operation cannot be undone. The data is gone once deleted. Use carefully.
+
+#### Specifying specific rows to delete
+
+In order to specify a specific row to delete, you must pass along the player_id (and/or rotation_id) of the row of data you want to delete as a query.
+
+For example, if you wanted to delete information about a player from the Dummy School with a player_id `4a0607485855e088` from the sheet `roster`, you would call:
+`POST /delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?player_id=4a0607485855e088`
+
+You can request to remove info about multiple players at once by adding additional ids separate by commas:
+`POST /delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?player_id=4a0607485855e088,8756f4fc30e954ec`
+
+##### Deleting from the rotations page
+
+There are two ways you can delete data from the rotations page: by `player_id` and `rotation_id`. You can delete by one of these, or *BOTH* of these. Here is an example of deleting by both of these:
+`POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations?player_id=5,6&rotation_id=f4c1f6fb561f4d72`
+
+*Read the following carefully:* when specifying both parameters, only rows of data that match a provided rotation id *AND* a provided player id will be deleted. Both must match for a row to be deleted. For example, given the above API call:
+Will be deleted:
+- [f4c1f6fb561f4d72,	5,	[arrays3],	notes!!,	block this way,	[serverecieve data,this is words],	[my additional notes on this, more notes]]
+- [f4c1f6fb561f4d72,	6,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
+Will not be deleted:
+- [9cb0cbced5cb0d91,	5,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
+- [f4c1f6fb561f4d72,	7,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
+
+##### Deleting by most recent
+
+If you don't want to delete all instances of a given player in a sheet, you can specify how many you want by most recent additions. For example, this would be useful in deleting the most recent addition to the spray chart by a specified player instead of deleting all of that player's shots.
+
+You can do this by adding the query `recent`, so if you want to delete the most recent addition, you can call:
+`POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart?player_id=4f1162f40d063c5d&recent=1`
+
+### POST /clear/:spreadsheetId/:sheet/:
     
 ---------------------------------------------------------------------------
 To be implemented:
 - edit a column of a row (change a player's number, edit the notes, etc)
 - deleting a row given an id
-- deleting the contents of a page
 - filter by date
 - stats sheet populated
 ---------------------------------------------------------------------------

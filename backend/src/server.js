@@ -20,7 +20,7 @@
  const googleSheets = google.sheets({version: "v4", auth: client});
 
  app.get("/", async (req, res) =>{
-    res.status(200).send("Hello there. check out /help for help."); 
+    res.status(200).send("API is running. Check out /help for help."); 
  })
 
  app.get("/help", async (req, res) =>{
@@ -124,12 +124,8 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     const sheet = req.params.sheet
     var data = req.body.data
 
-    if(sheet === "roster" || sheet === "spray_chart"){
-        data = addUniqueId(data, 1)
-        console.log(data)
-    }
-    if(sheet === "rotations"){
-        data = addUniqueId(data, 2)
+    if(sheet == "roster" || sheet == "rotations"){
+        data = addUniqueId(data, sheet)
     }
 
     try{
@@ -149,19 +145,158 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     }
  })
 
+
+
+ app.post("/delete/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
+    const spreadsheetId = req.params.spreadsheetId
+    const sheet = req.params.sheet
+
+    var delete_by_id = 0
+    var targetValues = []
+    if(req.query.player_id){
+        targetValues = req.query.player_id.split(',');
+        delete_by_id = 1
+    }
+    if(req.query.rotation_id){
+        if(sheet != "rotations"){
+            res.status(500).send("Specified a rotation_id, but are not calling a rotations page")
+            return;
+        }
+
+        if(delete_by_id == 1){
+            targetValues = targetValues.concat(req.query.rotation_id.split(','))
+        }else{
+            targetValues = req.query.rotation_id.split(',');
+        }
+
+        if(delete_by_id == 1){delete_by_id = 3;}else{delete_by_id = 2;}
+        
+    }
+
+    try{
+        const sheetInfo = await googleSheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId,
+            range: sheet
+        });
+
+
+        if(delete_by_id != 0){
+
+            const sheetMetadata = await googleSheets.spreadsheets.get({auth, spreadsheetId, fields: 'sheets(properties(sheetId,title))' });
+            var sheetId = -1;
+            for (const sheet_info of sheetMetadata.data.sheets) {
+                if (sheet_info.properties.title == sheet) {
+                    sheetId = sheet_info.properties.sheetId;
+                }
+            }
+
+            const data = sheetInfo.data.values;
+            
+            var rowsToDelete = [];
+            
+            // Find the rows to delete
+            if(delete_by_id == 1 && sheet == "rotations"){
+                for (let i = 0; i < data.length; i++) {
+                    if (targetValues.includes(data[i][1])) {
+                        rowsToDelete.push(i + 1);
+                    }
+                }
+            }
+            else{
+                for (let i = 0; i < data.length; i++) {
+                    if (targetValues.includes(data[i][0])) {
+                        rowsToDelete.push(i + 1);
+                    }
+                }
+            }
+            if(delete_by_id == 3){
+                const specificRowsToDelete = []
+                for (const row of rowsToDelete) {
+                    if (targetValues.includes(data[row-1][1])) {
+                        specificRowsToDelete.push(row);
+                    }
+                }
+                rowsToDelete = specificRowsToDelete;
+            }
+            if(req.query.recent){
+                rowsToDelete = getLastNElements(rowsToDelete, parseInt(req.query.recent))
+            }
+            
+            if (rowsToDelete.length > 0) {
+            // Delete the rows
+                const requests = [];
+                
+                var shift = 0
+                for (const rowIndex of rowsToDelete) {
+                    requests.push({
+                    deleteDimension: {
+                        range: {
+                            sheetId,
+                            dimension: "ROWS",
+                            startIndex: rowIndex - 1 - shift,
+                            endIndex: rowIndex - shift
+                        }
+                    }
+                    });
+                    shift += 1;
+                }
+                
+                try{
+                    await googleSheets.spreadsheets.batchUpdate({
+                        auth,
+                        spreadsheetId,
+                        resource: {
+                            requests
+                        }
+                    });
+                    res.status(200).send("rows successfully deleted")
+                    return
+                } catch(error){
+                    console.log(error)
+                    res.status(500).send(error)
+                }
+            }else{
+                res.status(500).send("Specified ids do not exist")
+                return
+            }
+        }
+
+        
+        const returnedRange = sheetInfo.data.range;
+        const firstRow = returnedRange.split(":")[0];
+        const newRange = `${firstRow.split("1")[0]}2:${returnedRange.split(":")[1]}`;
+
+        await googleSheets.spreadsheets.values.clear({
+            auth,
+            spreadsheetId: spreadsheetId,
+            range: newRange
+        });
+
+        res.status(200).send("successfully cleared")
+    } catch(error){
+        console.log(error)
+        res.status(500).send(error)
+    }
+
+})
+
+
  function uniqueId(){
     return crypto.randomBytes(8).toString('hex');
  }
 
- function addUniqueId(data, num){
+ function addUniqueId(data, sheet){
     var newData = []
-    for(let arr of data){
-        if(num == 1){
-            arr.unshift(uniqueId())
+    if(sheet == "rotations"){
+        const id = uniqueId()
+        for(let arr of data){
+            arr.unshift(id)
             newData.push(arr)
         }
-        if(num == 2){
-            arr.unshift(uniqueId(), uniqueId())
+    }else{
+        for(let arr of data){
+            arr.unshift(uniqueId())
             newData.push(arr)
         }
     }
@@ -178,6 +313,8 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
                 indexes.push(index)
             }
         })
+    }else{
+        indexes = headers.map((_, i) => i)
     }
     return data.reduce((acc, cur) => {
         let obj = {}
@@ -202,6 +339,16 @@ function filterDataByColumns(data, col) {
       return col.some(c => row.includes(c))
     });
   }
+
+function getLastNElements(array, n) {
+    if (n >= array.length) {
+        return array;
+    }
+    return array.slice(array.length - n, array.length);
+}
+  
+  
+  
   
 
 
