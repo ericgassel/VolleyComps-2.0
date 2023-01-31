@@ -14,6 +14,10 @@ let second_click = {x:0, y:0};
 // the current dateID for the page
 let current_date_ID : string = "";
 
+// boolean for if hovering over a line
+let onLine : boolean = false;
+
+
 let x_scale = d3.scaleLinear()
         .domain([0, 100])
         .range([200, 700]);
@@ -54,10 +58,6 @@ export async function createSvg(dateID : string){
         data_graph.push({start_x: response[i].start_x, start_y: response[i].start_y, end_x: response[i].end_x, end_y: response[i].end_y, shot_type: response[i].type, result: response[i].result, player_num: response[i].player_id});
       }}
 
-    
-
-    console.log("made it here!");
-
 
 
 
@@ -97,21 +97,29 @@ export async function createSvg(dateID : string){
         .attr('y1', function(d, i){return y_scale(d.start_y)})
         .attr('y2', function(d, i){return y_scale(d.end_y)})
         .attr("opacity", function (d) {if (d.shot_type === "serve"){return .5} else {return 1}})
+        .on("click", function(d,i){
+            // i is the shot thing
+            console.log(i);
+            // --- delete shot ---
+        })
         .attr("stroke", function(d) {if (d.result === "kill"){return "#000"} else if (d.result === "out"){return "red"} else {return "green"}}).on('mouseover', function(event, d) {
-        d3.select(this).attr("stroke-width", 2);
+        d3.select(this).attr("stroke-width", 5);
+        onLine = true;
         })
         .on('mouseout', function(event, d) {
         d3.select(this).attr("stroke-width", 1);
+        onLine = false;
         });
 
         let width = 500;
         let height = 500;
 
     svg.on("click", function() {
+        
         let vals = d3.pointer(event, svg.node())
         console.log(x_scale(x_scale_click(vals[0])));
 
-        if (first_click.x === 0) {
+        if (first_click.x === 0 && !onLine) {
             first_click.x = x_scale_click(vals[0]);
             first_click.y = y_scale_click(vals[1]);
             svg.append("circle")
@@ -124,7 +132,7 @@ export async function createSvg(dateID : string){
                 .attr("stroke", "green")
                 .attr("stroke-width", 2);
         }
-        else if (second_click.x === 0) {
+        else if (second_click.x === 0 && !onLine) {
             second_click.x = x_scale_click(vals[0]);
             second_click.y = y_scale_click(vals[1]);
             svg.append("circle")
