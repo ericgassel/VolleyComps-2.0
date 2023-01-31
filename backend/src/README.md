@@ -262,7 +262,7 @@ Will not be deleted:
 - [9cb0cbced5cb0d91,	5,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
 - [f4c1f6fb561f4d72,	7,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
 
-##### Deleting by most recent
+#### Deleting by most recent
 
 If you don't want to delete all instances of a given player in a sheet, you can specify how many you want by most recent additions. For example, this would be useful in deleting the most recent addition to the spray chart by a specified player instead of deleting all of that player's shots.
 
