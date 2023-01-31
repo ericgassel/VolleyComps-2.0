@@ -3,13 +3,35 @@ import React from 'react';
 import logo from './logo.svg';
 import * as d3 from 'd3';
 import internal from 'stream';
-import ShotEntry from './ShotEntry';
+import ShotEntry, { disableButton, enableButton } from './ShotEntry';
 import { isConstructorDeclaration } from 'typescript';
 
-let data_graph : any[] = [];
+// representation of Shot type dictionary
+export interface Shot {
+    player_id : string;
+    shot_type : string;
+    result : string;
+    start_x : number;
+    start_y : number;
+    end_x : number;
+    end_y : number;
+    date : string;
+    clicked : boolean;
+}
 
-let first_click = {x:0, y:0};
-let second_click = {x:0, y:0};
+
+
+declare global {
+    // represents all shots
+    var data_graph : Shot[];
+
+    var first_click : any;
+    var second_click : any;
+}
+
+
+var first_click = {x:0, y:0};
+var second_click = {x:0, y:0};
 
 // the current dateID for the page
 let current_date_ID : string = "";
@@ -35,11 +57,9 @@ let y_scale_click = d3.scaleLinear()
     .range([100, 0]);
 
 
-
-export async function createSvg(dateID : string){
+export async function fullNewLoadSvg(dateID : string){
     current_date_ID = dateID;
-    console.log("in here");
-    console.log(current_date_ID);
+    globalThis.data_graph = [];
 
     let response : any[] = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart', {
     method: 'GET',
@@ -47,20 +67,27 @@ export async function createSvg(dateID : string){
     })
     .then(result => result.json());
 
-    console.log(response);
-    data_graph = [];
+    
+    
     for (let i : number = 0; i < response.length; i++){
         
         //let shot : Shot = {playerID : response[i].player_id, type:response[i].type, result:response[i].result,startX:response[i].start_x,startY:response[i].start_y,endX:response[i].end_x,endY:response[i].end_y,date:response[i].date};
         
         // only add to chart if is equal to the date on calendar.
-        if (response[i].date== current_date_ID){
-        data_graph.push({start_x: response[i].start_x, start_y: response[i].start_y, end_x: response[i].end_x, end_y: response[i].end_y, shot_type: response[i].type, result: response[i].result, player_num: response[i].player_id});
+        if (response[i].date == current_date_ID){
+        let shot : Shot = {player_id : response[i].player_id, shot_type:response[i].type, result:response[i].result,start_x:response[i].start_x,start_y:response[i].start_y,end_x:response[i].end_x,end_y:response[i].end_y,date:response[i].date,clicked:false};
+        globalThis.data_graph.push(shot);
       }}
+   
+    
+    createSvg();
+}
 
-
-
-
+export function createSvg(){
+    // set clicked values all to false
+    for(let i : number = 0; i< globalThis.data_graph.length;i++){
+        globalThis.data_graph[i].clicked = false;
+    }
 
     let checkboxes : string = "";
     let chartItem : HTMLDivElement =  document.getElementById("chart") as HTMLDivElement;
@@ -76,7 +103,7 @@ export async function createSvg(dateID : string){
 
     if (checkboxes === "kills")
     {
-        data_graph = data_graph.filter(d => d.result === "kill")
+        globalThis.data_graph = globalThis.data_graph.filter(d => d.result === "kill")
     }
 
     svg.append("rect")
@@ -90,25 +117,46 @@ export async function createSvg(dateID : string){
         .attr("stroke-width", 2);
 
     svg.selectAll('shots')
-        .data(data_graph)
+        .data(globalThis.data_graph)
         .join('line')
         .attr('x1', function(d, i){return x_scale(d.start_x)})
         .attr('x2', function(d, i){return x_scale(d.end_x)})
         .attr('y1', function(d, i){return y_scale(d.start_y)})
         .attr('y2', function(d, i){return y_scale(d.end_y)})
+        
         .attr("opacity", function (d) {if (d.shot_type === "serve"){return .5} else {return 1}})
-        .on("click", function(d,i){
+        .attr("stroke-width",function(d, i){return 2})
+        .on("click", function(event,d){
             // i is the shot thing
-            console.log(i);
-            // --- delete shot ---
+            
+            d.clicked = !d.clicked;
+          
+            let enableDelete : boolean = false;
+            for(let i : number = 0;i<globalThis.data_graph.length;i++){
+                
+                if (globalThis.data_graph[i].clicked){
+                    enableDelete = true;
+                }
+            }
+            if(enableDelete){
+                enableButton("delete");
+            } else {
+                disableButton("delete");
+            }
+
+            
         })
         .attr("stroke", function(d) {if (d.result === "kill"){return "#000"} else if (d.result === "out"){return "red"} else {return "green"}}).on('mouseover', function(event, d) {
-        d3.select(this).attr("stroke-width", 5);
+        d3.select(this).attr("stroke-width", 6);
         onLine = true;
         })
         .on('mouseout', function(event, d) {
-        d3.select(this).attr("stroke-width", 1);
-        onLine = false;
+            if (d.clicked == false){
+                d3.select(this).attr("stroke-width", 2);
+                
+            }
+            onLine = false;
+        
         });
 
         let width = 500;
@@ -117,7 +165,7 @@ export async function createSvg(dateID : string){
     svg.on("click", function() {
         
         let vals = d3.pointer(event, svg.node())
-        console.log(x_scale(x_scale_click(vals[0])));
+        //(x_scale(x_scale_click(vals[0])));
 
         if (first_click.x === 0 && !onLine) {
             first_click.x = x_scale_click(vals[0]);
@@ -150,30 +198,37 @@ export async function createSvg(dateID : string){
     })
 }
 
+export function deleteShotFromSvg(){
+    for( let i : number = 0; i < globalThis.data_graph.length; i++){
 
-export const addShotToSvg = (shot_type_selected: string, shot_result_selected: string, player_number_selected: number) => {
-    console.log(first_click.x);
-    data_graph.push({start_x: first_click.x, start_y: first_click.y, end_x: second_click.x, end_y: second_click.y, shot_type: shot_type_selected, result: shot_result_selected, player_num: 0});
+    }
+}
+
+export async function addShotToSvg(shot_type_selected: string, shot_result_selected: string, player_id: string){
+    
+    let shot : Shot = {start_x: first_click.x, start_y: first_click.y, end_x: second_click.x, end_y: second_click.y, shot_type: shot_type_selected, result: shot_result_selected, player_id: player_id, date:current_date_ID, clicked:false}
+    globalThis.data_graph.push(shot);
+    console.log(globalThis.data_graph);
     
     // send shot info to database
-    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart', {
+    await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart', {
     method: 'POST',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ "data": [[player_number_selected,shot_type_selected,shot_result_selected,first_click.x,first_click.y,second_click.x,second_click.y,current_date_ID]] })
+    body: JSON.stringify({ "data": [[player_id,shot_type_selected,shot_result_selected,first_click.x,first_click.y,second_click.x,second_click.y,current_date_ID]] })
     })
     .then(response => response.json())
-    .then(response => console.log(JSON.stringify(response)))
+    //.then(response => console.log(JSON.stringify(response)))
     
     // reset info relating to shot
     first_click = {x:0, y:0};
     second_click = {x:0, y:0};
-    console.log(data_graph);
-
+    
     // recreate the svg
-    createSvg(current_date_ID);
+    createSvg();
+    
     
 }
 

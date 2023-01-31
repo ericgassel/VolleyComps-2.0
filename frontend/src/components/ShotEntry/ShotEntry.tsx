@@ -1,15 +1,21 @@
 import React from 'react'
 import Square from './square.png'
 import './ShotEntry.css';
-import {createSvg,addShotToSvg} from './ShotSVG'
+import {createSvg,addShotToSvg, fullNewLoadSvg, Shot} from './ShotSVG'
 import { create, utcDay } from 'd3';
 import { time } from 'console';
 
+// interface representing a player
+interface Player {
+  player_num : number;
+  player_id : string;
+} 
 
-let rotation_current_player: string = "";
+
+let rotation_current_player: Player | null = null;
 let shot_type_current_button: string = "";
 let result_current_button: string = "";
-let player_order : string[] = [];
+let player_order : Player[] = [];
 
 // TODO:
 // add calendar item at the top of the page instead of calendar as seperate page thing.
@@ -45,7 +51,7 @@ const disableFields = () : void => {
 // INPUT: id of HTML button element
 // OUTPUT: N/A
 //    - disables button with id passed in as input
-const disableButton = (id : string) : void =>{
+export const disableButton = (id : string) : void =>{
   let field : HTMLButtonElement = document.getElementById(id) as HTMLButtonElement;
   field.disabled = true;
 }
@@ -53,7 +59,7 @@ const disableButton = (id : string) : void =>{
 // INPUT: id of HTML button element
 // OUTPUT: N/A
 //    - enables button with id passed in as input
-const enableButton = (id : string) : void =>{
+export const enableButton = (id : string) : void =>{
   let field : HTMLButtonElement = document.getElementById(id) as HTMLButtonElement;
   field.disabled = false;
 }
@@ -119,32 +125,38 @@ const clearAllButtons = (btn_ids: string[]) => {
     let input = document.getElementById(btn_ids[i]) as HTMLButtonElement;
     input.style.background = "";
   }
-  for (let i = 1; i<player_order.length;i++){
-    let input = document.getElementById("player" + i.toString()) as HTMLButtonElement;
+  for (let i = 0; i<player_order.length;i++){
+    let input = document.getElementById("player" + player_order[i].player_id) as HTMLButtonElement;
     input.style.background = "";
   }
-  rotation_current_player = "";
+  rotation_current_player = null;
   shot_type_current_button = "";
   result_current_button = "";
+
+  createSvg();
 } 
 
 const addShot = (btn_ids_toClear: string[]) => {
 
-  if (rotation_current_player != "" && shot_type_current_button != "" && result_current_button != "") {
-    let player = document.getElementById("player" + rotation_current_player) as HTMLButtonElement;
+  if (rotation_current_player != null && shot_type_current_button != "" && result_current_button != "") {
+    
+    addShotToSvg(shot_type_current_button,result_current_button,rotation_current_player.player_id);
+
+    let deletedPlayer : Player | null = deleteSelectedPlayer(rotation_current_player);
+    
+    if (deletedPlayer != null){
+      player_order.unshift(deletedPlayer);
+    }
     
 
-    addShotToSvg(shot_type_current_button,result_current_button,parseInt(player.innerHTML));
 
-    deleteSelectedPlayer(player.innerHTML);
-    //player.innerHTML is the player's number
-    player_order.unshift(player.innerHTML);
+
     playerOptions(player_order);
     clearAllButtons(btn_ids_toClear);
     let player_btns = document.getElementById("playerOptions") as HTMLDivElement;
     player_btns.scrollTop = 0;
     disableFields();
-  } else if (rotation_current_player == ""){
+  } else if (rotation_current_player == null){
     alert("Please select a player.");
   }
   else if (shot_type_current_button == ""){
@@ -154,24 +166,28 @@ const addShot = (btn_ids_toClear: string[]) => {
     alert("Please select result type.");
   }
 }
-const deleteSelectedPlayer = (num: string) => {
+
+// INPUT: player number as a string
+// OUTPUT: the deleted player or null if no player was deleted.
+const deleteSelectedPlayer = (player: Player) : Player | null => {
   for(let i = 0; i<player_order.length; i++){
-    if (player_order[i] == num){
-      player_order.splice(i,1);
+    if (player_order[i].player_id == player.player_id){
+      return player_order.splice(i,1)[0];
     }
   }
+  return null;
 }
-const selectPlayer = (num: string) => {
+const selectPlayer = (player: Player) => {
   
-  let player = document.getElementById("player" + num) as HTMLButtonElement;
+  let playerHTML = document.getElementById("player" + player.player_id) as HTMLButtonElement;
  
-    player.style.background = "#277ACC";
-    if (rotation_current_player != "" && num != rotation_current_player) {
-      let old_selected = document.getElementById("player" + rotation_current_player) as HTMLButtonElement;
+  playerHTML.style.background = "#277ACC";
+    if (rotation_current_player != null && player != rotation_current_player) {
+      let old_selected = document.getElementById("player" + rotation_current_player.player_id) as HTMLButtonElement;
       old_selected.style.background = "";
     } 
-    rotation_current_player = num;
-
+    rotation_current_player = player;
+    
     enableButton("shot");
     enableButton("serve");
     
@@ -182,21 +198,21 @@ const selectPlayer = (num: string) => {
 // INPUT: list of player numbers that are selectable for shot entry
 // OUTPUT: N/A
 //    - sets the div element with ID: playerOptions to HTML of buttons to select players
-const playerOptions = (player_nums: string[]) => {
+const playerOptions = (players: Player[]) => {
   let appended = document.getElementById("playerOptions") as HTMLDivElement;
   appended.innerHTML = "";
   player_order = [];
   let k : number = 0;
-  while (k < player_nums.length){
+  while (k < players.length){
     for(let i = k; i < 4+k; i++){
-      if (i < player_nums.length){
+      if (i < players.length){
         let element = document.createElement("button");
-        element.id = "player" + (i+1).toString();
+        element.id = "player" + players[i].player_id;
         element.className = "tableButton";
-        element.innerHTML=player_nums[i];
-        element.onclick = () => selectPlayer((i+1).toString());
+        element.innerHTML=players[i].player_num.toString();
+        element.onclick = () => selectPlayer(players[i]);
         appended.append(element);
-        player_order.push(player_nums[i])
+        player_order.push(players[i])
       }
       
     }
@@ -216,27 +232,28 @@ const changeSVG = () => {
   let date : Date = new Date(dateItem.value);
   // for some reason have to increment date by 1.
   date.setDate(date.getDate() + 1);
-  createSvg(getDateString(date));
+  fullNewLoadSvg(getDateString(date));
 }
 
 
 
 // INPUT: N/A
-// OUTPUT: a list of player number numbers
+// OUTPUT: a list of players
 //    - calls API and returns list of player numbers
-async function getPlayerNumbers() : Promise<string[]>{
-  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number', {
+async function getPlayers() : Promise<Player[]>{
+  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number,player_id', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
     })
     .then(result => result.json());
 
-    let numbers : string[] = []
+    let playerList : Player[] = []
     for (let i : number = 0; i < response.length; i++){
-      numbers.push(response[i].number.toString())
+      let player : Player = {player_num: response[i].number,player_id: response[i].player_id}
+      playerList.push(player);
     }
     
-    return numbers;
+    return playerList;
 }
 
 // adds the calendar to the page if is on ShotEntry page
@@ -249,15 +266,16 @@ window.addEventListener("load", async (event) => {
     
     today.setTime(today.getTime()-(timezoneOffset/60)*3600*1000);
   
-    createSvg(getDateString(today));
+    fullNewLoadSvg(getDateString(today));
     let dateElement : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
     dateElement.valueAsDate = today;
 
 
     // get player numbers from data base
-    let playerNumbers : string[]  = await getPlayerNumbers();
-    playerOptions(playerNumbers);
+    let currentPlayers : Player[]  = await getPlayers();
+    playerOptions(currentPlayers);
     disableFields();
+
     
   }
 });
@@ -276,6 +294,26 @@ const getScountingReportURL = () : string => {
   let url : string = window.location.href;
   let id : string = url.substring(url.lastIndexOf("/") + 1);
   return "/report/" + id + "/playerStatsTab";
+}
+
+// INPUT: N/A
+// OUTPUT: deletes the selected shot from the database and SVG
+const deleteShot = () : void => {
+  // -------------------
+  // delete shot from svg
+  let newDataGraph : Shot[] = [];
+  for(let i : number = 0; i<globalThis.data_graph.length;i++){
+    if (!globalThis.data_graph[i].clicked){
+      newDataGraph.push(globalThis.data_graph[i])
+    }
+  }
+  globalThis.data_graph = newDataGraph;
+  createSvg();
+
+  // --------------------
+  // delete shot from database
+  // -------- TODO -----------
+  
 }
 
 const ShotEntry=() =>{
@@ -325,7 +363,7 @@ const ShotEntry=() =>{
                         
                       <tr>
                         <td><button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
-                        <td><button id='delete' className='tableButton'>Delete</button></td>
+                        <td><button id='delete' className='tableButton' onClick={deleteShot}>Delete</button></td>
                         <td><button id='undo' className='tableButton' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
                         
                       </tr>
