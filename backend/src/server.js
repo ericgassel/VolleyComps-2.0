@@ -124,7 +124,7 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     const sheet = req.params.sheet
     var data = req.body.data
 
-    if(sheet == "roster" || sheet == "rotations"){
+    if(sheet == "rotations"){
         data = addUniqueId(data, sheet)
     }
 
@@ -288,17 +288,10 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
 
  function addUniqueId(data, sheet){
     var newData = []
-    if(sheet == "rotations"){
-        const id = uniqueId()
-        for(let arr of data){
-            arr.unshift(id)
-            newData.push(arr)
-        }
-    }else{
-        for(let arr of data){
-            arr.unshift(uniqueId())
-            newData.push(arr)
-        }
+    const id = uniqueId()
+    for(let arr of data){
+        arr.unshift(id)
+        newData.push(arr)
     }
     return newData;
  }

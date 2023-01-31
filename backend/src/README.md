@@ -34,15 +34,15 @@ The data base is composed of separate Google Sheets files that each represent on
 Each Google Sheets contain the following five sheets "pages":
 
 - "roster"
-    - columns in roster: [player_id, name, number, height, position, class, notes]
+    - columns in roster: [Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
 - "schedule"
-    - columns in schedule: [team, date, home, location, outcome]
+    - columns in schedule: [team, date, location, outcome]
 - "spray_chart"
     - columns in spray_chart: [player_id, type, result, start_x, start_y, end_x, end_y, date]
 - "rotations"
     - columns in rotations: [rotation_id, player_id, line, additional, notes, blocking_scheme, serve_recieve, transition]
-- "stats"
-    - not defined yet. waiting on what info will be provided from sam g
+- "team_stats"
+    - [Team, Kills,	Errors,	Attempts, Percent,	Kills_Per_Set,	Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Errors, Aces_Per_Set, Errors, Errors_Per_Set, Digs, Digs_Per_Set, Solo, Assists, Errors, Blocks, Blocks_Per_Set]
 
 ## Notes for interacting with the API
 
@@ -272,9 +272,7 @@ You can do this by adding the query `recent`, so if you want to delete the most 
 ---------------------------------------------------------------------------
 To be implemented:
 - edit a column of a row (change a player's number, edit the notes, etc)
-- deleting a row given an id
 - filter by date
-- stats sheet populated
 ---------------------------------------------------------------------------
 
 PLEASE NOTE, there are usage limits for the google sheets API (how frequently it can be used). Here is a quick overview:

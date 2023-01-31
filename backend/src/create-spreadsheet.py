@@ -41,8 +41,14 @@ sheet.append_rows([["player_id", "type", "result", "start_x", "start_y", "end_x"
 sheet = client.open(team_name).worksheet("rotations")
 sheet.append_rows([["player_id", "rotation_id", "a", "b", "c", "date"]])
 
+sheet = client.open(team_name).worksheet("ind_data")
+sheet.append_rows([["Player_ID", "Image", "Season", "Name", "Number", "Position(s)", "Height", "Year", "SP", "MP", "K", "K/S", "E", "TA", "PCT", "A", "A/S", "SA", "SA/S", "SE", "DIG", "D/S", "RE", "BS", "BA", "TB", "B/S", "BE", "BHE", "PTS", "PTS/S"]])
+
 sheet = client.open(team_name)
+sheet.share('sgloss@volleyball-schedule-375303.iam.gserviceaccount.com', perm_type='user', role='writer')
 sheet.share('gassele@carleton.edu', perm_type='user', role='writer')
+
+
 
 spreadsheet_id = sheet.id
 print(sheet.id)
