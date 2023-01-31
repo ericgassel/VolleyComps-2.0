@@ -2,7 +2,8 @@ import React from 'react'
 import Square from './square.png'
 import './ShotEntry.css';
 import {createSvg,addShotToSvg} from './ShotSVG'
-import { create } from 'd3';
+import { create, utcDay } from 'd3';
+import { time } from 'console';
 
 
 let rotation_current_player: string = "";
@@ -22,7 +23,39 @@ let player_order : string[] = [];
 //    - () in output means that may or may not return with digit there
 //    - for example, could return 1/13/2023, 5/1/2023, or 12/30/2023
 const getDateString = (date : Date) : string => {
-  return (date.getMonth() + 1).toString() + "/" + (date.getDate() + 1).toString() + "/" + date.getFullYear();
+
+
+  return (date.getMonth() + 1).toString() + "/" + (date.getDate()).toString() + "/" + date.getFullYear().toString().substring(2,4);
+}
+
+// INPUT: N/A
+// OUTPUT: N/A
+//    - Disables all fields besides player entry and switching between pages
+const disableFields = () : void => {
+  disableButton("serve");
+  disableButton("shot");
+  disableButton("kill");
+  disableButton("returned");
+  disableButton("out");
+  disableButton("addShot");
+  disableButton("delete");
+
+}
+
+// INPUT: id of HTML button element
+// OUTPUT: N/A
+//    - disables button with id passed in as input
+const disableButton = (id : string) : void =>{
+  let field : HTMLButtonElement = document.getElementById(id) as HTMLButtonElement;
+  field.disabled = true;
+}
+
+// INPUT: id of HTML button element
+// OUTPUT: N/A
+//    - enables button with id passed in as input
+const enableButton = (id : string) : void =>{
+  let field : HTMLButtonElement = document.getElementById(id) as HTMLButtonElement;
+  field.disabled = false;
 }
 
 // INPUT: button name for which user clicks
@@ -59,15 +92,19 @@ const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
 
     if (btn_type == "shot_type") {
       shot_type_current_button = btn_name;
+      enableButton("kill");
+      enableButton("returned");
+      enableButton("out");
     }
     if (btn_type == "result_type") {
       result_current_button = btn_name;
+      enableButton("addShot");
     }
       
   
   // color selected button
   let input = document.getElementById(btn_name) as HTMLButtonElement;
-  input.style.background = "red";
+  input.style.background = "#277ACC";
   
 }
 
@@ -77,7 +114,7 @@ const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
 //    - clears the formatting of all buttons with IDs passed in input
 const clearAllButtons = (btn_ids: string[]) => {
 
-  
+  disableFields();
   for (let i = 0; i < btn_ids.length ; i++ ){
     let input = document.getElementById(btn_ids[i]) as HTMLButtonElement;
     input.style.background = "";
@@ -95,7 +132,7 @@ const addShot = (btn_ids_toClear: string[]) => {
 
   if (rotation_current_player != "" && shot_type_current_button != "" && result_current_button != "") {
     let player = document.getElementById("player" + rotation_current_player) as HTMLButtonElement;
-
+    
 
     addShotToSvg(shot_type_current_button,result_current_button,parseInt(player.innerHTML));
 
@@ -106,6 +143,7 @@ const addShot = (btn_ids_toClear: string[]) => {
     clearAllButtons(btn_ids_toClear);
     let player_btns = document.getElementById("playerOptions") as HTMLDivElement;
     player_btns.scrollTop = 0;
+    disableFields();
   } else if (rotation_current_player == ""){
     alert("Please select a player.");
   }
@@ -127,12 +165,15 @@ const selectPlayer = (num: string) => {
   
   let player = document.getElementById("player" + num) as HTMLButtonElement;
  
-    player.style.background = "red";
+    player.style.background = "#277ACC";
     if (rotation_current_player != "" && num != rotation_current_player) {
       let old_selected = document.getElementById("player" + rotation_current_player) as HTMLButtonElement;
       old_selected.style.background = "";
     } 
     rotation_current_player = num;
+
+    enableButton("shot");
+    enableButton("serve");
     
   }
   
@@ -151,7 +192,7 @@ const playerOptions = (player_nums: string[]) => {
       if (i < player_nums.length){
         let element = document.createElement("button");
         element.id = "player" + (i+1).toString();
-        element.type = "rotationButton";
+        element.className = "tableButton";
         element.innerHTML=player_nums[i];
         element.onclick = () => selectPlayer((i+1).toString());
         appended.append(element);
@@ -173,6 +214,8 @@ const playerOptions = (player_nums: string[]) => {
 const changeSVG = () => {
   let dateItem : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
   let date : Date = new Date(dateItem.value);
+  // for some reason have to increment date by 1.
+  date.setDate(date.getDate() + 1);
   createSvg(getDateString(date));
 }
 
@@ -188,7 +231,6 @@ async function getPlayerNumbers() : Promise<string[]>{
     })
     .then(result => result.json());
 
-    console.log(response);
     let numbers : string[] = []
     for (let i : number = 0; i < response.length; i++){
       numbers.push(response[i].number.toString())
@@ -201,17 +243,21 @@ async function getPlayerNumbers() : Promise<string[]>{
 window.addEventListener("load", async (event) => {
   if (window.location.href.includes("ShotEntry")){
     // set default value of date element
+
     let today : Date = new Date();
+    let timezoneOffset = new Date().getTimezoneOffset();
+    
+    today.setTime(today.getTime()-(timezoneOffset/60)*3600*1000);
+  
     createSvg(getDateString(today));
     let dateElement : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
     dateElement.valueAsDate = today;
 
-    //add event listener to date input
-    dateElement.addEventListener('change',changeSVG)
 
     // get player numbers from data base
     let playerNumbers : string[]  = await getPlayerNumbers();
     playerOptions(playerNumbers);
+    disableFields();
     
   }
 });
@@ -245,7 +291,7 @@ const ShotEntry=() =>{
 
                 <div id = "dataEntry" className='right'>
                   <p id='dateOfShots'>Date of Shot:</p>
-                <input type="date" id='dateInput'></input>
+                <input type="date" id='dateInput' onChange={changeSVG}></input>
                   <br/>
                   <p>Shot Info:</p>
                   <div id='playerOptions'>
@@ -257,8 +303,8 @@ const ShotEntry=() =>{
                     <table className='shotEntryTable'>
                         <tbody>
                       <tr>
-                        <td><button id='serve' onClick={() => {btn_func("serve",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Serve</button></td>
-                        <td><button id='shot' onClick={() => {btn_func("shot",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Shot</button></td>
+                        <td><button id='serve' className='tableButton' onClick={() => {btn_func("serve",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Serve</button></td>
+                        <td><button id='shot' className='tableButton' onClick={() => {btn_func("shot",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Shot</button></td>
                       </tr>
                       </tbody>
                     </table>
@@ -266,9 +312,9 @@ const ShotEntry=() =>{
                       <table className='shotEntryTable'>
                       <tbody>
                       <tr>
-                        <td><button id='kill' onClick={() => {btn_func("kill",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Kill/Ace</button></td>
-                        <td><button id='returned' onClick={() => {btn_func("returned",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Returned</button></td>
-                        <td><button id='out' onClick={() => {btn_func("out",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Out</button></td>
+                        <td><button id='kill' className='tableButton' onClick={() => {btn_func("kill",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Kill/Ace</button></td>
+                        <td><button id='returned' className='tableButton' onClick={() => {btn_func("returned",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Returned</button></td>
+                        <td><button id='out' className='tableButton' onClick={() => {btn_func("out",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Out</button></td>
                       </tr>
                       </tbody>
                     </table>
@@ -278,8 +324,10 @@ const ShotEntry=() =>{
                       <tbody>
                         
                       <tr>
-                        <td><button id='addShot' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
-                        <td><button id='undo' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
+                        <td><button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
+                        <td><button id='delete' className='tableButton'>Delete</button></td>
+                        <td><button id='undo' className='tableButton' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
+                        
                       </tr>
                       </tbody>
                     </table>
@@ -290,9 +338,9 @@ const ShotEntry=() =>{
                       <tr>
                         <td>
                           <a href={getRotationsURL()}>
-                          <button>Switch to Rotations</button></a>
+                          <button className='switchButton'>Switch to Rotations</button></a>
                           <a href={getScountingReportURL()}>
-                          <button>Scouting Report</button></a>
+                          <button className='switchButton'>Scouting Report</button></a>
                           </td>
                       </tr>
                       </tbody>

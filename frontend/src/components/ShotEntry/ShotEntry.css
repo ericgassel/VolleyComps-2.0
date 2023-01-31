@@ -16,29 +16,8 @@
     display : none;
 }
 
-table button{
-  
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-   
-}
-
-table button:hover{
-    transform: translate(0px, 3px);
-    -webkit-transform: translate(0px, 3px);
-    box-shadow: 0px 1px 0px 0px;
-    background-color: #ddd;
-}
-
-button[type="rotationButton"] {
-    background-color: #4CAF50; /* Green */
+.tableButton:disabled{
+    background-color: #a4a4c3; /* Green */
     border: none;
     color: white;
     padding: 20px;
@@ -48,12 +27,50 @@ button[type="rotationButton"] {
     font-size: 16px;
     margin: 4px 2px;
 }
-button[type = "rotationButton"]:hover{
+
+
+.tableButton:enabled{
+    background-color: #51558b; /* Green */
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+}
+
+.tableButton:enabled:hover{
     transform: translate(0px, 3px);
     -webkit-transform: translate(0px, 3px);
     box-shadow: 0px 1px 0px 0px;
-    background-color: #ddd;
+    background-color: #8487af
 }
+
+.switchButton{
+    background-color: #533178; /* Green */
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+}
+
+.switchButton:hover{
+    transform: translate(0px, 3px);
+    -webkit-transform: translate(0px, 3px);
+    box-shadow: 0px 1px 0px 0px;
+    background-color: #4a3882
+}
+
+
+
+
+
 
 #playerOptions{
     overflow-y:auto;

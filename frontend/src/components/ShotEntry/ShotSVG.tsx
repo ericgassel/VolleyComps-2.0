@@ -34,6 +34,8 @@ let y_scale_click = d3.scaleLinear()
 
 export async function createSvg(dateID : string){
     current_date_ID = dateID;
+    console.log("in here");
+    console.log(current_date_ID);
 
     let response : any[] = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart', {
     method: 'GET',
@@ -42,15 +44,15 @@ export async function createSvg(dateID : string){
     .then(result => result.json());
 
     console.log(response);
-
+    data_graph = [];
     for (let i : number = 0; i < response.length; i++){
         
         //let shot : Shot = {playerID : response[i].player_id, type:response[i].type, result:response[i].result,startX:response[i].start_x,startY:response[i].start_y,endX:response[i].end_x,endY:response[i].end_y,date:response[i].date};
         
-
-
+        // only add to chart if is equal to the date on calendar.
+        if (response[i].date== current_date_ID){
         data_graph.push({start_x: response[i].start_x, start_y: response[i].start_y, end_x: response[i].end_x, end_y: response[i].end_y, shot_type: response[i].type, result: response[i].result, player_num: response[i].player_id});
-      }
+      }}
 
     
 
