@@ -253,9 +253,11 @@ There are two ways you can delete data from the rotations page: by `player_id` a
 `POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations?player_id=5,6&rotation_id=f4c1f6fb561f4d72`
 
 *Read the following carefully:* when specifying both parameters, only rows of data that match a provided rotation id *AND* a provided player id will be deleted. Both must match for a row to be deleted. For example, given the above API call:
+
 Will be deleted:
 - [f4c1f6fb561f4d72,	5,	[arrays3],	notes!!,	block this way,	[serverecieve data,this is words],	[my additional notes on this, more notes]]
 - [f4c1f6fb561f4d72,	6,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
+
 Will not be deleted:
 - [9cb0cbced5cb0d91,	5,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
 - [f4c1f6fb561f4d72,	7,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
