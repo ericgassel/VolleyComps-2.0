@@ -126,3 +126,30 @@ button[type="rotationButton"]:hover{
     box-shadow: 0px 1px 0px 0px;
     background-color: #6b6c96
 }
+
+
+.textInput{
+    padding:5px;
+    margin-top: 6px;
+
+    margin-left: 3px;
+    
+  border:.02px;
+  box-shadow:0 0 15px 2px rgba(0,0,0,0.1);
+}
+
+
+.serveTransitionInputs{
+    margin:auto;
+    width: 100%;
+
+}
+
+
+
+.inputFieldTable{
+    border:none;
+    margin: 5px
+}
+
+

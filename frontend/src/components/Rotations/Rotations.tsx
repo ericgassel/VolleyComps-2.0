@@ -41,10 +41,10 @@ let all_players : string[] = ["44","24","12","66","36","88","1","2","3","4","5",
 let add_rotation_player_selected : string= "";
 
 // color that is used when only one player is selected for adding new rotation.
-let success_color : string =  "#FFC300";
+let success_color : string =  "#009fa1";
 
 // color that is used when more than one player is selected for adding new rotation.
-let too_many_color : string = "#C70039";
+let too_many_color : string = "#b33647";
 
 // list of items for each rotation which stores serve/recieve text box info.
 // each item of list is list of format: *Primary*, *Secondary*, *Tertiary*
@@ -166,11 +166,13 @@ const saveAddtionalAndBlockingNotes = () : void => {
 //      - sets add_rotation_player_selected to the currently selected player.
 const selectPlayer = (selectedPlayerNum : string) : void=> {
     let selectedPlayer : HTMLButtonElement = document.getElementById("player" + selectedPlayerNum) as HTMLButtonElement;
-    selectedPlayer.style.background =  "red";
+    selectedPlayer.style.background =  "#533178";
     add_rotation_player_selected = selectedPlayerNum;
     for (let i : number = 0; i<all_players.length; i++){
         let otherPlayer : HTMLButtonElement = document.getElementById("player" + all_players[i]) as HTMLButtonElement;
-        if (otherPlayer != selectedPlayer && otherPlayer.style.background == "red") {
+        let rgbColors : any = hexToRgb("#533178");
+        let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+        if (otherPlayer != selectedPlayer && otherPlayer.style.background == rgbString) {
             otherPlayer.style.background = "";
         }
     }
@@ -804,16 +806,73 @@ function Rotations() {
                     <th className='rotationTable'>
                         <div id="currentRotation"></div>
                         <br/>
+                        <div className='serveTransitionInputs'>
                         <h3>Serve Recieve</h3>
-                        <div>Primary <input type='text' id="primaryServerRecieve"></input></div>
-                        <div>Secondary <input type='text' id="secondaryServerRecieve"></input></div>
-                        <div>Tertiary <input type='text' id="tertiaryServerRecieve"></input></div> 
+                        <table className='inputFieldTable'>
+                            <tbody className='inputFieldTable'>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                    Primary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="primaryServerRecieve" className='textInput'></input>
+                                    </th>
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                        Secondary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="secondaryServerRecieve" className='textInput'></input>
+                                    </th>
+
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                        Tertiary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="tertiaryServerRecieve" className='textInput'></input>
+                                    </th>
+                                </tr>
+                        
+                       
+                            </tbody>
+                        </table>
                         <br/>
                         <h3>Transition</h3>
-                        <div>Primary <input type='text' id="primaryTransition"></input></div>
-                        <div>Secondary <input type='text' id="secondaryTransition"></input></div>
-                        <div>Tertiary <input type='text' id="tertiaryTransition"></input></div> 
+                        <table className='inputFieldTable'>
+                            <tbody className='inputFieldTable'>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                    Primary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="primaryTransition" className='textInput'></input>
+                                    </th>
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                    Secondary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="secondaryTransition" className='textInput'></input>
+                                    </th>
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                        Tertiary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="tertiaryTransition" className='textInput'></input>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+    
+                        </div>
                         <button className='saveButton' onClick={saveTransitionServeNotes}>Save</button>
+
 
                     </th>
                 </tr>
