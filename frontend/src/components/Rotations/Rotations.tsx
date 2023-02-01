@@ -20,11 +20,11 @@ globalThis.current_selected_player = "";
 globalThis.current_color = "";
 
 // represents the 6 colors that can draw for the rotation
-let colors : string[] = ["red","orange","grey","maroon","blue","violet"];
+let colors : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b928"];
 
 // represents the colors not used by rotation yet
-let colors_available : string[] = ["red","orange","grey","maroon","blue","violet"];
-
+let colors_available : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b928"];
+//                                ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","f6b928"]
 // the rotation that the user selects --> is the index of rotation in all_existing_rotations.
 let current_rotation_selected: number = 0;
 
@@ -41,10 +41,10 @@ let all_players : string[] = ["44","24","12","66","36","88","1","2","3","4","5",
 let add_rotation_player_selected : string= "";
 
 // color that is used when only one player is selected for adding new rotation.
-let success_color : string =  "#FFC300";
+let success_color : string =  "#009fa1";
 
 // color that is used when more than one player is selected for adding new rotation.
-let too_many_color : string = "#C70039";
+let too_many_color : string = "#b33647";
 
 // list of items for each rotation which stores serve/recieve text box info.
 // each item of list is list of format: *Primary*, *Secondary*, *Tertiary*
@@ -166,11 +166,13 @@ const saveAddtionalAndBlockingNotes = () : void => {
 //      - sets add_rotation_player_selected to the currently selected player.
 const selectPlayer = (selectedPlayerNum : string) : void=> {
     let selectedPlayer : HTMLButtonElement = document.getElementById("player" + selectedPlayerNum) as HTMLButtonElement;
-    selectedPlayer.style.background =  "red";
+    selectedPlayer.style.background =  "#533178";
     add_rotation_player_selected = selectedPlayerNum;
     for (let i : number = 0; i<all_players.length; i++){
         let otherPlayer : HTMLButtonElement = document.getElementById("player" + all_players[i]) as HTMLButtonElement;
-        if (otherPlayer != selectedPlayer && otherPlayer.style.background == "red") {
+        let rgbColors : any = hexToRgb("#533178");
+        let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+        if (otherPlayer != selectedPlayer && otherPlayer.style.background == rgbString) {
             otherPlayer.style.background = "";
         }
     }
@@ -305,6 +307,8 @@ const addNewRotationButtonSelected = ()=>{
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
     let editOrCancelButton : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
     addButton.innerHTML = "Add";
+    addButton.className="changeButton";
+    editOrCancelButton.className="changeButton";
     editOrCancelButton.innerHTML = "Cancel";
     addButton.onclick = addNewRotation;
     editOrCancelButton.onclick = () => allRotationButtonsUpper(all_existing_rotations);
@@ -500,7 +504,7 @@ const selectRotation = (selectedRotation : number) => {
     // --------------------
     // set selected button to have red background
     let rotationButton : HTMLButtonElement = document.getElementById("rotation" + selectedRotation.toString()) as HTMLButtonElement;
-    rotationButton.style.background = "red";
+    rotationButton.style.background = "#51558b";
     // --------------------
     // change current_rotation_selected and update HTML
     current_rotation_selected = selectedRotation;
@@ -528,8 +532,14 @@ const allRotationButtonsUpper = (allRotations : string[][]) => {
     let editOrCancelButton : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
     addButton.innerHTML = "Add Rotation";
     editOrCancelButton.innerHTML = "Edit Rotation";
+    addButton.className="changeButton";
     addButton.onclick = addNewRotationButtonSelected;
     editOrCancelButton.onclick = () => editASelectedRotation(current_rotation_selected);
+    editOrCancelButton.className="changeButton";
+    // -----------------
+    // change switch buttons to default
+    let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
+    htmlSwitchButtons.style.display="";
     // -----------------
     // set default for paragraph html element with id "SelectRotationText" and default for div html element with id "rotationToAdd"
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
@@ -578,7 +588,9 @@ const buttonClickCurrentRotation = (number : string) => {
     // delete temporary data on SVG
     newSelection();
     let button : HTMLButtonElement = document.getElementById("player"+ number) as HTMLButtonElement;
+    
     globalThis.current_selected_player = number;
+
     if (button.style.background == ""){
         button.style.background = colors_available[0];
         globalThis.current_color = colors_available[0];
@@ -588,20 +600,24 @@ const buttonClickCurrentRotation = (number : string) => {
         globalThis.current_color = button.style.background;
     }
     
+    
     button.style.border = "solid";
-    button.style.borderColor = "blue";
+    button.style.borderColor = "#454977";
     button.style.borderWidth = "5px";
+    // resent colors for other players
     for(let i : number = 0; i<current_players_on_rotation.length;i++){
         if (current_players_on_rotation[i] != number){
             let non_selected_player : HTMLButtonElement = document.getElementById("player"+ current_players_on_rotation[i]) as HTMLButtonElement;
             if (colors_available.length > 0) {
-                if (non_selected_player.style.background == colors_available[0]){
+                let rgbColors : any = hexToRgb(colors_available[0]);
+                let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+                if (non_selected_player.style.background == rgbString){
                     non_selected_player.style.background = "";
                 }
             }
            
             non_selected_player.style.border = "none";
-            non_selected_player.style.borderColor = "blue";
+            non_selected_player.style.borderColor = "#454977";
             non_selected_player.style.borderWidth = "5px";
         }
     }
@@ -616,15 +632,13 @@ const addRoute = () => {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
         // move the temp drawn info on SVG to rotation storage
         addRotationToSVG(parseInt(globalThis.current_selected_player));
-        // remove current_selected_player
-        globalThis.current_selected_player = "";
-        // remove the button border
-        current_button.style.border = "none";
+        
         // ------------------
         // find index in rotation that is the spot of the player
         let rotation : string[] = all_existing_rotations[current_rotation_selected];
         let index : number = 0;
         let stop : boolean = false;
+        
         for(let i : number = 0; i < rotation.length; i++){
             if(rotation[i] == globalThis.current_selected_player){
                 stop = true;
@@ -633,10 +647,22 @@ const addRoute = () => {
                 index += 1;
             }
         }
+        
         all_existing_rotation_movements[current_rotation_selected][index] = current_button.style.backgroundColor;
-        if (current_button.style.background == colors_available[0]){
+        console.log(current_button.style.backgroundColor);
+        
+        let rgbColors : any = hexToRgb(colors_available[0]);
+        let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+        
+        if (current_button.style.background == rgbString){
             colors_available.shift();
         } 
+        // remove current_selected_player
+        globalThis.current_selected_player = "";
+        // remove the button border
+        current_button.style.border = "none";
+        // remove the current color
+        globalThis.current_color="";
     } else {
         alert("Please select a player.");
     }
@@ -645,18 +671,24 @@ const addRoute = () => {
 
 
 }
+
+function hexToRgb(hex:string) {
+    // from: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
 // INTPUT: N/A
 // OUTPUT: N/A
 //      - deletes the drawn route from routes
 const deleteRoute = () => {
     if (globalThis.current_selected_player != "") {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
-        // gets rid of player info on SVG
-        deletePlayerRotation(parseInt(globalThis.current_selected_player));
-        current_button.style.background = "";
-        current_button.style.border = "none";
-        globalThis.current_color="";
-        globalThis.current_selected_player ="";
+        
         
         // ------------------
         // find index in rotation that is the spot of the player
@@ -672,12 +704,21 @@ const deleteRoute = () => {
             }
         }
         all_existing_rotation_movements[current_rotation_selected][index] = "";
+        
         colors_available = [];
         for (let i : number = 0; i < colors.length; i++) {
             if (all_existing_rotation_movements[current_rotation_selected].indexOf(colors[i]) == -1){
                 colors_available.push(colors[i]);
             }
         }
+    
+        // gets rid of player info on SVG
+       
+        deletePlayerRotation(parseInt(globalThis.current_selected_player));
+        current_button.style.background = "";
+        current_button.style.border = "none";
+        globalThis.current_color="";
+        globalThis.current_selected_player ="";
 
     } else {
         alert("Please select a player.");
@@ -745,36 +786,93 @@ function Rotations() {
         <div className='right' >
             <table className='rotationTable'>
                 <tbody>
-                <tr className='spaceUnder'>
-                    <th >
+                <tr className='spaceUnder rotationTable'>
+                    <th className='rotationTable'>
                         <button id="AddButton"></button><br/>
                         <button id="EditOrCancelButton"></button>
                     </th>
-                    <th className='padding'>
+                    <th className='padding rotationTable'>
                         <p id="SelectRotationText"></p>
                         <div id = "allRotations"></div>
                         <div id="rotationToAdd" className='padding-small'></div>
                     </th>
                 </tr>
                 <tr id="rotationTable" className='spaceUnder'>
-                    <th >
-                        <button onClick={addRoute}>Add Route</button><br/>
-                        <button onClick={deleteRoute}>Delete Route</button>
+                    <th className='rotationTable'>
+                        <button className= "changeButton" onClick={addRoute}>Add Route</button><br/>
+                        <button className = "changeButton" onClick={deleteRoute}>Delete Route</button>
                     </th>
                     
-                    <th >
+                    <th className='rotationTable'>
                         <div id="currentRotation"></div>
                         <br/>
+                        <div className='serveTransitionInputs'>
                         <h3>Serve Recieve</h3>
-                        <div>Primary <input type='text' id="primaryServerRecieve"></input></div>
-                        <div>Secondary <input type='text' id="secondaryServerRecieve"></input></div>
-                        <div>Tertiary <input type='text' id="tertiaryServerRecieve"></input></div> 
+                        <table className='inputFieldTable'>
+                            <tbody className='inputFieldTable'>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                    Primary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="primaryServerRecieve" className='textInput'></input>
+                                    </th>
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                        Secondary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="secondaryServerRecieve" className='textInput'></input>
+                                    </th>
+
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                        Tertiary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="tertiaryServerRecieve" className='textInput'></input>
+                                    </th>
+                                </tr>
+                        
+                       
+                            </tbody>
+                        </table>
                         <br/>
                         <h3>Transition</h3>
-                        <div>Primary <input type='text' id="primaryTransition"></input></div>
-                        <div>Secondary <input type='text' id="secondaryTransition"></input></div>
-                        <div>Tertiary <input type='text' id="tertiaryTransition"></input></div> 
+                        <table className='inputFieldTable'>
+                            <tbody className='inputFieldTable'>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                    Primary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="primaryTransition" className='textInput'></input>
+                                    </th>
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                    Secondary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="secondaryTransition" className='textInput'></input>
+                                    </th>
+                                </tr>
+                                <tr className='inputFieldTable'>
+                                    <th className='inputFieldTable inputLabel'>
+                                        Tertiary:
+                                    </th>
+                                    <th className='inputFieldTable'>
+                                    <input type='text' id="tertiaryTransition" className='textInput'></input>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+    
+                        </div>
                         <button className='saveButton' onClick={saveTransitionServeNotes}>Save</button>
+
 
                     </th>
                 </tr>

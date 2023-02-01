@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "./table.css"
 import {useParams } from "react-router-dom"
 import AddModal from './AddModal'
+import { useAppContext, useAppDispatchContext } from '../context/appContext';
+import { addMember, getRoster } from '../action/action';
 
 const ManageTeam = () => {
 
-    let {teamID} = useParams()
+    const state = useAppContext();
+    const dispatch = useAppDispatchContext();
+
+    const {api_base_url, roster, currTeamData} = state;
 
     const onSubmitForm = (event: any) => {
         event.preventDefault(event);
@@ -20,42 +25,34 @@ const ManageTeam = () => {
         setModalOpen(false);
       };
     
+      // Modal for adding member
       const onSubmitModal = (event: any) => {
         event.preventDefault(event);
+        let newMember = [event.target[0].value, event.target[1].value, event.target[2].value, event.target[3].value, event.target[4].value]
+        addMember(dispatch, newMember, `${api_base_url}/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster`)
+
         setModalOpen(false);
       };
 
-    const teamData = [
-      { id: 1,  name: "St.Olaf", location: "Northfield, MN", score: "3:2" },
-      { id: 2, name: "Crown College", location: "Northfield, MN", score: "3:0" },
-      { id: 3, name: "Concordia", location: "St.Paul, MN", score: "3:1"},
-      { id: 4, name: "Augusburg University", location: "Minneapolis, MN", score: "3:1"},
-      { id: 5, name: "Unniversity of Minnesota", location: "St.Paul, MN", score: "3:1"},
-    ]
 
-    const members = [
-        {name: "Jackson", backNumber: 6},
-        {name: "DaB", backNumber: 5},
-        {name: "Perason", backNumber: 4},
-        {name: "Toronto", backNumber: 3},
-        {name: "Tokyo", backNumber: 2},
-    ]
-
-    let targetTeam: any = teamData.find(val => val.id === Number(teamID));
+      useEffect(() => {
+        // 1. Fetch api
+        getRoster(dispatch, `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster`);
+      }, [])
 
     return <div>
-        <h1>{targetTeam.name}</h1>
+        <h1>{currTeamData.name}</h1>
 
         <form onSubmit={onSubmitForm}>
           <label>
             School Name:
-            <input type="text" name="name" placeholder={targetTeam.name} />
+            <input type="text" name="name" placeholder={currTeamData.name} />
             <br/>
             School Mascot Image:
             <input type="text" name="mascot" />
             <br/>
-            Address:
-            <input type="text" name="address" placeholder={targetTeam.address}/>
+            {/* Address:
+            <input type="text" name="address" placeholder={currTeamData.name.address}/> */}
             <br/>
           </label>
           <input type="submit" value="Submit" />
@@ -70,18 +67,21 @@ const ManageTeam = () => {
             Name:
             <input type="text" name="name" />
             <br/>
-            Position:
-            <input type="text" name="mascot" />
-            <br/>
             Number:
-            <input type="text" name="address" />
+            <input type="text" name="number" />
             <br/>
-            Image:
-            <input type="text" name="address" />
+            Height:
+            <input type="text" name="height" />
+            <br/>
+            Position:
+            <input type="text" name="position" />
+            <br/>
+            Class:
+            <input type="text" name="class" />
             <br/>
 
           </label>
-          <input type="submit" value="Submit" />
+          <input type="submit" value="Submit"/>
           </form>
 
 
@@ -93,15 +93,18 @@ const ManageTeam = () => {
                 <thead>
                 <tr>
                     <th>Team Member</th>
+                    <th>Position</th>
+                    <th>Number</th>
                 </tr>
                 </thead>
                 <tbody>
 
-                {members.map((val, key) => {
+                {roster.map((val, key) => {
                 return (
                     <tr key={key}>
                     <td>{val.name}</td>
-                    <td>{val.backNumber}</td>
+                    <td>{val.position}</td>
+                    <td>{val.number}</td>
                     </tr>
                 )
                 })}

@@ -30,16 +30,20 @@ type State = {
     schedule: any;
     spray_chart: spray_line[];
     rotations: any;
+    teams: any;
+    currTeamData: {name:string; id:string}
 }
 
 // -- Global react state managed by React Context API --
 let initialState = {
     error: null,
     roster: [],
+    teams: [],
     schedule: [],
     spray_chart: [],
     rotations: [],
-    api_base_url: "http://cs400volleyball.mathcs.carleton.edu:5000"
+    api_base_url: "http://cs400volleyball.mathcs.carleton.edu:5000",
+    currTeamData: {}
 }
 
 type AppDispatch = Dispatch<Action>
@@ -53,11 +57,32 @@ type AppDispatch = Dispatch<Action>
 
 const appReducer = (state: any, action: Action) => {
     switch (action.type) {
+        case "update_curr_team_success": {
+            const { data } = action;
+            return {
+              ...state,
+              currTeamData: data
+            }
+        }
+        case "post_roster_success": {
+          const { data } = action;
+          return {
+            ...state,
+            roster: [data, ...initialState.roster]
+          }
+        }
         case "roster_success": {
             const { data } = action;
             return {
               ...state,
               roster: data
+            }
+        }
+        case "teams_success": {
+            const { data } = action;
+            return {
+              ...state,
+              teams: data
             }
         }
         case "rotation_success": {

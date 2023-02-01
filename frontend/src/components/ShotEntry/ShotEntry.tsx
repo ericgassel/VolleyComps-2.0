@@ -1,14 +1,21 @@
 import React from 'react'
 import Square from './square.png'
 import './ShotEntry.css';
-import {createSvg,addShotToSvg} from './ShotSVG'
-import { create } from 'd3';
+import {createSvg,addShotToSvg, fullNewLoadSvg, Shot} from './ShotSVG'
+import { create, utcDay } from 'd3';
+import { time } from 'console';
+
+// interface representing a player
+interface Player {
+  player_num : number;
+  player_id : string;
+} 
 
 
-let rotation_current_player: string = "";
+let rotation_current_player: Player | null = null;
 let shot_type_current_button: string = "";
 let result_current_button: string = "";
-let player_order : string[] = [];
+let player_order : Player[] = [];
 
 // TODO:
 // add calendar item at the top of the page instead of calendar as seperate page thing.
@@ -22,7 +29,39 @@ let player_order : string[] = [];
 //    - () in output means that may or may not return with digit there
 //    - for example, could return 1/13/2023, 5/1/2023, or 12/30/2023
 const getDateString = (date : Date) : string => {
-  return (date.getMonth() + 1).toString() + "/" + (date.getDate() + 1).toString() + "/" + date.getFullYear();
+
+
+  return (date.getMonth() + 1).toString() + "/" + (date.getDate()).toString() + "/" + date.getFullYear().toString().substring(2,4);
+}
+
+// INPUT: N/A
+// OUTPUT: N/A
+//    - Disables all fields besides player entry and switching between pages
+const disableFields = () : void => {
+  disableButton("serve");
+  disableButton("shot");
+  disableButton("kill");
+  disableButton("returned");
+  disableButton("out");
+  disableButton("addShot");
+  disableButton("delete");
+
+}
+
+// INPUT: id of HTML button element
+// OUTPUT: N/A
+//    - disables button with id passed in as input
+export const disableButton = (id : string) : void =>{
+  let field : HTMLButtonElement = document.getElementById(id) as HTMLButtonElement;
+  field.disabled = true;
+}
+
+// INPUT: id of HTML button element
+// OUTPUT: N/A
+//    - enables button with id passed in as input
+export const enableButton = (id : string) : void =>{
+  let field : HTMLButtonElement = document.getElementById(id) as HTMLButtonElement;
+  field.disabled = false;
 }
 
 // INPUT: button name for which user clicks
@@ -59,15 +98,19 @@ const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
 
     if (btn_type == "shot_type") {
       shot_type_current_button = btn_name;
+      enableButton("kill");
+      enableButton("returned");
+      enableButton("out");
     }
     if (btn_type == "result_type") {
       result_current_button = btn_name;
+      enableButton("addShot");
     }
       
   
   // color selected button
   let input = document.getElementById(btn_name) as HTMLButtonElement;
-  input.style.background = "red";
+  input.style.background = "#277ACC";
   
 }
 
@@ -77,36 +120,43 @@ const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
 //    - clears the formatting of all buttons with IDs passed in input
 const clearAllButtons = (btn_ids: string[]) => {
 
-  
+  disableFields();
   for (let i = 0; i < btn_ids.length ; i++ ){
     let input = document.getElementById(btn_ids[i]) as HTMLButtonElement;
     input.style.background = "";
   }
-  for (let i = 1; i<player_order.length;i++){
-    let input = document.getElementById("player" + i.toString()) as HTMLButtonElement;
+  for (let i = 0; i<player_order.length;i++){
+    let input = document.getElementById("player" + player_order[i].player_id) as HTMLButtonElement;
     input.style.background = "";
   }
-  rotation_current_player = "";
+  rotation_current_player = null;
   shot_type_current_button = "";
   result_current_button = "";
+
+  createSvg();
 } 
 
 const addShot = (btn_ids_toClear: string[]) => {
 
-  if (rotation_current_player != "" && shot_type_current_button != "" && result_current_button != "") {
-    let player = document.getElementById("player" + rotation_current_player) as HTMLButtonElement;
+  if (rotation_current_player != null && shot_type_current_button != "" && result_current_button != "") {
+    
+    addShotToSvg(shot_type_current_button,result_current_button,rotation_current_player.player_id);
+
+    let deletedPlayer : Player | null = deleteSelectedPlayer(rotation_current_player);
+    
+    if (deletedPlayer != null){
+      player_order.unshift(deletedPlayer);
+    }
+    
 
 
-    addShotToSvg(shot_type_current_button,result_current_button,parseInt(player.innerHTML));
 
-    deleteSelectedPlayer(player.innerHTML);
-    //player.innerHTML is the player's number
-    player_order.unshift(player.innerHTML);
     playerOptions(player_order);
     clearAllButtons(btn_ids_toClear);
     let player_btns = document.getElementById("playerOptions") as HTMLDivElement;
     player_btns.scrollTop = 0;
-  } else if (rotation_current_player == ""){
+    disableFields();
+  } else if (rotation_current_player == null){
     alert("Please select a player.");
   }
   else if (shot_type_current_button == ""){
@@ -116,23 +166,30 @@ const addShot = (btn_ids_toClear: string[]) => {
     alert("Please select result type.");
   }
 }
-const deleteSelectedPlayer = (num: string) => {
+
+// INPUT: player number as a string
+// OUTPUT: the deleted player or null if no player was deleted.
+const deleteSelectedPlayer = (player: Player) : Player | null => {
   for(let i = 0; i<player_order.length; i++){
-    if (player_order[i] == num){
-      player_order.splice(i,1);
+    if (player_order[i].player_id == player.player_id){
+      return player_order.splice(i,1)[0];
     }
   }
+  return null;
 }
-const selectPlayer = (num: string) => {
+const selectPlayer = (player: Player) => {
   
-  let player = document.getElementById("player" + num) as HTMLButtonElement;
+  let playerHTML = document.getElementById("player" + player.player_id) as HTMLButtonElement;
  
-    player.style.background = "red";
-    if (rotation_current_player != "" && num != rotation_current_player) {
-      let old_selected = document.getElementById("player" + rotation_current_player) as HTMLButtonElement;
+  playerHTML.style.background = "#277ACC";
+    if (rotation_current_player != null && player != rotation_current_player) {
+      let old_selected = document.getElementById("player" + rotation_current_player.player_id) as HTMLButtonElement;
       old_selected.style.background = "";
     } 
-    rotation_current_player = num;
+    rotation_current_player = player;
+    
+    enableButton("shot");
+    enableButton("serve");
     
   }
   
@@ -141,21 +198,21 @@ const selectPlayer = (num: string) => {
 // INPUT: list of player numbers that are selectable for shot entry
 // OUTPUT: N/A
 //    - sets the div element with ID: playerOptions to HTML of buttons to select players
-const playerOptions = (player_nums: string[]) => {
+const playerOptions = (players: Player[]) => {
   let appended = document.getElementById("playerOptions") as HTMLDivElement;
   appended.innerHTML = "";
   player_order = [];
   let k : number = 0;
-  while (k < player_nums.length){
+  while (k < players.length){
     for(let i = k; i < 4+k; i++){
-      if (i < player_nums.length){
+      if (i < players.length){
         let element = document.createElement("button");
-        element.id = "player" + (i+1).toString();
-        element.type = "rotationButton";
-        element.innerHTML=player_nums[i];
-        element.onclick = () => selectPlayer((i+1).toString());
+        element.id = "player" + players[i].player_id;
+        element.className = "tableButton";
+        element.innerHTML=players[i].player_num.toString();
+        element.onclick = () => selectPlayer(players[i]);
         appended.append(element);
-        player_order.push(player_nums[i])
+        player_order.push(players[i])
       }
       
     }
@@ -173,45 +230,54 @@ const playerOptions = (player_nums: string[]) => {
 const changeSVG = () => {
   let dateItem : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
   let date : Date = new Date(dateItem.value);
-  createSvg(getDateString(date));
+  // for some reason have to increment date by 1.
+  date.setDate(date.getDate() + 1);
+  fullNewLoadSvg(getDateString(date));
 }
 
 
 
 // INPUT: N/A
-// OUTPUT: a list of player number numbers
+// OUTPUT: a list of players
 //    - calls API and returns list of player numbers
-async function getPlayerNumbers() : Promise<string[]>{
-  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number', {
+async function getPlayers() : Promise<Player[]>{
+  let url : string = window.location.href;
+  let id : string = url.substring(url.lastIndexOf("/") + 1);
+  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/'+ id +'/roster?col=number,player_id', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
     })
     .then(result => result.json());
 
-    console.log(response);
-    let numbers : string[] = []
+    let playerList : Player[] = []
     for (let i : number = 0; i < response.length; i++){
-      numbers.push(response[i].number.toString())
+      let player : Player = {player_num: response[i].number,player_id: response[i].player_id}
+      playerList.push(player);
     }
     
-    return numbers;
+    return playerList;
 }
 
 // adds the calendar to the page if is on ShotEntry page
 window.addEventListener("load", async (event) => {
   if (window.location.href.includes("ShotEntry")){
     // set default value of date element
+
     let today : Date = new Date();
-    createSvg(getDateString(today));
+    let timezoneOffset = new Date().getTimezoneOffset();
+    
+    today.setTime(today.getTime()-(timezoneOffset/60)*3600*1000);
+  
+    fullNewLoadSvg(getDateString(today));
     let dateElement : HTMLInputElement = document.getElementById("dateInput") as HTMLInputElement;
     dateElement.valueAsDate = today;
 
-    //add event listener to date input
-    dateElement.addEventListener('change',changeSVG)
 
     // get player numbers from data base
-    let playerNumbers : string[]  = await getPlayerNumbers();
-    playerOptions(playerNumbers);
+    let currentPlayers : Player[]  = await getPlayers();
+    playerOptions(currentPlayers);
+    disableFields();
+
     
   }
 });
@@ -232,6 +298,26 @@ const getScountingReportURL = () : string => {
   return "/report/" + id + "/playerStatsTab";
 }
 
+// INPUT: N/A
+// OUTPUT: deletes the selected shot from the database and SVG
+const deleteShot = () : void => {
+  // -------------------
+  // delete shot from svg
+  let newDataGraph : Shot[] = [];
+  for(let i : number = 0; i<globalThis.data_graph.length;i++){
+    if (!globalThis.data_graph[i].clicked){
+      newDataGraph.push(globalThis.data_graph[i])
+    }
+  }
+  globalThis.data_graph = newDataGraph;
+  createSvg();
+
+  // --------------------
+  // delete shot from database
+  // -------- TODO -----------
+  
+}
+
 const ShotEntry=() =>{
     return <div className='ShotEntry'>
           
@@ -245,7 +331,7 @@ const ShotEntry=() =>{
 
                 <div id = "dataEntry" className='right'>
                   <p id='dateOfShots'>Date of Shot:</p>
-                <input type="date" id='dateInput'></input>
+                <input type="date" id='dateInput' onChange={changeSVG}></input>
                   <br/>
                   <p>Shot Info:</p>
                   <div id='playerOptions'>
@@ -257,8 +343,8 @@ const ShotEntry=() =>{
                     <table className='shotEntryTable'>
                         <tbody>
                       <tr>
-                        <td><button id='serve' onClick={() => {btn_func("serve",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Serve</button></td>
-                        <td><button id='shot' onClick={() => {btn_func("shot",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Shot</button></td>
+                        <td><button id='serve' className='tableButton' onClick={() => {btn_func("serve",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Serve</button></td>
+                        <td><button id='shot' className='tableButton' onClick={() => {btn_func("shot",["serve","shot","nothing","nothing","nothing","nothing"],"shot_type")}}>Shot</button></td>
                       </tr>
                       </tbody>
                     </table>
@@ -266,9 +352,9 @@ const ShotEntry=() =>{
                       <table className='shotEntryTable'>
                       <tbody>
                       <tr>
-                        <td><button id='kill' onClick={() => {btn_func("kill",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Kill/Ace</button></td>
-                        <td><button id='returned' onClick={() => {btn_func("returned",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Returned</button></td>
-                        <td><button id='out' onClick={() => {btn_func("out",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Out</button></td>
+                        <td><button id='kill' className='tableButton' onClick={() => {btn_func("kill",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Kill/Ace</button></td>
+                        <td><button id='returned' className='tableButton' onClick={() => {btn_func("returned",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Returned</button></td>
+                        <td><button id='out' className='tableButton' onClick={() => {btn_func("out",["nothing","nothing","kill","returned","out","nothing"],"result_type")}}>Out</button></td>
                       </tr>
                       </tbody>
                     </table>
@@ -278,8 +364,10 @@ const ShotEntry=() =>{
                       <tbody>
                         
                       <tr>
-                        <td><button id='addShot' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
-                        <td><button id='undo' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
+                        <td><button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
+                        <td><button id='delete' className='tableButton' onClick={deleteShot}>Delete</button></td>
+                        <td><button id='undo' className='tableButton' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
+                        
                       </tr>
                       </tbody>
                     </table>
@@ -290,9 +378,9 @@ const ShotEntry=() =>{
                       <tr>
                         <td>
                           <a href={getRotationsURL()}>
-                          <button>Switch to Rotations</button></a>
+                          <button className='switchButton'>Switch to Rotations</button></a>
                           <a href={getScountingReportURL()}>
-                          <button>Scouting Report</button></a>
+                          <button className='switchButton'>Scouting Report</button></a>
                           </td>
                       </tr>
                       </tbody>
