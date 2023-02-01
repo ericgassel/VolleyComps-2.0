@@ -20,11 +20,11 @@ globalThis.current_selected_player = "";
 globalThis.current_color = "";
 
 // represents the 6 colors that can draw for the rotation
-let colors : string[] = ["red","orange","grey","maroon","blue","violet"];
+let colors : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b928"];
 
 // represents the colors not used by rotation yet
-let colors_available : string[] = ["red","orange","grey","maroon","blue","violet"];
-
+let colors_available : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b928"];
+//                                ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","f6b928"]
 // the rotation that the user selects --> is the index of rotation in all_existing_rotations.
 let current_rotation_selected: number = 0;
 
@@ -305,6 +305,8 @@ const addNewRotationButtonSelected = ()=>{
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
     let editOrCancelButton : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
     addButton.innerHTML = "Add";
+    addButton.className="changeButton";
+    editOrCancelButton.className="changeButton";
     editOrCancelButton.innerHTML = "Cancel";
     addButton.onclick = addNewRotation;
     editOrCancelButton.onclick = () => allRotationButtonsUpper(all_existing_rotations);
@@ -500,7 +502,7 @@ const selectRotation = (selectedRotation : number) => {
     // --------------------
     // set selected button to have red background
     let rotationButton : HTMLButtonElement = document.getElementById("rotation" + selectedRotation.toString()) as HTMLButtonElement;
-    rotationButton.style.background = "red";
+    rotationButton.style.background = "#51558b";
     // --------------------
     // change current_rotation_selected and update HTML
     current_rotation_selected = selectedRotation;
@@ -528,8 +530,14 @@ const allRotationButtonsUpper = (allRotations : string[][]) => {
     let editOrCancelButton : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
     addButton.innerHTML = "Add Rotation";
     editOrCancelButton.innerHTML = "Edit Rotation";
+    addButton.className="changeButton";
     addButton.onclick = addNewRotationButtonSelected;
     editOrCancelButton.onclick = () => editASelectedRotation(current_rotation_selected);
+    editOrCancelButton.className="changeButton";
+    // -----------------
+    // change switch buttons to default
+    let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
+    htmlSwitchButtons.style.display="";
     // -----------------
     // set default for paragraph html element with id "SelectRotationText" and default for div html element with id "rotationToAdd"
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
@@ -590,20 +598,24 @@ const buttonClickCurrentRotation = (number : string) => {
         globalThis.current_color = button.style.background;
     }
     
+    
     button.style.border = "solid";
-    button.style.borderColor = "blue";
+    button.style.borderColor = "#454977";
     button.style.borderWidth = "5px";
+    // resent colors for other players
     for(let i : number = 0; i<current_players_on_rotation.length;i++){
         if (current_players_on_rotation[i] != number){
             let non_selected_player : HTMLButtonElement = document.getElementById("player"+ current_players_on_rotation[i]) as HTMLButtonElement;
             if (colors_available.length > 0) {
-                if (non_selected_player.style.background == colors_available[0]){
+                let rgbColors : any = hexToRgb(colors_available[0]);
+                let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+                if (non_selected_player.style.background == rgbString){
                     non_selected_player.style.background = "";
                 }
             }
            
             non_selected_player.style.border = "none";
-            non_selected_player.style.borderColor = "blue";
+            non_selected_player.style.borderColor = "#454977";
             non_selected_player.style.borderWidth = "5px";
         }
     }
@@ -635,8 +647,12 @@ const addRoute = () => {
         }
         
         all_existing_rotation_movements[current_rotation_selected][index] = current_button.style.backgroundColor;
+        console.log(current_button.style.backgroundColor);
         
-        if (current_button.style.background == colors_available[0]){
+        let rgbColors : any = hexToRgb(colors_available[0]);
+        let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+        
+        if (current_button.style.background == rgbString){
             colors_available.shift();
         } 
         // remove current_selected_player
@@ -653,6 +669,17 @@ const addRoute = () => {
 
 
 }
+
+function hexToRgb(hex:string) {
+    // from: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
 // INTPUT: N/A
 // OUTPUT: N/A
 //      - deletes the drawn route from routes
@@ -757,24 +784,24 @@ function Rotations() {
         <div className='right' >
             <table className='rotationTable'>
                 <tbody>
-                <tr className='spaceUnder'>
-                    <th >
+                <tr className='spaceUnder rotationTable'>
+                    <th className='rotationTable'>
                         <button id="AddButton"></button><br/>
                         <button id="EditOrCancelButton"></button>
                     </th>
-                    <th className='padding'>
+                    <th className='padding rotationTable'>
                         <p id="SelectRotationText"></p>
                         <div id = "allRotations"></div>
                         <div id="rotationToAdd" className='padding-small'></div>
                     </th>
                 </tr>
                 <tr id="rotationTable" className='spaceUnder'>
-                    <th >
-                        <button onClick={addRoute}>Add Route</button><br/>
-                        <button onClick={deleteRoute}>Delete Route</button>
+                    <th className='rotationTable'>
+                        <button className= "changeButton" onClick={addRoute}>Add Route</button><br/>
+                        <button className = "changeButton" onClick={deleteRoute}>Delete Route</button>
                     </th>
                     
-                    <th >
+                    <th className='rotationTable'>
                         <div id="currentRotation"></div>
                         <br/>
                         <h3>Serve Recieve</h3>

@@ -60,8 +60,9 @@ let y_scale_click = d3.scaleLinear()
 export async function fullNewLoadSvg(dateID : string){
     current_date_ID = dateID;
     globalThis.data_graph = [];
-
-    let response : any[] = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart', {
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    let response : any[] = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/'+ id + '/spray_chart', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
     })
@@ -211,7 +212,9 @@ export async function addShotToSvg(shot_type_selected: string, shot_result_selec
     console.log(globalThis.data_graph);
     
     // send shot info to database
-    await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart', {
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/'+ id+'/spray_chart', {
     method: 'POST',
     headers: {
         'Accept': 'application/json',

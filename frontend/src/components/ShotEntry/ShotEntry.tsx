@@ -241,7 +241,9 @@ const changeSVG = () => {
 // OUTPUT: a list of players
 //    - calls API and returns list of player numbers
 async function getPlayers() : Promise<Player[]>{
-  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number,player_id', {
+  let url : string = window.location.href;
+  let id : string = url.substring(url.lastIndexOf("/") + 1);
+  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/'+ id +'/roster?col=number,player_id', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
     })
