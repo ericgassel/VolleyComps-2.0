@@ -6,30 +6,36 @@ import * as d3 from 'd3';
 
 const SprayChart = (spray_chart: any) => {
   // console.log('spray_charts:', spray_chart.spray_chart);
+  const x_scale = d3.scaleLinear()
+  .domain([0, 100])
+  .range([0, 500]);
+
+  const y_scale = d3.scaleLinear()
+  .domain([0, 100])
+  .range([0, 600]);
 
   return (
-    <svg className='sprayChartSVG' width={500} height={500}>
+    <svg className='sprayChartSVG' width={700} height={500}>
       <g>
-        {/* <rect className='sprayChartRect' width={500} height={500} x={x_scale(0)} y={y_scale(0)}></rect> */}
         <rect className='sprayChartRect' width={500} height={500}></rect>
-
-          {spray_chart.spray_chart ? spray_chart.spray_chart.map((line: any, i: number) => {
-            // console.log('line:', line);
-            const { start_x, end_x, start_y, end_y } = line;
-            return (
-              <line key={i} x1={Number(start_x)} x2={Number(end_x)} y1={Number(start_y)} y2={Number(end_y)} opacity={1} stroke={'#000'}></line>
-              )}
-            ) : (
-              <div>Loading...</div>
-            )}
-        
-
-          {/* <line x1={250} x2={150} y1={0} y2={480} opacity={1} stroke={'#000'}></line> */}
+        {spray_chart.spray_chart ? spray_chart.spray_chart.map((line: any, i: number) => {
+          const { start_x, end_x, start_y, end_y } = line;
+          return (
+            <line key={i} 
+              x1={x_scale(start_x)} 
+              x2={x_scale(end_x)} 
+              y1={y_scale(start_y)} 
+              y2={y_scale(end_y)} 
+              opacity={1} 
+              stroke={'#000'}>
+            </line> )}
+          ) : (
+            <div>Loading...</div>
+          )}
       </g>
     </svg>
   )
 }
-
 
 const PlayerStatsTab = () => {
   const state = useAppContext();
@@ -67,8 +73,6 @@ const PlayerStatsTab = () => {
     }
   }, [roster])
 
-  console.log('spray____chart:', spray_chart)
-
   return (
     (roster && selectedPlayer ? (
       <div className='playerStatsTab'>
@@ -90,10 +94,11 @@ const PlayerStatsTab = () => {
           <h2>Team Roster</h2>
           <ul className='teamRosterList'>
             {roster.map((player: any, i: Number) => 
-              <li className='playerName' 
+              <li className={selectedPlayer.player_id === player.player_id ? 'selected playerName' : 'playerName'} 
+              // <li className='playerName' 
                   key={player.player_id} 
                   id={player.player_id}
-                  style={{ fontWeight : selectedPlayer.player_id === player.player_id ? 'bold' : 'normal' }} 
+                  // style={{ fontWeight : selectedPlayer.player_id === player.player_id ? 'bold' : 'normal' }} 
                   onClick={handleSelectedPlayer}>{player.name}</li>
             )}
           </ul>
@@ -108,10 +113,11 @@ const PlayerStatsTab = () => {
         </div>
         <div className='chartCommentContainer'>
           <div className='commentTitle'>Comment</div>
-          <div className='commentContents'>
+          <form className='commentContents'>
             {/* {notes && notes.map((note: String, i: React.Key) => <li key={i}>{note}</li>)} */}
             {notes ? notes.split('\n').map((note: string, i: number) => <div key={i}>- {note}</div>) : <></>}
-          </div>
+            <button >Edit</button>
+          </form>
         </div>
       </div>
 
