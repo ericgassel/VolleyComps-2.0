@@ -119,16 +119,9 @@
   padding: 2%;
 }
 
-.selected {
-  font-weight: bold;
-  background-color: lightgrey;
-  padding: 1%;
-}
-
 .playerName {
   margin: 10px 0px 10px 0px;
   cursor: pointer;
-  padding: 1%;
 }
 
 /* TeamStatsTab Styles */
