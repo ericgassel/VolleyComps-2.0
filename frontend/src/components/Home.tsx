@@ -25,7 +25,7 @@ const Home=() =>{
   return <div className='Home'>
      <h1>Schedules</h1>
 
-     <div className="Table">
+     <div className="ScheduleTable">
       <table>
         <thead>
           <tr>

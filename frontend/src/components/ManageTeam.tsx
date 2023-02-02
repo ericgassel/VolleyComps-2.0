@@ -88,7 +88,7 @@ const ManageTeam = () => {
           </AddModal>
         </React.Fragment>
 
-        <div className="Table">
+        <div className="ManageTeamTable">
             <table>
                 <thead>
                 <tr>
