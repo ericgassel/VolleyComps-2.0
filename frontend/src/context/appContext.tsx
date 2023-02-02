@@ -101,9 +101,17 @@ const appReducer = (state: any, action: Action) => {
         }
         case "spray_chart_success": {
           const { data } = action;
+          const convertedData = data.map((line: spray_line) =>  ({ 
+            ...line,
+            player_id: line.player_id,
+            start_x: Number(line.start_x),
+            start_y: Number(line.start_y),
+            end_x: Number(line.end_x),
+            end_y: Number(line.end_y),
+          }))
           return {
             ...state,
-            spray_chart: [...data]
+            spray_chart: convertedData
           }
         }
         case "error": {
