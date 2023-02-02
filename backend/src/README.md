@@ -17,13 +17,7 @@ You do *not* need to run this part to access the api already running on the serv
 Follow these steps: 
 1. Make sure you're connected to eduroam or the Carleton VPN.
 2. Enter our VM from the command line: `ssh username@cs400volleyball.mathcs.carleton.edu`
-3. Move to home directory `cd ..`
-4. Move into the API server directory `cd backend`
-5. The server is currently running in the background without a machine needing to be on. Attach to it sing tmux `tmux attach`
-6. To terminate the API program, press `ctrl-c` or `command-c` for mac
-7. To run the program again, type `npm run start`
-8. To exit tmux and leave the API server running, press `ctrl-b` (or `command-b`), then press `d` quickly after. 
-9. You should see the message `[detached (from session 0)]`. The server is running.
+3. Step 3 coming soon!
 
 You may need to adjust some commands for mac.
 
@@ -34,13 +28,15 @@ The data base is composed of separate Google Sheets files that each represent on
 Each Google Sheets contain the following five sheets "pages":
 
 - "roster"
-    - columns in roster: [Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
+    - columns in roster: [player_id, name, number, height, position, class, notes]
+    
+    [Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
 - "schedule"
     - columns in schedule: [team, date, location, outcome]
 - "spray_chart"
     - columns in spray_chart: [player_id, type, result, start_x, start_y, end_x, end_y, date]
 - "rotations"
-    - columns in rotations: [rotation_id, player_id, line, additional, notes, blocking_scheme, serve_recieve, transition]
+    - columns in rotations: [rotation_number, line, additional, notes, blocking_scheme, serve_recieve, transition]
 - "team_stats"
     - [Team, Kills,	Errors,	Attempts, Percent,	Kills_Per_Set,	Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Errors, Aces_Per_Set, Errors, Errors_Per_Set, Digs, Digs_Per_Set, Solo, Assists, Errors, Blocks, Blocks_Per_Set]
 
