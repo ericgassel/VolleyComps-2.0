@@ -631,6 +631,7 @@ const addRoute = () => {
     if (globalThis.current_selected_player != "") {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
         // move the temp drawn info on SVG to rotation storage
+        // include the notes in this call
         addRotationToSVG(parseInt(globalThis.current_selected_player));
         
         // ------------------
@@ -705,12 +706,21 @@ const deleteRoute = () => {
         }
         all_existing_rotation_movements[current_rotation_selected][index] = "";
         
+        // I think this adds back too many availible colors...
+        console.log(colors_available)
         colors_available = [];
         for (let i : number = 0; i < colors.length; i++) {
-            if (all_existing_rotation_movements[current_rotation_selected].indexOf(colors[i]) == -1){
+            console.log(all_existing_rotation_movements[current_rotation_selected])
+            
+            let rgbColors : any = hexToRgb(colors[i]);
+            let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+            console.log(rgbString)
+
+            if (all_existing_rotation_movements[current_rotation_selected].indexOf(rgbString) == -1){
                 colors_available.push(colors[i]);
             }
         }
+        console.log(colors_available)
     
         // gets rid of player info on SVG
        
@@ -719,6 +729,8 @@ const deleteRoute = () => {
         current_button.style.border = "none";
         globalThis.current_color="";
         globalThis.current_selected_player ="";
+
+
 
     } else {
         alert("Please select a player.");
