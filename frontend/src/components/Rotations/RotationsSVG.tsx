@@ -136,7 +136,7 @@ export const addRotationToSVG = (player_number_selected: number) => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ "data": [["TESTING123","5", "5'11", "OPP", "Sr", "Hits really hard!"]] })
+    body: JSON.stringify({ "data": [[new_rotation[0].player_num, JSON.stringify(new_rotation), "5'11", "OPP", "Sr", "Hits really hard!"]] })
     })
     .then(response => response.json())
     
