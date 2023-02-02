@@ -124,8 +124,6 @@ const setNotes = () : void => {
 
     let extraNotesHeader : HTMLHeadingElement = document.getElementById("rotationNotesText") as HTMLHeadingElement;
     extraNotesHeader.innerText = "Rotation " +  (current_rotation_selected + 1).toString() +  " Extra Info";
-
-
 }
 
 // INPUT: N/A
@@ -632,7 +630,7 @@ const addRoute = () => {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
         // move the temp drawn info on SVG to rotation storage
         // include the notes in this call
-        addRotationToSVG(parseInt(globalThis.current_selected_player));
+        addRotationToSVG(parseInt(globalThis.current_selected_player), current_rotation_selected);
         
         // ------------------
         // find index in rotation that is the spot of the player
