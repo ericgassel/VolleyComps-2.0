@@ -77,7 +77,7 @@ const Teams = () => {
 
 
 
-    <div className="Table">
+    <div className="TeamsTable">
       <table>
         <tbody>        
         
