@@ -130,6 +130,8 @@ export const addRotationToSVG = (player_number_selected: number) => {
     // this should move temp 
     // ---------
     // adds a player to Dummy School
+
+    /*
     fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster', {
     method: 'POST',
     headers: {
@@ -140,6 +142,7 @@ export const addRotationToSVG = (player_number_selected: number) => {
     })
     .then(response => response.json())
     
+    */
     createRotSvg();
     
 }
