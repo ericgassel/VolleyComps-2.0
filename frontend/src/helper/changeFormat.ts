@@ -7,13 +7,14 @@ export function changeTeams(teams: any): {name: string; id: string}[] {
     return formattedTeams
 }
 
-export function formatMember(memberData: string[]): {player_id: string; name:string; number:string; height:string; position:string; class:string} {
+export function formatMember(memberData: string[]): {player_id: string; name:string; number:string; height:string; position:string; class:string, notes: string} {
     return {
         player_id:memberData[0], 
         name: memberData[1],
         number: memberData[2],
         height: memberData[3],
         position: memberData[4],
-        class: memberData[5]
+        class: memberData[5],
+        notes: memberData[6]
     }
 }

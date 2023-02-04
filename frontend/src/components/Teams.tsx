@@ -3,7 +3,7 @@ import {Outlet} from "react-router-dom"
 import {Link, useLocation} from 'react-router-dom'
 
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { getTeams, updateCurrentTeam } from '../action/action';
+import { addTeam, getTeams, updateCurrentTeam } from '../action/action';
 
 import TavNav from "./TabNav"
 import AddModal from './AddModal'
@@ -34,16 +34,33 @@ const Teams = () => {
 
   const {api_base_url, teams} = state;
 
-  let newAPI = `${api_base_url}/data/schools`
 
+   // Modal for adding school
+  const onSubmitTeam = async (e: any) => {
+    e.preventDefault()
+
+    let newTeam = e.target[0].value
+    let addTeamAPI = `${api_base_url}/newteam/${newTeam}`
+
+    await addTeam(dispatch, newTeam, addTeamAPI)
+
+    setModalOpen(false);
+
+  };
+
+
+  let getTeamsAPI = `${api_base_url}/data/schools`
   useEffect(() => {
-    getTeams(dispatch, newAPI);
-    
-  }, []);
+    if (!teams.length) {
+      getTeams(dispatch, getTeamsAPI);
+    }
+  }, [teams]);
+
+  console.log(teams)
 
 
-
-  return <div className='Teams'>
+  return (
+    <div className='Teams'>
 
     <div className="teamsTitle">
       <h1>Teams</h1>
@@ -52,26 +69,20 @@ const Teams = () => {
           <h2><button onClick={openModal}>Add Team</button></h2>
           <AddModal open={modalOpen} close={closeModal} header="Add a New Team">
             
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmitTeam}>
           <label>
+
             School Name:
             <input type="text" name="name" />
             <br/>
-            School Mascot Image:
-            <input type="text" name="mascot" />
-            <br/>
-            Address:
-            <input type="text" name="address" />
-            <br/>
 
           </label>
-          <input type="submit" value="Submit" />
+          <button type="submit">Submit</button>
           </form>
 
 
           </AddModal>
         </React.Fragment>
-        <h2><button>Edit Teams</button></h2>
       </div>
     </div>
 
@@ -95,7 +106,8 @@ const Teams = () => {
         </tbody>
       </table>
     </div>
-  </div>
+
+  </div>)
 }
 // from Michael:
 //    Please leave the a tag above instead of whatever the Link thing is doing.

@@ -35,7 +35,7 @@ type State = {
 }
 
 // -- Global react state managed by React Context API --
-let initialState = {
+let initialState: any = {
     error: null,
     roster: [],
     teams: [],
@@ -57,6 +57,15 @@ type AppDispatch = Dispatch<Action>
 
 const appReducer = (state: any, action: Action) => {
     switch (action.type) {
+        case "post_team_success": {
+          const { data } = action;
+          let newTeams = [...state.teams]
+          newTeams.push(data)
+          return {
+            ...state,
+            teams: newTeams
+          }
+        }
         case "update_curr_team_success": {
             const { data } = action;
             return {
@@ -64,11 +73,22 @@ const appReducer = (state: any, action: Action) => {
               currTeamData: data
             }
         }
-        case "post_roster_success": {
+        case "delete_roster_success": {
           const { data } = action;
+          let newRoster = state.roster.filter((member: any) => member.player_id !== data)
+
           return {
             ...state,
-            roster: [data, ...initialState.roster]
+            roster: newRoster
+          }
+        }
+        case "post_roster_success": {
+          const { data } = action;
+          let updatedRoster = [...state.roster]
+          updatedRoster.push(data)
+          return {
+            ...state,
+            roster: updatedRoster
           }
         }
         case "roster_success": {
