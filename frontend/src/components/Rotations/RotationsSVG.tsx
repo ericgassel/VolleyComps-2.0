@@ -125,24 +125,24 @@ export const createRotSvg = () => {
 }
 
 // called when route is added to SVG
-export const addRotationToSVG = (player_number_selected: number) => {
+export const addRotationToSVG = (player_number_selected: number, rotation_number: number) => {
     rotation.push(new_rotation);
     // this should move temp 
     // ---------
     // adds a player to Dummy School
 
-    /*
-    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster', {
+    
+    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
     method: 'POST',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ "data": [[new_rotation[0].player_num, JSON.stringify(new_rotation), "5'11", "OPP", "Sr", "Hits really hard!"]] })
+    body: JSON.stringify({ "data": [[rotation_number.toString(), JSON.stringify(new_rotation), "", "", "serve recieve data", "transition"]] })
     })
     .then(response => response.json())
     
-    */
+    
     createRotSvg();
     
 }
