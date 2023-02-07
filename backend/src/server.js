@@ -35,9 +35,10 @@
 })
 
 
- app.post("/newteam/:teamname", async (req, res) =>{
+ app.post("/newteam", async (req, res) =>{
     const pyshell = util.promisify(PythonShell.run);
-    const teamname = req.params.teamname
+    if(!req.body.teamname){res.status(500).send("No team name provided. Send a JSON object with the team name assigned to the key `teamname`."); return;}
+    const teamname = req.body.teamname
     var new_spreadsheetId = ""
 
     const options = {
@@ -145,32 +146,114 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     }
  })
 
+ app.post("/write/:spreadsheetId/:sheet/edit", express.json(), async (req, res) =>{
+
+    const spreadsheetId = req.params.spreadsheetId
+    const sheet = req.params.sheet
+    if(!req.body.toedit){
+        res.status(500).json({"error": "Specify which row(s) you would like to edit by including a `toedit` object in the request body. See readme for more"})
+        return
+    }
+    const toedit = req.body.toedit
+    console.log(toedit)
+    if(!req.body.newvalue){
+        res.status(500).json({"error": "Specify a new value"})
+        return
+    }
+    const newvalue = req.body.newvalue
+    console.log(newvalue)
+
+
+    try{
+        const sheetInfo = await googleSheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId,
+            range: sheet
+        });
+
+        const sheetMetadata = await googleSheets.spreadsheets.get({auth, spreadsheetId, fields: 'sheets(properties(sheetId,title))' });
+        var sheetId = -1;
+        for (const sheet_info of sheetMetadata.data.sheets) {
+            if (sheet_info.properties.title == sheet) {
+                sheetId = sheet_info.properties.sheetId;
+            }
+        }
+
+        const data = sheetInfo.data.values;
+
+        var valid = checkValidFilters(Object.keys(toedit), data[0])
+        console.log(valid)
+        if(!valid[0]){
+            res.status(500).json({"error": `Column '${valid[1]}' does not exist in worksheet '${sheet}'`})
+            return;
+        }
+        valid = checkValidFilters([newvalue.var], data[0])
+        console.log(valid)
+        if(!valid[0]){
+            res.status(500).json({"error": `Column '${valid[1]}' does not exist in worksheet '${sheet}'`})
+            return;
+        }
+        const headers = data[0]
+        console.log(headers)
+        
+        columnIndex = headers.indexOf(newvalue.var);
+        if(columnIndex == -1){
+            res.status(500).json({"error": `specified "var" is not a valid variable`})
+            return
+        }
+
+
+        const rowsToEdit = findRowsToMatch(data, toedit)
+        console.log(rowsToEdit)
+
+        const requests = []
+        for (const rowIndex of rowsToEdit) {
+            requests.push({
+            updateCells: {
+                range: {
+                    sheetId,
+                    startRowIndex: rowIndex - 1,
+                    endRowIndex: rowIndex,
+                    startColumnIndex: columnIndex,
+                    endColumnIndex: columnIndex + 1
+                },
+                rows: [{
+                      values: [{
+                          userEnteredValue: {
+                            stringValue: newvalue.value
+                          }
+                        }]
+                    }],
+                  fields: "userEnteredValue"
+            }
+            });
+        }
+
+        console.log(requests)
+
+        const response = await googleSheets.spreadsheets.batchUpdate({
+            auth,
+            spreadsheetId,
+            resource: {requests}
+        })
+
+        res.status(200).send("success")
+
+    }catch(error){
+        res.status(500).send(error)
+    }
+ })
+
 
 
  app.post("/delete/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     const spreadsheetId = req.params.spreadsheetId
     const sheet = req.params.sheet
-
-    var delete_by_id = 0
-    var targetValues = []
-    if(req.query.player_id){
-        targetValues = req.query.player_id.split(',');
-        delete_by_id = 1
-    }
-    if(req.query.rotation_id){
-        if(sheet != "rotations"){
-            res.status(500).send("Specified a rotation_id, but are not calling a rotations page")
-            return;
-        }
-
-        if(delete_by_id == 1){
-            targetValues = targetValues.concat(req.query.rotation_id.split(','))
-        }else{
-            targetValues = req.query.rotation_id.split(',');
-        }
-
-        if(delete_by_id == 1){delete_by_id = 3;}else{delete_by_id = 2;}
-        
+    var spec_delete = 0
+    var todelete = {}
+    if(req.body.todelete){
+        todelete = req.body.todelete;
+        spec_delete = 1;
     }
 
     try{
@@ -180,8 +263,8 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
             range: sheet
         });
 
-
-        if(delete_by_id != 0){
+        // Delete by specififed columns
+        if(spec_delete == 1){
 
             const sheetMetadata = await googleSheets.spreadsheets.get({auth, spreadsheetId, fields: 'sheets(properties(sheetId,title))' });
             var sheetId = -1;
@@ -192,81 +275,63 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
             }
 
             const data = sheetInfo.data.values;
+
+            const valid = checkValidFilters(Object.keys(todelete), data[0])
+            if(!valid[0]){
+                res.status(500).json({"error": `Column '${valid[1]}' does not exist in worksheet '${sheet}'`})
+                return;
+            }
             
-            var rowsToDelete = [];
+            const rowsToDelete = findRowsToMatch(data, todelete);
             
-            // Find the rows to delete
-            if(delete_by_id == 1 && sheet == "rotations"){
-                for (let i = 0; i < data.length; i++) {
-                    if (targetValues.includes(data[i][1])) {
-                        rowsToDelete.push(i + 1);
-                    }
-                }
-            }
-            else{
-                for (let i = 0; i < data.length; i++) {
-                    if (targetValues.includes(data[i][0])) {
-                        rowsToDelete.push(i + 1);
-                    }
-                }
-            }
-            if(delete_by_id == 3){
-                const specificRowsToDelete = []
-                for (const row of rowsToDelete) {
-                    if (targetValues.includes(data[row-1][1])) {
-                        specificRowsToDelete.push(row);
-                    }
-                }
-                rowsToDelete = specificRowsToDelete;
-            }
             if(req.query.recent){
                 rowsToDelete = getLastNElements(rowsToDelete, parseInt(req.query.recent))
             }
             
             if (rowsToDelete.length > 0) {
             // Delete the rows
-                const requests = [];
-                
-                var shift = 0
-                for (const rowIndex of rowsToDelete) {
-                    requests.push({
-                    deleteDimension: {
-                        range: {
-                            sheetId,
-                            dimension: "ROWS",
-                            startIndex: rowIndex - 1 - shift,
-                            endIndex: rowIndex - shift
-                        }
+            const requests = [];
+            
+            var shift = 0
+            for (const rowIndex of rowsToDelete) {
+                requests.push({
+                deleteDimension: {
+                    range: {
+                        sheetId,
+                        dimension: "ROWS",
+                        startIndex: rowIndex - 1 - shift,
+                        endIndex: rowIndex - shift
                     }
-                    });
-                    shift += 1;
                 }
-                
-                try{
-                    await googleSheets.spreadsheets.batchUpdate({
-                        auth,
-                        spreadsheetId,
-                        resource: {
-                            requests
-                        }
-                    });
-                    res.status(200).send("rows successfully deleted")
-                    return
-                } catch(error){
-                    console.log(error)
-                    res.status(500).send(error)
-                }
+                });
+                shift += 1;
+            }
+            
+            try{
+                await googleSheets.spreadsheets.batchUpdate({
+                    auth,
+                    spreadsheetId,
+                    resource: {
+                        requests
+                    }
+                });
+                res.status(200).send("rows successfully deleted")
+                return
+            } catch(error){
+                res.status(500).send(error)
+            }
             }else{
-                res.status(500).send("Specified ids do not exist")
+                res.status(500).send("No rows to delete")
                 return
             }
         }
 
+        //no columns specified, clear the whole sheet
         
         const returnedRange = sheetInfo.data.range;
         const firstRow = returnedRange.split(":")[0];
         const newRange = `${firstRow.split("1")[0]}2:${returnedRange.split(":")[1]}`;
-
+    
         await googleSheets.spreadsheets.values.clear({
             auth,
             spreadsheetId: spreadsheetId,
@@ -281,6 +346,37 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
 
 })
 
+
+function findRowsToMatch(data, tomatch) {
+    const headers = data[0];
+    const headerIndices = {};
+
+    headers.forEach((header, index) => {
+      headerIndices[header] = index;
+    });
+    
+    const result = [];
+    
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      var match = true;
+      
+      for (const key in tomatch) {
+        const values = tomatch[key].split(',');
+        if (!values.includes(row[headerIndices[key]])) {
+          match = false;
+          break;
+        }
+      }
+      
+      if (match) {
+        result.push(i+1);
+      }
+    }
+    
+    return result;
+  }
+  
 
  function uniqueId(){
     return crypto.randomBytes(8).toString('hex');
@@ -318,7 +414,18 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     }, [])
 }
 
-
+function checkValidFilters(keys, headers){
+    var badkey = false
+    keys.forEach(key => {
+        if (!headers.includes(key)) {
+            badkey = key;
+        }
+    });
+    if(badkey){
+        return [false, badkey]
+    }
+    return [true, null];
+}
 
 
 function createSchoolsJson(arr) {

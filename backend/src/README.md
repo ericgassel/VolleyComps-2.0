@@ -5,21 +5,13 @@ The API currently connects to port 5000 on our server and can be accessed at
 
 You must be connected to eduroam or the Carleton VPN to access this API. 
 
-## Running the API locally
+## What if the server is down?
+
+If the server is down, you unfortunately cannot access it as I (Eric Gassel) am running it in a tmux session that only I can access. If you need to use the API, what you can do is run the API locally.
 
 To run the API on your local machine, navigate to `VolleyComps-2.0/backend` and run the command `npm run start`. 
 
-Please note that connecting to the Google Sheets API will fail if you are running the API locally and connected to eduroam, as there are Carleton firewalls set up preventing this.
-
-You do *not* need to run this part to access the api already running on the server. This is just to run locally.
-
-## Accessing the API server
-Follow these steps: 
-1. Make sure you're connected to eduroam or the Carleton VPN.
-2. Enter our VM from the command line: `ssh username@cs400volleyball.mathcs.carleton.edu`
-3. Step 3 coming soon!
-
-You may need to adjust some commands for mac.
+*Please note that connecting to the Google Sheets API will fail if you are running the API locally and connected to eduroam, as there are Carleton firewalls set up preventing this.
 
 ## Sheet Design
 
@@ -29,8 +21,6 @@ Each Google Sheets contain the following five sheets "pages":
 
 - "roster"
     - columns in roster: [player_id, name, number, height, position, class, notes]
-    
-    [Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
 - "schedule"
     - columns in schedule: [team, date, location, outcome]
 - "spray_chart"
@@ -39,12 +29,14 @@ Each Google Sheets contain the following five sheets "pages":
     - columns in rotations: [rotation_number, line, additional, notes, blocking_scheme, serve_recieve, transition]
 - "team_stats"
     - [Team, Kills,	Errors,	Attempts, Percent,	Kills_Per_Set,	Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Errors, Aces_Per_Set, Errors, Errors_Per_Set, Digs, Digs_Per_Set, Solo, Assists, Errors, Blocks, Blocks_Per_Set]
+- "ind_stats"
+    -[Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
 
 ## Notes for interacting with the API
 
 - Use dummy school "spreadsheetId: 1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM" for testing.
 - "spreadsheetId" is how you will tell the API which team you want to post data to. There is a unique spreadsheet id for each Google Sheet that is found in its URL.
-- "sheet" is how you will specify which sheet you want to post data to. There are only five valid sheets, and they can be found in the "Sheet Design" section.
+- "sheet" is how you will specify which worksheet you want to post data to. There are only five valid sheets, and they can be found in the "Sheet Design" section.
 
 ## Implemented Endpoints
 
@@ -55,9 +47,17 @@ Health check route. Access the root to see if the API is up and running.
 ### GET /help
 Loads this file.
 
-### POST /newteam/:teamname
+### POST /newteam
 
-This endpoint creates a new team spread sheet with the title as the name passed in the path, and returns the spreadsheet id in the following JSON format:
+This endpoint creates a new team spread sheet with the title as the name passed in body of a json object. The following is the required format for passing along the team name:
+
+```
+{
+    "teamname": "St. Team Name University"
+}
+```
+
+This endpoint returns the spreadsheet id in the following JSON format:
 
 ```
 {
@@ -65,7 +65,7 @@ This endpoint creates a new team spread sheet with the title as the name passed 
 }
 ```
 
-Please note that this function is slow and may take ~10 seconds to complete.
+Please note that this function is slow and may take ~10 seconds to complete. This endpoint also updates the "schools" spreadsheet.
 
 ### GET /data/schools
 
@@ -202,8 +202,8 @@ and pass along the following in the body:
 ```
 {
     "data": [
-        ["Goofy Goober"	"60", "5'11", "OPP", "Sr", "Hits really hard!"],
-        ["Sally Sample", "34", "5'7" "OH", "Jr", "great passer, looks to score off of set /n bad returner"]
+        ["Goofy Goober", "60", "5'11", "OPP", "Sr", "Hits really hard!"],
+        ["Sally Sample", "34", "5'7", "OH", "Jr", "great passer, looks to score off of set /n bad returner"]
     ]
 }
 ```
@@ -225,7 +225,25 @@ notes:
 
 - when sending data to a sheet, you must send data in the same order of the variables in the columns outlined in the Sheet Design section. For example, when posting to "spray_chart", you must send the following data in this exact order: [type, result, start_x, start_y, end_x, end_y, date]
 
-- the backend will generate unique ids for players, shots, and rotations
+### POST /write/:spreadsheetId/:sheet/edit
+
+This endpoint allows you to edit single cell values by specifying which rows you want to edit, the column to make changes to, and the value to upload.
+
+Please follow the following format, where the row filtering is in "toedit", and the column to edit and value are provided in "newvalue".
+
+"var" is the column you want to edit, and "value" is the actual value you want to upload.
+
+```
+{
+    "toedit":{
+        "player_id": "1856"
+    },
+    "newvalue":{
+        "var": "notes",
+        "value": "here is my new note for this player!"
+    }
+}
+```
 
 ### POST /delete/:spreadsheetId/:sheet
 
@@ -235,40 +253,51 @@ Calling this endpoint with no specified ids clears the content of a specified sh
 
 #### Specifying specific rows to delete
 
-In order to specify a specific row to delete, you must pass along the player_id (and/or rotation_id) of the row of data you want to delete as a query.
+In order to specify a specific row to delete, you must pass along a json object "todelete" which contains the rows you'd like to delete by matching variable values
 
-For example, if you wanted to delete information about a player from the Dummy School with a player_id `4a0607485855e088` from the sheet `roster`, you would call:
-`POST /delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?player_id=4a0607485855e088`
+For example, if you wanted to delete information about a player from the Dummy School with a player_id `1845` from the sheet `roster`, you would pass along the following:
+
+```
+{
+    "todelete":{
+        "player_id": "1845"
+    }
+}
+```
 
 You can request to remove info about multiple players at once by adding additional ids separate by commas:
-`POST /delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?player_id=4a0607485855e088,8756f4fc30e954ec`
 
-#### Deleting from the rotations page
+```
+{
+    "todelete":{
+        "player_id": "1845,1847"
+    }
+}
+```
 
-There are two ways you can delete data from the rotations page: by `player_id` and `rotation_id`. You can delete by one of these, or *BOTH* of these. Here is an example of deleting by both of these:
-`POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations?player_id=5,6&rotation_id=f4c1f6fb561f4d72`
+You can specify more filters by adding more variables. Any row with at least one value in each of the provided values will be deleted.
 
-*Read the following carefully:* when specifying both parameters, only rows of data that match a provided rotation id *AND* a provided player id will be deleted. Both must match for a row to be deleted. For example, given the above API call:
-
-Will be deleted:
-- [f4c1f6fb561f4d72,	5,	[arrays3],	notes!!,	block this way,	[serverecieve data,this is words],	[my additional notes on this, more notes]]
-- [f4c1f6fb561f4d72,	6,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
-
-Will not be deleted:
-- [9cb0cbced5cb0d91,	5,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
-- [f4c1f6fb561f4d72,	7,	[arrays4],	these are notes!!,	scheming,	[serverecieve data, this is recieving],	[my additional notes on this, important info]]
+```
+{
+    "todelete":{
+        "player_id": "1845,1847",
+        "number": "8"
+    }
+}
+```
+Based on the above, any row that's deleted must have a player_id of either "1845" or "1847" AND have the number "8".
 
 #### Deleting by most recent
 
-If you don't want to delete all instances of a given player in a sheet, you can specify how many you want by most recent additions. For example, this would be useful in deleting the most recent addition to the spray chart by a specified player instead of deleting all of that player's shots.
+If you don't want to delete all instances of the given filters in a sheet, you can specify how many you want by most recent additions. For example, this would be useful in deleting the most recent addition to the spray chart by a specified player instead of deleting all of that player's shots.
 
 You can do this by adding the query `recent`, so if you want to delete the most recent addition, you can call:
 `POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart?player_id=4f1162f40d063c5d&recent=1`
     
 ---------------------------------------------------------------------------
 To be implemented:
-- edit a column of a row (change a player's number, edit the notes, etc)
 - filter by date
+- team ids with schedule
 ---------------------------------------------------------------------------
 
 PLEASE NOTE, there are usage limits for the google sheets API (how frequently it can be used). Here is a quick overview:
