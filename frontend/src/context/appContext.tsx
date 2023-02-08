@@ -2,14 +2,14 @@ import { AxiosError } from "axios";
 import React, { useReducer, createContext, useContext, Dispatch } from "react";
 import { Action } from "../action/action";
 
-type player = {
+export type player = {
   player_id: Number; 
   class: string; 
   height: string; 
   name: string; 
   number: string; 
   position: string;
-  notes?: string | null
+  notes?: string | undefined;
 }
 
 export type spray_line = {
@@ -29,6 +29,7 @@ type State = {
     roster: player[];
     schedule: any;
     spray_chart: spray_line[];
+    stats: any;
     rotations: any;
     teams: any;
     currTeamData: {name:string; id:string}
@@ -87,9 +88,12 @@ const appReducer = (state: any, action: Action) => {
         }
         case "rotation_success": {
           const { data } = action;
+          console.log('ratation data: ', data);
+          const convertedData = data.map((element: any) => ({ ...element, line: JSON.parse(element.line)}));
+          console.log('convertedData: ', convertedData);
           return {
             ...state,
-            rotations: data
+            rotations: convertedData,
           }
         }
         case "schedule_success": {
@@ -112,6 +116,38 @@ const appReducer = (state: any, action: Action) => {
           return {
             ...state,
             spray_chart: convertedData
+          }
+        }
+        case "stats_success": {
+          const { data } = action;
+          // console.log('data:', data)
+          const formatedData = data.map((stats: any) => {
+            for (const key in stats) {
+              if (key !== 'Height' && key !== "Image" && key !== 'Name' && 
+              key !== 'Position(s)'&& key !== 'Year' && key !== 'Notes' && key !== 'Seasons') {
+                stats[key] = Number(stats[key]);
+              }
+            }
+            return stats;
+          });
+          console.log('formatedData:', formatedData);
+          return {
+            ...state,
+            stats: [...data],
+          }
+        }
+        case "update_comment_success": {
+          const { value, player_id } = action.data;
+          const updatedRoster = state.roster.map((player: player) => {
+            if (player.player_id === player_id) {
+              return { ...player, notes: value }
+            }
+            return player;
+          });
+          console.log('data in appContext:', value);
+          return {
+            ...state,
+            roster: [...updatedRoster],
           }
         }
         case "error": {
