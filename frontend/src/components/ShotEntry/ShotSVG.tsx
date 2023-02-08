@@ -5,6 +5,8 @@ import * as d3 from 'd3';
 import internal from 'stream';
 import ShotEntry, { disableButton, enableButton } from './ShotEntry';
 import { isConstructorDeclaration } from 'typescript';
+import { assert } from 'console';
+import { AssertionError } from 'assert';
 
 // representation of Shot type dictionary
 export interface Shot {
@@ -25,13 +27,11 @@ declare global {
     // represents all shots
     var data_graph : Shot[];
 
-    var first_click : any;
-    var second_click : any;
+    var first_click : {[key : string]: number} | null;
+    var second_click : {[key : string]: number} | null;
 }
 
 
-var first_click = {x:0, y:0};
-var second_click = {x:0, y:0};
 
 // the current dateID for the page
 let current_date_ID : string = "";
@@ -85,6 +85,11 @@ export async function fullNewLoadSvg(dateID : string){
 }
 
 export function createSvg(){
+    // set first and second clicks to null
+    globalThis.first_click = null;
+    globalThis.second_click = null;
+    // set okay_to_add to false. variable to represent if can display AddShot button.
+    globalThis.okay_to_add = false;
     // set clicked values all to false
     for(let i : number = 0; i< globalThis.data_graph.length;i++){
         globalThis.data_graph[i].clicked = false;
@@ -168,9 +173,9 @@ export function createSvg(){
         let vals = d3.pointer(event, svg.node())
         //(x_scale(x_scale_click(vals[0])));
 
-        if (first_click.x === 0 && !onLine) {
-            first_click.x = x_scale_click(vals[0]);
-            first_click.y = y_scale_click(vals[1]);
+        if (globalThis.first_click == null && !onLine) {
+            globalThis.first_click = {x : x_scale_click(vals[0]), y : y_scale_click(vals[1])};
+           
             svg.append("circle")
                 .attr("id", "selected")
                 .attr("cx", vals[0])
@@ -181,9 +186,9 @@ export function createSvg(){
                 .attr("stroke", "green")
                 .attr("stroke-width", 2);
         }
-        else if (second_click.x === 0 && !onLine) {
-            second_click.x = x_scale_click(vals[0]);
-            second_click.y = y_scale_click(vals[1]);
+        else if (globalThis.second_click == null && !onLine) {
+            globalThis.second_click = {x : x_scale_click(vals[0]), y : y_scale_click(vals[1])};
+            
             svg.append("circle")
                 .attr("id", "selected")
                 .attr("cx", vals[0])
@@ -196,6 +201,14 @@ export function createSvg(){
 
 
         }
+
+
+        if(globalThis.okay_to_add && globalThis.first_click != null && globalThis.second_click != null){
+            enableButton("addShot");
+        }
+        
+
+
     })
 }
 
@@ -206,8 +219,8 @@ export function deleteShotFromSvg(){
 }
 
 export async function addShotToSvg(shot_type_selected: string, shot_result_selected: string, player_id: string){
-    
-    let shot : Shot = {start_x: first_click.x, start_y: first_click.y, end_x: second_click.x, end_y: second_click.y, shot_type: shot_type_selected, result: shot_result_selected, player_id: player_id, date:current_date_ID, clicked:false}
+    // the ! after globalThis.first_click is a non-null assertion
+    let shot : Shot = {start_x: globalThis.first_click!.x, start_y: globalThis.first_click!.y, end_x: globalThis.second_click!.x, end_y: globalThis.second_click!.y, shot_type: shot_type_selected, result: shot_result_selected, player_id: player_id, date:current_date_ID, clicked:false}
     globalThis.data_graph.push(shot);
     console.log(globalThis.data_graph);
     
@@ -220,14 +233,14 @@ export async function addShotToSvg(shot_type_selected: string, shot_result_selec
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ "data": [[player_id,shot_type_selected,shot_result_selected,first_click.x,first_click.y,second_click.x,second_click.y,current_date_ID]] })
+    body: JSON.stringify({ "data": [[player_id,shot_type_selected,shot_result_selected,globalThis.first_click!.x,globalThis.first_click!.y,globalThis.second_click!.x,globalThis.second_click!.y,current_date_ID]] })
     })
     .then(response => response.json())
     //.then(response => console.log(JSON.stringify(response)))
     
     // reset info relating to shot
-    first_click = {x:0, y:0};
-    second_click = {x:0, y:0};
+    globalThis.first_click = null;
+    globalThis.second_click = null;
     
     // recreate the svg
     createSvg();
