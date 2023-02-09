@@ -132,9 +132,9 @@ export const addRotationToSVG = (player_number_selected: number, rotation_number
     rotation.push(new_rotation);
     // this should move temp 
     // ---------
-    // adds a player to Dummy School
+    // adds rotation to dummy school
 
-    /*
+    
     fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
     method: 'POST',
     headers: {
@@ -147,7 +147,7 @@ export const addRotationToSVG = (player_number_selected: number, rotation_number
     
     
     createRotSvg();
-    */
+    
     
 }
 
