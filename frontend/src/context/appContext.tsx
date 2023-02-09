@@ -27,26 +27,30 @@ type State = {
     error: Error | AxiosError;
     api_base_url: string;
     roster: player[];
+    fetchedRoster: boolean;
     schedule: any;
     spray_chart: spray_line[];
     team_stats: any;
     stats: any;
     rotations: any;
     teams: any;
-    currTeamData: {name:string; id:string}
+    currTeamData: {name:string; id:string}, 
+    isCurrTeamFilled: boolean
 }
 
 // -- Global react state managed by React Context API --
-let initialState = {
+let initialState: any = {
     error: null,
     team_stats: [],
     roster: [],
+    fetchedRoster: false,
     teams: [],
     schedule: [],
     spray_chart: [],
     rotations: [],
     api_base_url: "http://cs400volleyball.mathcs.carleton.edu:5000",
-    currTeamData: {}
+    currTeamData: {}, 
+    isCurrTeamFilled: false
 }
 
 type AppDispatch = Dispatch<Action>
@@ -60,25 +64,49 @@ type AppDispatch = Dispatch<Action>
 
 const appReducer = (state: any, action: Action) => {
     switch (action.type) {
+        case "post_team_success": {
+          const { data } = action;
+          let newTeams = [...state.teams]
+          newTeams.push(data)
+          return {
+            ...state,
+            teams: newTeams
+          }
+        }
         case "update_curr_team_success": {
             const { data } = action;
             return {
               ...state,
-              currTeamData: data
+              currTeamData: data,
+              isCurrTeamFilled: true,
+              fetchedRoster: false, 
+              roster: []
             }
+        }
+        case "delete_roster_success": {
+          const { data } = action;
+          let newRoster = state.roster.filter((member: any) => member.player_id !== data)
+
+          return {
+            ...state,
+            roster: newRoster
+          }
         }
         case "post_roster_success": {
           const { data } = action;
+          let updatedRoster = [...state.roster]
+          updatedRoster.push(data)
           return {
             ...state,
-            roster: [data, ...initialState.roster]
+            roster: updatedRoster
           }
         }
         case "roster_success": {
             const { data } = action;
             return {
               ...state,
-              roster: data
+              roster: data, 
+              fetchedRoster: true
             }
         }
         case "teams_success": {
@@ -107,17 +135,9 @@ const appReducer = (state: any, action: Action) => {
         }
         case "spray_chart_success": {
           const { data } = action;
-          const convertedData = data.map((line: spray_line) =>  ({ 
-            ...line,
-            player_id: line.player_id,
-            start_x: Number(line.start_x),
-            start_y: Number(line.start_y),
-            end_x: Number(line.end_x),
-            end_y: Number(line.end_y),
-          }))
           return {
             ...state,
-            spray_chart: convertedData
+            spray_chart: [...data]
           }
         }
         case "team_stats_success": {

@@ -1,110 +1,148 @@
 import React, { useEffect, useState } from 'react';
-import "./table.css"
-import {useParams } from "react-router-dom"
+import "./manageteamtable.css"
 import AddModal from './AddModal'
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { addMember, getRoster } from '../action/action';
+import { addMember, deleteMember, getRoster, getTeams, updateCurrentTeam } from '../action/action';
+import { useParams } from 'react-router-dom';
 
 const ManageTeam = () => {
 
     const state = useAppContext();
     const dispatch = useAppDispatchContext();
 
-    const {api_base_url, roster, currTeamData} = state;
+    const {api_base_url, roster, currTeamData, teams, isCurrTeamFilled, fetchedRoster} = state;
+
+    const getCurrentTeamFromURL = () => {
+      let {teamID} = useParams()
+      let currTeam = teams.find((team: {name:string; id:string}) => team.id === teamID)
+      return currTeam;
+    }
+    let {teamID} = useParams()
+    let currTeam = isCurrTeamFilled ? currTeamData : getCurrentTeamFromURL()
 
     const onSubmitForm = (event: any) => {
-        event.preventDefault(event);
-      };
+      event.preventDefault(event);
+    };
 
-      const [modalOpen, setModalOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
-      const openModal = () => {
-        setModalOpen(true);
-      };
-      const closeModal = () => {
-        setModalOpen(false);
-      };
+    const openModal = () => {
+      setModalOpen(true);
+    };
+    const closeModal = () => {
+      setModalOpen(false);
+    };
+  
+    // Modal for adding member
+    const onSubmitModal = async (event: any) => {
+      event.preventDefault()
+      let newMember = [event.target[0].value, event.target[1].value, event.target[2].value, event.target[3].value, event.target[4].value, event.target[5].value]
+      await addMember(dispatch, newMember, `${api_base_url}/write/${currTeam.id}/roster`)
+
+      setModalOpen(false);
+    };
     
-      // Modal for adding member
-      const onSubmitModal = (event: any) => {
-        event.preventDefault(event);
-        let newMember = [event.target[0].value, event.target[1].value, event.target[2].value, event.target[3].value, event.target[4].value]
-        addMember(dispatch, newMember, `${api_base_url}/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster`)
+    const deleteMemberButton = async (memberID: string) => {
+      let deleteMemberAPI = `${api_base_url}/delete/${currTeam.id}/roster`
+      await deleteMember(dispatch, memberID, deleteMemberAPI);
+    }
 
-        setModalOpen(false);
-      };
+    useEffect(() => {
+      if (!teams.length) {
+        let getTeamsAPI = `${api_base_url}/data/schools`
+        getTeams(dispatch, getTeamsAPI);
+      }
 
+      // 1. Fetch api
+      if (!roster.length && fetchedRoster === false) {
+        getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`);
+      }
+    }, [roster, teams])
 
-      useEffect(() => {
-        // 1. Fetch api
-        getRoster(dispatch, `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster`);
-      }, [])
-
-    return <div>
-        <h1>{currTeamData.name}</h1>
-
-        <form onSubmit={onSubmitForm}>
-          <label>
-            School Name:
-            <input type="text" name="name" placeholder={currTeamData.name} />
-            <br/>
-            School Mascot Image:
-            <input type="text" name="mascot" />
-            <br/>
-            {/* Address:
-            <input type="text" name="address" placeholder={currTeamData.name.address}/> */}
-            <br/>
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-
+    return (
+        <div className="managementTitle">
+        <h1>{currTeam ? currTeam.name : ""}</h1>
+        <div className="MemberModal">
         <React.Fragment>
-          <h2><button onClick={openModal}>Manage Member</button></h2>
+          <h2><button className='AddMemberButton' onClick={openModal}>Add Member</button></h2>
           <AddModal open={modalOpen} close={closeModal} header="Add a New Member">
             
           <form onSubmit={onSubmitModal}>
-          <label>
-            Name:
-            <input type="text" name="name" />
-            <br/>
-            Number:
-            <input type="text" name="number" />
-            <br/>
-            Height:
-            <input type="text" name="height" />
-            <br/>
-            Position:
-            <input type="text" name="position" />
-            <br/>
-            Class:
-            <input type="text" name="class" />
-            <br/>
 
-          </label>
-          <input type="submit" value="Submit"/>
+          <div className="question">
+            <label>Name:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="name" />
+          </div>
+          <div className="question">
+            <label>Number:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="number" />
+          </div>
+          <div className="question">
+            <label>Height:</label>  
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="height" />
+          </div>
+
+          <div className="question">
+            <label>Position:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="position" />
+          </div>
+
+          <div className="question">
+            <label>Class:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="class" />
+          </div>
+
+          <div className="question">
+            <label>Notes:</label>
+          </div>
+
+          <div className="answer notes">
+            <textarea className='textbox' name="notes" />
+          </div>
+          <br/>
+
+          <button className='SubmitMemberButton' type="submit">Submit</button>
           </form>
 
 
           </AddModal>
         </React.Fragment>
+        </div>
 
-        <div className="Table">
-            <table>
-                <thead>
-                <tr>
-                    <th>Team Member</th>
-                    <th>Position</th>
-                    <th>Number</th>
-                </tr>
+
+        <div>
+            <table className="ManageTeamTable">
+                <thead className="ManageTeamTableHead">
+                  <tr>
+                      <th className='ManageTeamTableTh'>Team Member</th>
+                      <th className='ManageTeamTableTh'>Position</th>
+                      <th className='ManageTeamTableTh'>Height</th>
+                      <th className='ManageTeamTableTh'>Class</th>
+                      <th className='ManageTeamTableTh'>Number</th>
+                      <th className='ManageTeamTableTh_delete'></th>
+                  </tr>
                 </thead>
                 <tbody>
 
-                {roster.map((val, key) => {
+                {roster.map((val: any, key) => {
                 return (
-                    <tr key={key}>
-                    <td>{val.name}</td>
-                    <td>{val.position}</td>
-                    <td>{val.number}</td>
+                    <tr className='ManageTeamsTableTr' key={key}>
+                      <td className='ManageTeamsTableTd'>{val.name}</td>
+                      <td className='ManageTeamsTableTd'>{val.position}</td>
+                      <td className='ManageTeamsTableTd'>{val.height}</td>
+                      <td className='ManageTeamsTableTd'>{val.class}</td>
+                      <td className='ManageTeamsTableTd'>{val.number}</td>
+                      <td className='ManageTeamsTableTd_delete'><button className='DeleteMemberButton' onClick={() => deleteMemberButton(val.player_id)}>delete</button></td>
                     </tr>
                 )
                 })}
@@ -113,7 +151,7 @@ const ManageTeam = () => {
             </table>
         </div>
 
-    </div>
+    </div>)
 
 
 }

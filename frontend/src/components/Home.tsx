@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import "./Home.css"
-import "./table.css"
+import "./hometable.css"
 import {Link} from 'react-router-dom'
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
 import { getSchedule, getTeams, updateCurrentTeam } from '../action/action';
@@ -14,25 +14,32 @@ const Home=() =>{
   const {api_base_url, schedule, teams} = state;
 
   let scheduleAPI = `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/schedule`
-  let teamsAPI = `${api_base_url}/data/schools`
 
   useEffect(() => {
-    getSchedule(dispatch, scheduleAPI);
-    getTeams(dispatch, teamsAPI);
-    }, []);
+    if (!schedule.length) {
+      getSchedule(dispatch, scheduleAPI);
+    }
+
+    if (!teams.length) {
+      let getTeamsAPI = `${api_base_url}/data/schools`
+      getTeams(dispatch, getTeamsAPI);
+    }
+    }, [schedule, teams]);
+
+  // console.log(schedule)
 
 
   return <div className='Home'>
      <h1>Schedules</h1>
 
-     <div className="Table">
-      <table>
-        <thead>
+     <div>
+      <table className="ScheduleTable">
+        <thead className="ScheduleTableHead">
           <tr>
-            <th>Date</th>
-            <th>Name</th>
-            <th>Location</th>
-            <th>Record</th>
+            <th className="ScheduleTableTh">Date</th>
+            <th className="ScheduleTableTh">Name</th>
+            <th className="ScheduleTableTh">Location</th>
+            <th className="ScheduleTableTh">Record</th>
           </tr>
         </thead>
         <tbody>
@@ -42,11 +49,11 @@ const Home=() =>{
           let currTeam = teams.find((team: {name:string; id:string}) => team.name === val.team) || {name: "Dummy_school", id: "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM"}
 
           return (
-            <tr key={key}>
-              <td>{val.date}</td>
-              <td><Link to={`/report/${currTeam.id}`} onClick={() => updateCurrentTeam(dispatch, {name:currTeam.name, id: currTeam.id})}>{val.team}</Link></td>
-              <td>{val.location}</td>
-              <td>{val.outcome}</td>
+            <tr className="ScheduleTableTr" key={key}>
+              <td className="ScheduleTableTd">{val.date}</td>
+              <td className="ScheduleTableTd"><Link className="reportLink" to={`/report/${currTeam.id}`} onClick={() => updateCurrentTeam(dispatch, {name:currTeam.name, id: currTeam.id})}>{val.team}</Link></td>
+              <td className="ScheduleTableTd">{val.location}</td>
+              <td className="ScheduleTableTd">{val.outcome}</td>
             </tr>
           )
         })}

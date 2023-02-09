@@ -1,9 +1,9 @@
 import React from 'react';
 import logo from './logo.svg';
 import * as d3 from 'd3';
-import Rotation from '../Rotation';
-import { getSystemErrorMap } from 'util';
 
+import { getSystemErrorMap } from 'util';
+import Rotations, { Rotation, disableButton, enableButton } from './Rotations';
 
 let point_tracking = false;
 
@@ -118,29 +118,36 @@ export const createRotSvg = () => {
         }
     })
     svg.on("pointerup", function() {
-        console.log(rotation)
         point_tracking = false;
+        if(globalThis.able_to_add_rotation == true){
+            enableButton("addRouteButton");
+        }
+        globalThis.able_to_add_rotation = true;
         //addRotationToSVG(8);
     })
 }
 
 // called when route is added to SVG
-export const addRotationToSVG = (player_number_selected: number) => {
+export const addRotationToSVG = (rotationObject: Rotation) => {
     rotation.push(new_rotation);
     // this should move temp 
     // ---------
-    // adds a player to Dummy School
-    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster', {
+    // adds rotation to dummy school
+
+    
+    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
     method: 'POST',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ "data": [["TESTING123","5", "5'11", "OPP", "Sr", "Hits really hard!"]] })
+    body: JSON.stringify({ "data": [[rotationObject.rotation_number.toString(), JSON.stringify(new_rotation), "", "", "serve recieve data", "transition"]] })
     })
     .then(response => response.json())
     
+    
     createRotSvg();
+    
     
 }
 

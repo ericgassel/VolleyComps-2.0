@@ -15,7 +15,7 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: any, select
   .range([0, 600]);
   
   return (
-    <svg className='sprayChartSVG' width={700} height={500}>
+    <svg className='sprayChartSVG' width={500} height={500}>
       <g>
         <rect className='sprayChartRect' width={500} height={500} x={100}></rect>
         {spray_chart ? spray_chart.map((line: any, i: number) => {
@@ -42,6 +42,7 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: any, select
     </svg>
   )
 }
+
 
 const PlayerStatsTab = () => {
   const state = useAppContext();
@@ -86,6 +87,8 @@ const PlayerStatsTab = () => {
       setSelectedPlayer(roster[0]);
     }
   }, [roster])
+
+  // console.log('spray____chart:', spray_chart)
 
   return (
     (roster && selectedPlayer ? (

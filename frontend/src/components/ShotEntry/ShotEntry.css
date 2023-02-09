@@ -17,7 +17,7 @@
 }
 
 .tableButton:disabled{
-    background-color: #a4a4c3; /* Green */
+    background-color: #9d9dab; /* Green */
     border: none;
     color: white;
     padding: 20px;
@@ -31,7 +31,7 @@
 
 
 .tableButton:enabled{
-    background-color: #51558b; /* Green */
+    background-color: #8D8DB3; /* Green */
     border: none;
     color: white;
     padding: 20px;
@@ -47,7 +47,7 @@
     transform: translate(0px, 3px);
     -webkit-transform: translate(0px, 3px);
     box-shadow: 0px 1px 0px 0px;
-    background-color: #8487af
+    background-color: #6b6c96
 }
 
 .switchButton{
@@ -129,3 +129,33 @@ div[class="playerOptions"]{
 .playerNotes{
     display: none;
 }
+
+/* data-tooltip CSS help from:
+https://stackoverflow.com/questions/9150796/change-how-fast-title-attributes-tooltip-appears
+https://css-tricks.com/different-transitions-for-hover-on-hover-off/
+*/
+[data-tooltip] {
+    position: relative;
+    
+  }
+ 
+
+
+[data-tooltip]:disabled:after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 5%;
+    bottom: -30%; /* put it on the top */
+    color: black;
+    width: max-content;
+    opacity: 0;
+    transition: .2s ease-in .001s;
+    
+    
+    
+  }
+
+  [data-tooltip]:disabled:hover:after {
+    opacity: 1;
+    transition: .2s ease-in .25s;
+  }

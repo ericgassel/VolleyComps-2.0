@@ -3,6 +3,8 @@ import axios, { AxiosResponse, AxiosError } from "axios";
 import { changeTeams, formatMember } from "../helper/changeFormat";
 
 export type Action = 
+| { type: "post_team_success", data: any } 
+| { type: "delete_roster_success", data: any } 
 | { type: "post_roster_success", data: any } 
 | { type: "roster_success", data: any } 
 | { type: "teams_success", data: any } 
@@ -16,6 +18,8 @@ export type Action =
 | { type: "error"; error: Error | AxiosError }
 
 export const ACTIONS = {
+  POST_TEAM_SUCCESS: "post_team_success",
+  DELETE_ROSTER_SUCCESS: "delete_roster_success",
   POST_ROSTER_SUCCESS: "post_roster_success",
   FECTH_ROSTER_SUCCESS: "roster_success",
   FECTH_TEAMS_SUCCESS: "teams_success",
@@ -34,12 +38,52 @@ export const updateCurrentTeam = (dispatch: any, teamData: {name:string; id:stri
   return;
 }
 
+/* 
+* api call for adding team
+*/
+export const addTeam = async (dispatch: any, teamName: string, apiWithTeam: string) => {
+  try {
+    let response: AxiosResponse = await axios.post(apiWithTeam, {teamname: teamName});
+    if (response.status == 200) {
+      const fetchedData: {spreadsheet_id: string} = response.data;
+      dispatch({ type: ACTIONS.POST_TEAM_SUCCESS, data: {name: teamName, id: fetchedData.spreadsheet_id} });
+      return;
+    }
+    throw Error;
+  }
+  catch (error) {
+    const errors = error as Error | AxiosError;
+    dispatch({ type: ACTIONS.ERROR, error: errors });
+    return;
+  }}
+
+/* 
+* api call for deleting member
+*/
+export const deleteMember = async (dispatch: any, memberID: string, api: string) => {
+  try {
+    let response: AxiosResponse = await axios.post(api, {todelete: {player_id: memberID}});
+    if (response.status == 200) {
+      dispatch({ type: ACTIONS.DELETE_ROSTER_SUCCESS, data: memberID });
+      return;
+    }
+    throw Error;
+  }
+  catch (error) {
+    const errors = error as Error | AxiosError;
+    dispatch({ type: ACTIONS.ERROR, error: errors });
+    return;
+  }}
+
+/* 
+* api call for adding member
+*/
 export const addMember = async (dispatch: any, memberData: string[], api: string) => {
   try {
     let response: AxiosResponse = await axios.post(api, {data: [memberData]});
     if (response.status == 200) {
       const fetchedData = response.data;
-      let memberData = formatMember(fetchedData);
+      let memberData = formatMember(fetchedData[0]);
       dispatch({ type: ACTIONS.POST_ROSTER_SUCCESS, data: memberData });
       return;
     }
@@ -49,9 +93,7 @@ catch (error) {
     const errors = error as Error | AxiosError;
     dispatch({ type: ACTIONS.ERROR, error: errors });
     return;
-}
-
-}
+}}
 
 /* 
 * api call for roster
