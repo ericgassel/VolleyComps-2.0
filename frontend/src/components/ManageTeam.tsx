@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import "./table.css"
+import "./manageteamtable.css"
 import AddModal from './AddModal'
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { addMember, deleteMember, getRoster } from '../action/action';
+import { addMember, deleteMember, getRoster, getTeams, updateCurrentTeam } from '../action/action';
 import { useParams } from 'react-router-dom';
 
 const ManageTeam = () => {
@@ -10,15 +10,15 @@ const ManageTeam = () => {
     const state = useAppContext();
     const dispatch = useAppDispatchContext();
 
-    const {api_base_url, roster, currTeamData, teams} = state;
+    const {api_base_url, roster, currTeamData, teams, isCurrTeamFilled, fetchedRoster} = state;
 
     const getCurrentTeamFromURL = () => {
       let {teamID} = useParams()
-      let currTeam = teams.find((team: {name:string; id:string}) => team.id === teamID) || {name: "Cool School", id: "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM"}
+      let currTeam = teams.find((team: {name:string; id:string}) => team.id === teamID)
       return currTeam;
     }
-
-    let currTeam = currTeamData.id ? currTeamData : getCurrentTeamFromURL()
+    let {teamID} = useParams()
+    let currTeam = isCurrTeamFilled ? currTeamData : getCurrentTeamFromURL()
 
     const onSubmitForm = (event: any) => {
       event.preventDefault(event);
@@ -43,86 +43,106 @@ const ManageTeam = () => {
     };
     
     const deleteMemberButton = async (memberID: string) => {
-      let deleteMemberAPI = `${api_base_url}/delete/${currTeam.id}/roster?player_id=${memberID}`
+      let deleteMemberAPI = `${api_base_url}/delete/${currTeam.id}/roster`
       await deleteMember(dispatch, memberID, deleteMemberAPI);
     }
 
     useEffect(() => {
-      // 1. Fetch api
-      if (!roster.length) {
-        getRoster(dispatch, `${api_base_url}/data/${currTeam.id}/roster`);
+      if (!teams.length) {
+        let getTeamsAPI = `${api_base_url}/data/schools`
+        getTeams(dispatch, getTeamsAPI);
       }
-    }, [roster])
+
+      // 1. Fetch api
+      if (!roster.length && fetchedRoster === false) {
+        getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`);
+      }
+    }, [roster, teams])
 
     return (
-        <div>
-        <h1>{currTeam.name || currTeam.name}</h1>
-
-        {/* <form onSubmit={onSubmitForm}>
-          <label>
-            School Name:
-            <input type="text" name="name" placeholder={currTeamData.name} />
-            <br/>
-            <br/>
-          </label>
-          <input type="submit" value="Submit" />
-        </form> */}
-
+        <div className="managementTitle">
+        <h1>{currTeam ? currTeam.name : ""}</h1>
+        <div className="MemberModal">
         <React.Fragment>
-          <h2><button onClick={openModal}>Add Member</button></h2>
+          <h2><button className='AddMemberButton' onClick={openModal}>Add Member</button></h2>
           <AddModal open={modalOpen} close={closeModal} header="Add a New Member">
             
           <form onSubmit={onSubmitModal}>
-          <label>
-            Name:
-            <input type="text" name="name" />
-            <br/>
-            Number:
-            <input type="text" name="number" />
-            <br/>
-            Height:
-            <input type="text" name="height" />
-            <br/>
-            Position:
-            <input type="text" name="position" />
-            <br/>
-            Class:
-            <input type="text" name="class" />
-            <br/>
-            Notes:
-            <input type="text" name="notes" />
-            <br/>
 
-          </label>
-          <button type="submit">Submit</button>
+          <div className="question">
+            <label>Name:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="name" />
+          </div>
+          <div className="question">
+            <label>Number:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="number" />
+          </div>
+          <div className="question">
+            <label>Height:</label>  
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="height" />
+          </div>
+
+          <div className="question">
+            <label>Position:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="position" />
+          </div>
+
+          <div className="question">
+            <label>Class:</label>
+          </div>
+          <div className="answer">
+            <input className='textbox' type="text" name="class" />
+          </div>
+
+          <div className="question">
+            <label>Notes:</label>
+          </div>
+
+          <div className="answer notes">
+            <textarea className='textbox' name="notes" />
+          </div>
+          <br/>
+
+          <button className='SubmitMemberButton' type="submit">Submit</button>
           </form>
 
 
           </AddModal>
         </React.Fragment>
+        </div>
 
-        <div className="ManageTeamTable">
-            <table>
-                <thead>
-                <tr>
-                    <th>Team Member</th>
-                    <th>Position</th>
-                    <th>Height</th>
-                    <th>Year</th>
-                    <th>Number</th>
-                </tr>
+
+        <div>
+            <table className="ManageTeamTable">
+                <thead className="ManageTeamTableHead">
+                  <tr>
+                      <th className='ManageTeamTableTh'>Team Member</th>
+                      <th className='ManageTeamTableTh'>Position</th>
+                      <th className='ManageTeamTableTh'>Height</th>
+                      <th className='ManageTeamTableTh'>Class</th>
+                      <th className='ManageTeamTableTh'>Number</th>
+                      <th className='ManageTeamTableTh_delete'></th>
+                  </tr>
                 </thead>
                 <tbody>
 
                 {roster.map((val: any, key) => {
                 return (
-                    <tr key={key}>
-                    <td>{val.name}</td>
-                    <td>{val.position}</td>
-                    <td>{val.height}</td>
-                    <td>{val.year}</td>
-                    <td>{val.number}</td>
-                    <td><button onClick={() => deleteMemberButton(val.player_id)}>delete</button></td>
+                    <tr className='ManageTeamsTableTr' key={key}>
+                      <td className='ManageTeamsTableTd'>{val.name}</td>
+                      <td className='ManageTeamsTableTd'>{val.position}</td>
+                      <td className='ManageTeamsTableTd'>{val.height}</td>
+                      <td className='ManageTeamsTableTd'>{val.class}</td>
+                      <td className='ManageTeamsTableTd'>{val.number}</td>
+                      <td className='ManageTeamsTableTd_delete'><button className='DeleteMemberButton' onClick={() => deleteMemberButton(val.player_id)}>delete</button></td>
                     </tr>
                 )
                 })}
