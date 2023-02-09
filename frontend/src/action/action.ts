@@ -8,6 +8,7 @@ export type Action =
 | { type: "teams_success", data: any } 
 | { type: "schedule_success", data: any }
 | { type: "spray_chart_success", data: any }
+| { type: "team_stats_success", data: any }
 | { type: "stats_success", data: any }
 | { type: "rotation_success", data: any }
 | { type:"update_curr_team_success", data: any }
@@ -20,6 +21,7 @@ export const ACTIONS = {
   FECTH_TEAMS_SUCCESS: "teams_success",
   FECTH_SCHEDULE_SUCCESS: "schedule_success",
   FECTH_SPRAYCHART_SUCCESS: "spray_chart_success",
+  FECTH_TEAM_STATS_SUCCESS: "team_stats_success",
   FECTH_STATS_SUCCESS: "stats_success",
   FECTH_ROTATIONS_SUCCESS: "rotation_success",
   UPDATE_CURR_TEAM_SUCCESS: "update_curr_team_success",
@@ -121,6 +123,27 @@ export const getSprayChart = async (dispatch: any, api: string) => {
       if (response.status == 200) {
         const fetchedData = response.data;
         dispatch({ type: ACTIONS.FECTH_SPRAYCHART_SUCCESS, data: fetchedData });
+        return;
+      }
+      throw Error;
+  }
+  catch (error) {
+      const errors = error as Error | AxiosError;
+      dispatch({ type: ACTIONS.ERROR, error: errors });
+      return;
+  }
+};
+
+/* 
+* api call for stats
+*/
+export const getTeamStats = async (dispatch: any, api: string) => {
+  try {
+      let response: AxiosResponse = await axios.get(api);
+      if (response.status == 200) {
+        const fetchedData = response.data;
+        // console.log('stats:', fetchedData);
+        dispatch({ type: ACTIONS.FECTH_TEAM_STATS_SUCCESS, data: fetchedData });
         return;
       }
       throw Error;

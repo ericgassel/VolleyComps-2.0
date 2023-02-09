@@ -29,6 +29,7 @@ type State = {
     roster: player[];
     schedule: any;
     spray_chart: spray_line[];
+    team_stats: any;
     stats: any;
     rotations: any;
     teams: any;
@@ -38,6 +39,7 @@ type State = {
 // -- Global react state managed by React Context API --
 let initialState = {
     error: null,
+    team_stats: [],
     roster: [],
     teams: [],
     schedule: [],
@@ -116,6 +118,24 @@ const appReducer = (state: any, action: Action) => {
           return {
             ...state,
             spray_chart: convertedData
+          }
+        }
+        case "team_stats_success": {
+          const { data } = action;
+          // console.log('data:', data)
+          // const formatedData = data.map((stats: any) => {
+          //   for (const key in stats) {
+          //     if (key !== 'Height' && key !== "Image" && key !== 'Name' && 
+          //     key !== 'Position(s)'&& key !== 'Year' && key !== 'Notes' && key !== 'Seasons') {
+          //       stats[key] = Number(stats[key]);
+          //     }
+          //   }
+          //   return stats;
+          // });
+          // console.log('formatedData:', formatedData);
+          return {
+            ...state,
+            team_stats: [...data],
           }
         }
         case "stats_success": {
