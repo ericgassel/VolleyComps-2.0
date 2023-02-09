@@ -12,13 +12,13 @@ declare global {
 }
 
 // interface representing a player object
-interface Player {
+export interface Player {
     player_num : number;
     player_id : string;
   } 
 
 // interface representing a note object
-interface Notes {
+export interface Notes {
     additional_notes : string;
     blocking_scheme : string;
     serve_primary : string;
@@ -30,15 +30,24 @@ interface Notes {
 }
 
 // interface representing a rotation object
-interface Rotation{
+export interface Rotation{
     rotation_id : string;
     rotation_number : number;
     players_in_rotation : Player[];
     movement_colors : string[];
     notes : Notes;
     colors_available : string[];
+    
 
 }
+
+export interface Point{
+    x : number;
+    y : number;
+    color : string;
+    player_id : string;
+}
+
 
 // represents the 6 players that are currently selected as part of the rotation
 let current_players_on_rotation : Player[] = [];
@@ -796,7 +805,7 @@ const addRoute = () => {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
         // move the temp drawn info on SVG to rotation storage
         // include the notes in this call
-        addRotationToSVG(parseInt(globalThis.current_selected_player), current_rotation_selected);
+        addRotationToSVG(all_existing_rotations[current_rotation_selected]);
         
         // ------------------
         // find index in rotation that is the spot of the player

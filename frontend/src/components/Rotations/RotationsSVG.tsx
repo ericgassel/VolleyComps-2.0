@@ -1,9 +1,9 @@
 import React from 'react';
 import logo from './logo.svg';
 import * as d3 from 'd3';
-import Rotation from '../Rotation';
+
 import { getSystemErrorMap } from 'util';
-import Rotations, { disableButton, enableButton } from './Rotations';
+import Rotations, { Rotation, disableButton, enableButton } from './Rotations';
 
 let point_tracking = false;
 
@@ -128,7 +128,7 @@ export const createRotSvg = () => {
 }
 
 // called when route is added to SVG
-export const addRotationToSVG = (player_number_selected: number, rotation_number: number) => {
+export const addRotationToSVG = (rotationObject: Rotation) => {
     rotation.push(new_rotation);
     // this should move temp 
     // ---------
@@ -141,7 +141,7 @@ export const addRotationToSVG = (player_number_selected: number, rotation_number
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ "data": [[rotation_number.toString(), JSON.stringify(new_rotation), "", "", "serve recieve data", "transition"]] })
+    body: JSON.stringify({ "data": [[rotationObject.rotation_number.toString(), JSON.stringify(new_rotation), "", "", "serve recieve data", "transition"]] })
     })
     .then(response => response.json())
     
