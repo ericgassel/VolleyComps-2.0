@@ -5,8 +5,8 @@ import './TabStyles.css';
 const  PlaysTab=() =>{
   return (
     <div className='playsTab'>
-      <Rotation />
-      <Rotation />
+      {/* <Rotation />
+      <Rotation /> */}
     </div>
   );
 }

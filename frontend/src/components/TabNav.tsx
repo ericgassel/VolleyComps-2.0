@@ -9,7 +9,7 @@ const TabNav = () => {
     <Link to={`/report/${teamID}/playerStatsTab`} className={location.pathname===`/report/${teamID}/playerStatsTab` ?'tab_active':''}>Player Stats</Link>
     <Link to={`/report/${teamID}/teamStatsTab`} className={location.pathname===`/report/${teamID}/teamStatsTab` ?'tab_active':''}>Team Stats</Link>
     <Link to={`/report/${teamID}/rotationsTab`} className={location.pathname===`/report/${teamID}/rotationsTab` ?'tab_active':''}>Rotations</Link>
-    <Link to={`/report/${teamID}/playsTab`} className={location.pathname===`/report/${teamID}/playsTab` ?'tab_active':''}>Plays</Link>
+    {/* <Link to={`/report/${teamID}/playsTab`} className={location.pathname===`/report/${teamID}/playsTab` ?'tab_active':''}>Plays</Link> */}
   </div>;
 }
 
