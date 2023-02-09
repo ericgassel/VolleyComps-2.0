@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import * as d3 from 'd3';
 import Rotation from '../Rotation';
 import { getSystemErrorMap } from 'util';
-
+import Rotations, { disableButton, enableButton } from './Rotations';
 
 let point_tracking = false;
 
@@ -118,8 +118,11 @@ export const createRotSvg = () => {
         }
     })
     svg.on("pointerup", function() {
-        console.log(rotation)
         point_tracking = false;
+        if(globalThis.able_to_add_rotation == true){
+            enableButton("addRouteButton");
+        }
+        globalThis.able_to_add_rotation = true;
         //addRotationToSVG(8);
     })
 }
@@ -131,7 +134,7 @@ export const addRotationToSVG = (player_number_selected: number, rotation_number
     // ---------
     // adds a player to Dummy School
 
-    
+    /*
     fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
     method: 'POST',
     headers: {
@@ -144,6 +147,7 @@ export const addRotationToSVG = (player_number_selected: number, rotation_number
     
     
     createRotSvg();
+    */
     
 }
 

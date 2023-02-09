@@ -16,6 +16,7 @@ declare global {
   var okay_to_add : boolean;
 }
 
+let tooltipInfo = 'Select player, shot options, and spots on court.';
 let rotation_current_player: Player | null = null;
 let shot_type_current_button: string = "";
 let result_current_button: string = "";
@@ -108,6 +109,8 @@ const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
       // if we have selected a shot on SVG, enable the add shot button.
       if (globalThis.first_click != null && globalThis.second_click != null){
         enableButton("addShot");
+
+
       }
       globalThis.okay_to_add = true;
     }
@@ -118,6 +121,7 @@ const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
   input.style.background = selection_color;
   
 }
+
 
 
 // INPUT: IDs of buttons to clear formatting
@@ -404,10 +408,10 @@ const ShotEntry=() =>{
                       <tr>
                         <td>
                           
-                          <button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}} data-tooltip='Select player, shot option, and spot on court.'>ADD SHOT</button>
+                          <button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}} data-tooltip={tooltipInfo}>ADD SHOT</button>
                           
                           </td>
-                        <td><button id='delete' className='tableButton' onClick={deleteShot}>Delete</button></td>
+                        <td><button id='delete' className='tableButton' onClick={deleteShot} data-tooltip="Select a shot to delete.">Delete</button></td>
                         <td><button id='undo' className='tableButton' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
                         
                       </tr>
