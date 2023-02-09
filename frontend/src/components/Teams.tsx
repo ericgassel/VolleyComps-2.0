@@ -8,8 +8,8 @@ import { addTeam, getTeams, updateCurrentTeam } from '../action/action';
 import TavNav from "./TabNav"
 import AddModal from './AddModal'
 
-import "./Teams.css"
-import "./table.css"
+// import "./Teams.css"
+import "./teamtable.css"
 import ManageTeam from './ManageTeam'
 
 
@@ -40,7 +40,7 @@ const Teams = () => {
     e.preventDefault()
 
     let newTeam = e.target[0].value
-    let addTeamAPI = `${api_base_url}/newteam/${newTeam}`
+    let addTeamAPI = `${api_base_url}/newteam`
 
     await addTeam(dispatch, newTeam, addTeamAPI)
 
@@ -56,28 +56,27 @@ const Teams = () => {
     }
   }, [teams]);
 
-  console.log(teams)
-
 
   return (
     <div className='Teams'>
 
     <div className="teamsTitle">
       <h1>Teams</h1>
-      <div className="options">
+      <div className="TeamModal">
         <React.Fragment>
-          <h2><button onClick={openModal}>Add Team</button></h2>
+          <h2><button className='AddTeamButton' onClick={openModal}>Add Team</button></h2>
+          
           <AddModal open={modalOpen} close={closeModal} header="Add a New Team">
             
           <form onSubmit={onSubmitTeam}>
-          <label>
+          <div className="col-25">
+            <label>School Name:</label>
+          </div>
+          <div className="col-75">
+            <input className='schoolName' type="text" name="name" />
+          <button className='SubmitTeamButton' type="submit">Submit</button>
+          </div>
 
-            School Name:
-            <input type="text" name="name" />
-            <br/>
-
-          </label>
-          <button type="submit">Submit</button>
           </form>
 
 
@@ -88,17 +87,17 @@ const Teams = () => {
 
 
 
-    <div className="TeamsTable">
-      <table>
+    <div>
+      <table className="TeamsTable">
         <tbody>        
         
         {teams.map((val:any, key:any) => {
           return (
-            <tr key={key}>
-              <td>{val.name}</td>
-              <td> <Link to={`/management/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Manage Team</Link></td>
-              <td><Link to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Scout Report</Link></td>
-              <td><a href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Add Report</a></td>
+            <tr className='TeamsTableTr' key={key}>
+              <td className='TeamsTableTd TeamName'>{val.name}</td>
+              <td className='TeamsTableTd'> <Link className='teamManagementLink' to={`/management/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Manage Team</Link></td>
+              <td className='TeamsTableTd'><Link className='teamReportLink' to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Scout Report</Link></td>
+              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Add Report</a></td>
             </tr>
           )
         })}

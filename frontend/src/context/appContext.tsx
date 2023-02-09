@@ -27,23 +27,27 @@ type State = {
     error: Error | AxiosError;
     api_base_url: string;
     roster: player[];
+    fetchedRoster: boolean;
     schedule: any;
     spray_chart: spray_line[];
     rotations: any;
     teams: any;
-    currTeamData: {name:string; id:string}
+    currTeamData: {name:string; id:string}, 
+    isCurrTeamFilled: boolean
 }
 
 // -- Global react state managed by React Context API --
 let initialState: any = {
     error: null,
     roster: [],
+    fetchedRoster: false,
     teams: [],
     schedule: [],
     spray_chart: [],
     rotations: [],
     api_base_url: "http://cs400volleyball.mathcs.carleton.edu:5000",
-    currTeamData: {}
+    currTeamData: {}, 
+    isCurrTeamFilled: false
 }
 
 type AppDispatch = Dispatch<Action>
@@ -70,7 +74,10 @@ const appReducer = (state: any, action: Action) => {
             const { data } = action;
             return {
               ...state,
-              currTeamData: data
+              currTeamData: data,
+              isCurrTeamFilled: true,
+              fetchedRoster: false, 
+              roster: []
             }
         }
         case "delete_roster_success": {
@@ -95,7 +102,8 @@ const appReducer = (state: any, action: Action) => {
             const { data } = action;
             return {
               ...state,
-              roster: data
+              roster: data, 
+              fetchedRoster: true
             }
         }
         case "teams_success": {
