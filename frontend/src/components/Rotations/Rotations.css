@@ -136,6 +136,7 @@ button[type="rotationButton"]:hover{
     
   border:.02px;
   box-shadow:0 0 15px 2px rgba(0,0,0,0.1);
+    outline: none;
 }
 
 
@@ -153,3 +154,7 @@ button[type="rotationButton"]:hover{
 }
 
 
+.notesField{
+    overflow: auto;
+    outline: none;
+}

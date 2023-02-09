@@ -11,18 +11,19 @@ interface Player {
   player_id : string;
 } 
 
+declare global {
+  // variable that represents if it is okay to enable addShot button
+  var okay_to_add : boolean;
+}
 
 let rotation_current_player: Player | null = null;
 let shot_type_current_button: string = "";
 let result_current_button: string = "";
 let player_order : Player[] = [];
 
-// TODO:
-// add calendar item at the top of the page instead of calendar as seperate page thing.
-// defaults to the current date
+let selection_color : string = "#51558B";
 
-// also might want to add notes during shot entry
-//  - ability to go to the scouting report from shot entry?
+
 
 // INPUT: date object
 // OUTPUT: date string of D(D)/M(M)/YYYY
@@ -102,15 +103,19 @@ const btn_func = (btn_name: string, btn_options: string[], btn_type: string) =>{
       enableButton("returned");
       enableButton("out");
     }
-    if (btn_type == "result_type") {
+    if (btn_type == "result_type" ) {
       result_current_button = btn_name;
-      enableButton("addShot");
+      // if we have selected a shot on SVG, enable the add shot button.
+      if (globalThis.first_click != null && globalThis.second_click != null){
+        enableButton("addShot");
+      }
+      globalThis.okay_to_add = true;
     }
       
   
   // color selected button
   let input = document.getElementById(btn_name) as HTMLButtonElement;
-  input.style.background = "#277ACC";
+  input.style.background = selection_color;
   
 }
 
@@ -164,7 +169,7 @@ const addShot = (btn_ids_toClear: string[]) => {
   }
   else if (result_current_button == ""){
     alert("Please select result type.");
-  }
+  } 
 }
 
 // INPUT: player number as a string
@@ -181,7 +186,7 @@ const selectPlayer = (player: Player) => {
   
   let playerHTML = document.getElementById("player" + player.player_id) as HTMLButtonElement;
  
-  playerHTML.style.background = "#277ACC";
+  playerHTML.style.background = selection_color;
     if (rotation_current_player != null && player != rotation_current_player) {
       let old_selected = document.getElementById("player" + rotation_current_player.player_id) as HTMLButtonElement;
       old_selected.style.background = "";
@@ -300,13 +305,20 @@ const getScountingReportURL = () : string => {
 
 // INPUT: N/A
 // OUTPUT: deletes the selected shot from the database and SVG
-const deleteShot = () : void => {
+async function deleteShot() : Promise<void> {
+  // ------------------
+  // get sheets id
+  let url : string = window.location.href;
+  let id : string = url.substring(url.lastIndexOf("/") + 1);
   // -------------------
   // delete shot from svg
   let newDataGraph : Shot[] = [];
+  let oldShots : Shot[] = [];
   for(let i : number = 0; i<globalThis.data_graph.length;i++){
     if (!globalThis.data_graph[i].clicked){
-      newDataGraph.push(globalThis.data_graph[i])
+      newDataGraph.push(globalThis.data_graph[i]);
+    } else {
+      oldShots.push(globalThis.data_graph[i]);
     }
   }
   globalThis.data_graph = newDataGraph;
@@ -314,9 +326,35 @@ const deleteShot = () : void => {
 
   // --------------------
   // delete shot from database
-  // -------- TODO -----------
+  for(let i : number = 0; i<oldShots.length;i++){
+    let data : {[key: string] : {[key: string] : string}} = {};
+    let toDelete : {[key: string] : string} = {}
+    toDelete.player_id = oldShots[i].player_id;
+    toDelete.date = oldShots[i].date;
+    toDelete.result = oldShots[i].result;
+    toDelete.type = oldShots[i].shot_type;
+    data.todelete = toDelete;
+    console.log(JSON.stringify(data));
+    // send delete request to API
+    await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/delete/'+ id+'/spray_chart', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+    })
+  }
+  
   
 }
+
+
+
+// TODO: 
+
+// change data-tooltip depending on what is currently selected to tell user
+// what they still need to do.
 
 const ShotEntry=() =>{
     return <div className='ShotEntry'>
@@ -364,7 +402,11 @@ const ShotEntry=() =>{
                       <tbody>
                         
                       <tr>
-                        <td><button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}}>ADD SHOT</button></td>
+                        <td>
+                          
+                          <button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}} data-tooltip='Select player, shot option, and spot on court.'>ADD SHOT</button>
+                          
+                          </td>
                         <td><button id='delete' className='tableButton' onClick={deleteShot}>Delete</button></td>
                         <td><button id='undo' className='tableButton' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
                         
