@@ -47,7 +47,7 @@
     transform: translate(0px, 3px);
     -webkit-transform: translate(0px, 3px);
     box-shadow: 0px 1px 0px 0px;
-    background-color: #797B9F
+    background-color: #6b6c96
 }
 
 .switchButton{
@@ -141,7 +141,7 @@ https://css-tricks.com/different-transitions-for-hover-on-hover-off/
  
 
 
-[data-tooltip]:after {
+[data-tooltip]:disabled:after {
     content: attr(data-tooltip);
     position: absolute;
     left: 5%;
@@ -149,13 +149,13 @@ https://css-tricks.com/different-transitions-for-hover-on-hover-off/
     color: black;
     width: max-content;
     opacity: 0;
-    transition: .2s ease-in .1s;
+    transition: .2s ease-in .001s;
     
     
     
   }
 
-  [data-tooltip]:hover:after {
+  [data-tooltip]:disabled:hover:after {
     opacity: 1;
-    transition: .2s ease-in .75s;
+    transition: .2s ease-in .25s;
   }
