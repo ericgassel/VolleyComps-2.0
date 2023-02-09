@@ -37,11 +37,10 @@ export const updateCurrentTeam = (dispatch: any, teamData: {name:string; id:stri
 */
 export const addTeam = async (dispatch: any, teamName: string, apiWithTeam: string) => {
   try {
-    let response: AxiosResponse = await axios.post(apiWithTeam, {});
+    let response: AxiosResponse = await axios.post(apiWithTeam, {teamname: teamName});
     if (response.status == 200) {
       const fetchedData: {spreadsheet_id: string} = response.data;
-      // console.log(fetchedData)
-      dispatch({ type: ACTIONS.POST_TEAM_SUCCESS, data: {teamName, id: fetchedData.spreadsheet_id} });
+      dispatch({ type: ACTIONS.POST_TEAM_SUCCESS, data: {name: teamName, id: fetchedData.spreadsheet_id} });
       return;
     }
     throw Error;
@@ -57,7 +56,7 @@ export const addTeam = async (dispatch: any, teamName: string, apiWithTeam: stri
 */
 export const deleteMember = async (dispatch: any, memberID: string, api: string) => {
   try {
-    let response: AxiosResponse = await axios.post(api, {});
+    let response: AxiosResponse = await axios.post(api, {todelete: {player_id: memberID}});
     if (response.status == 200) {
       dispatch({ type: ACTIONS.DELETE_ROSTER_SUCCESS, data: memberID });
       return;
