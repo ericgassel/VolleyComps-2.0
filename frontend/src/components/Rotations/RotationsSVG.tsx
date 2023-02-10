@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+
 import * as d3 from 'd3';
 
 import { getSystemErrorMap } from 'util';
@@ -130,24 +130,49 @@ export const createRotSvg = () => {
 // called when route is added to SVG
 export const addRotationToSVG = (rotationObject: Rotation) => {
     rotation.push(new_rotation);
-    // this should move temp 
-    // ---------
-    // adds rotation to dummy school
+    // delete existing rotation info
+    let data : {[key: string] : {[key: string] : string}} = {};
+    let toDelete : {[key: string] : string} = {}
+    toDelete.rotation_number = rotationObject.rotation_number.toString();
+    data.todelete = toDelete;
+    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(response=> console.log(response))
 
-    
+    // --------------
+    // resend new rotation info
+    let playerIDs : string[] = [];
+    let playerNums : number[] = [];
+    for(let i : number = 0; i<rotationObject.players_in_rotation.length; i++){
+        playerIDs.push(rotationObject.players_in_rotation[i].player_id);
+        playerNums.push(rotationObject.players_in_rotation[i].player_num);
+    }
+    // because am storing the movement colors as rbg(red,green,blue), need to replace commas
+    // so that when pull, can splice into list over the commas.
+    for(let i : number = 0; i<rotationObject.movement_colors.length;i++){
+        rotationObject.movement_colors[i] = rotationObject.movement_colors[i].replaceAll(",","|");
+    }
+
     fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
     method: 'POST',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ "data": [[rotationObject.rotation_number.toString(), JSON.stringify(new_rotation), "", "", "serve recieve data", "transition"]] })
+    body: JSON.stringify({ "data": [[rotationObject.rotation_number.toString(), playerIDs.toString(), playerNums.toString() , rotationObject.movement_colors.toString(),JSON.stringify(rotation), rotationObject.notes.additional_notes.toString(), rotationObject.notes.blocking_scheme.toString(), [rotationObject.notes.serve_primary, rotationObject.notes.serve_secondary,rotationObject.notes.serve_tertiary].toString(), [rotationObject.notes.transition_primary, rotationObject.notes.transition_secondary,rotationObject.notes.transition_tertiary].toString()]] })
     })
     .then(response => response.json())
+    .then(response=> console.log(response))
     
-    
+    console.log(JSON.stringify({ "data": [[rotationObject.rotation_number.toString(), playerIDs.toString(), playerNums.toString() , rotationObject.movement_colors.toString(),rotation.toString(), rotationObject.notes.additional_notes.toString(), rotationObject.notes.blocking_scheme.toString(), [rotationObject.notes.serve_primary, rotationObject.notes.serve_secondary,rotationObject.notes.serve_tertiary].toString(), [rotationObject.notes.transition_primary, rotationObject.notes.transition_secondary,rotationObject.notes.transition_tertiary].toString()]] }))
     createRotSvg();
-    
     
 }
 
@@ -174,6 +199,7 @@ export async function sendAndReset(rotationNumber : number) {
 
    //http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number
    // gets all player numbers
+   try {
     let response = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster?col=number', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
@@ -181,8 +207,12 @@ export async function sendAndReset(rotationNumber : number) {
     
     //then() function is used to convert the posted contents to the website into json format
     .then(result => result.json())
+   } catch (error) {
     
-    console.log(response);
+   }
+    
+    
+    
    
 
 

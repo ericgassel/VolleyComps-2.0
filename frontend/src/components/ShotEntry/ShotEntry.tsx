@@ -327,6 +327,7 @@ async function deleteShot() : Promise<void> {
   }
   globalThis.data_graph = newDataGraph;
   createSvg();
+  disableButton("delete");
 
   // --------------------
   // delete shot from database
