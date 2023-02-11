@@ -3,7 +3,7 @@ import React from 'react';
 import * as d3 from 'd3';
 
 import { getSystemErrorMap } from 'util';
-import Rotations, { Rotation, disableButton, enableButton } from './Rotations';
+import Rotations, { Point, Rotation, disableButton, enableButton, sendEditRotation, sendNewRotation } from './Rotations';
 
 let point_tracking = false;
 
@@ -29,11 +29,11 @@ let y_scale_click = d3.scaleLinear()
 let new_rotation : any = [];
 //let rotation : Array<Array<Array<number>>> = [];
 
-let rotation : any[] = [];
+let rotation : Point[] = [];
 
-export const createRotSvg = () => {
+export const createRotSvg = (rotationInput : Rotation) => {
     
-    
+    rotation = rotationInput.points; 
     let checkboxes : string = "";
     let chartItem : HTMLDivElement =  document.getElementById("chart") as HTMLDivElement;
     chartItem.innerHTML = "";
@@ -56,19 +56,18 @@ export const createRotSvg = () => {
 
     for (let j =0; j < rotation.length;j++)
     {
-        for (let i = 0; i < rotation[j].length; i++)
-        {
+        
             
             svg.append("rect")
             .attr("id", "court")
-            .attr("x", rotation[j][i].x)
-            .attr("y", rotation[j][i].y)
+            .attr("x", rotation[j].x)
+            .attr("y", rotation[j].y)
             .attr("width", 4)
             .attr("height", 4)
-            .attr("fill", rotation[j][i].color)
-            .attr("stroke", rotation[j][i].color)
+            .attr("fill", rotation[j].color)
+            .attr("stroke", rotation[j].color)
             .attr("stroke-width", 2);
-        }
+        
     }
 
 
@@ -101,7 +100,7 @@ export const createRotSvg = () => {
                 to_add["x"] = vals[0]
                 to_add["y"] = vals[1]
                 to_add["color"] = globalThis.current_color
-                to_add["player_number"] = globalThis.current_selected_player
+                to_add["player_number"] = globalThis.current_selected_player!.player_num.toString()
                 }
                 new_rotation.push(to_add);
 
@@ -129,67 +128,32 @@ export const createRotSvg = () => {
 
 // called when route is added to SVG
 export const addRotationToSVG = (rotationObject: Rotation) => {
-    rotation.push(new_rotation);
-    // delete existing rotation info
-    let data : {[key: string] : {[key: string] : string}} = {};
-    let toDelete : {[key: string] : string} = {}
-    toDelete.rotation_number = rotationObject.rotation_number.toString();
-    data.todelete = toDelete;
-    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
-    method: 'POST',
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(response=> console.log(response))
-
-    // --------------
-    // resend new rotation info
-    let playerIDs : string[] = [];
-    let playerNums : number[] = [];
-    for(let i : number = 0; i<rotationObject.players_in_rotation.length; i++){
-        playerIDs.push(rotationObject.players_in_rotation[i].player_id);
-        playerNums.push(rotationObject.players_in_rotation[i].player_num);
+    for(let i : number = 0; i<new_rotation.length; i++){
+        rotationObject.points.push(new_rotation[i]);
     }
-    // because am storing the movement colors as rbg(red,green,blue), need to replace commas
-    // so that when pull, can splice into list over the commas.
-    for(let i : number = 0; i<rotationObject.movement_colors.length;i++){
-        rotationObject.movement_colors[i] = rotationObject.movement_colors[i].replaceAll(",","|");
-    }
-
-    fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
-    method: 'POST',
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ "data": [[rotationObject.rotation_number.toString(), playerIDs.toString(), playerNums.toString() , rotationObject.movement_colors.toString(),JSON.stringify(rotation), rotationObject.notes.additional_notes.toString(), rotationObject.notes.blocking_scheme.toString(), [rotationObject.notes.serve_primary, rotationObject.notes.serve_secondary,rotationObject.notes.serve_tertiary].toString(), [rotationObject.notes.transition_primary, rotationObject.notes.transition_secondary,rotationObject.notes.transition_tertiary].toString()]] })
-    })
-    .then(response => response.json())
-    .then(response=> console.log(response))
     
-    console.log(JSON.stringify({ "data": [[rotationObject.rotation_number.toString(), playerIDs.toString(), playerNums.toString() , rotationObject.movement_colors.toString(),rotation.toString(), rotationObject.notes.additional_notes.toString(), rotationObject.notes.blocking_scheme.toString(), [rotationObject.notes.serve_primary, rotationObject.notes.serve_secondary,rotationObject.notes.serve_tertiary].toString(), [rotationObject.notes.transition_primary, rotationObject.notes.transition_secondary,rotationObject.notes.transition_tertiary].toString()]] }))
-    createRotSvg();
+    sendEditRotation(rotationObject);
+    // -------------
+    // recreate SVG
+    createRotSvg(rotationObject);
     
 }
 
 // to be called to delete all temporary data
-export const newSelection = () => {
+export const newSelection = (rotationInput : Rotation) => {
     // this will delete the temporary data (anything not added)
     new_rotation = []
-    createRotSvg()
+    createRotSvg(rotationInput);
 }
 
 // to be called to delete from rotation data
-export const deletePlayerRotation = (player_number_selected: number) => {
+export const deletePlayerRotation = (rotationObject : Rotation, player_number_selected: number) => {
     // removes player info from svg
-
-    rotation = rotation.filter(function(d) {return d[0].player_number.toString() !== player_number_selected.toString() })
-
-    createRotSvg()
+    
+    rotation = rotation.filter(function(d) {return d.player_number.toString() !== player_number_selected.toString() })
+    rotationObject.points = rotation;
+    sendEditRotation(rotationObject);
+    createRotSvg(rotationObject);
 }
 
 // this function will send all data to the API and reset the svg
