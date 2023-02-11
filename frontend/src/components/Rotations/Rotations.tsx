@@ -1029,6 +1029,11 @@ export interface Rotation{
 */
     // THIS IS THE LAST THING THAT IS MISSING.
     export const sendEditRotation = (rotation : Rotation) : void => {
+        // ------------------
+        // get sheets id
+        let url : string = window.location.href;
+        let id : string = url.substring(url.lastIndexOf("/") + 1);
+        // -----------
         let data : {[key: string] : any} = {};
 
         let toEdit : {[key: string] : any} = {}
@@ -1063,7 +1068,7 @@ export interface Rotation{
         */
         
         console.log(data);
-        fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations/edit', {
+        fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/'+ id +'/rotations/edit', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -1075,7 +1080,10 @@ export interface Rotation{
 
     }
     export const sendNewRotation = (rotation : Rotation) : void => {
- 
+          // ------------------
+        // get sheets id
+        let url : string = window.location.href;
+        let id : string = url.substring(url.lastIndexOf("/") + 1);
         // --------------
         // send new rotation info
         let playerIDs : string[] = [];
@@ -1085,7 +1093,7 @@ export interface Rotation{
             playerNums.push(rotation.players_in_rotation[i].player_num);
         }
         
-        fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations', {
+        fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/'+ id + '/rotations', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
