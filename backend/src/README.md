@@ -334,7 +334,6 @@ You can do this by adding the query `recent`, so if you want to delete the most 
 ---------------------------------------------------------------------------
 To be implemented:
 - filter by date
-- team ids with schedule
 ---------------------------------------------------------------------------
 
 PLEASE NOTE, there are usage limits for the google sheets API (how frequently it can be used). Here is a quick overview:
