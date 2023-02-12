@@ -17,12 +17,10 @@ To run the API on your local machine, navigate to `VolleyComps-2.0/backend` and 
 
 The data base is composed of separate Google Sheets files that each represent one team. For example, there will be a Google Sheets titled "St. Olaf", and another Google Sheets titled "Macalaster".
 
-Each Google Sheets contain the following five sheets "pages":
+Each Google Sheets contain the following four sheets "pages":
 
 - "roster"
     - columns in roster: [player_id, name, number, height, position, class, notes]
-- "schedule"
-    - columns in schedule: [team, date, location, outcome]
 - "spray_chart"
     - columns in spray_chart: [player_id, type, result, start_x, start_y, end_x, end_y, date]
 - "rotations"
@@ -31,6 +29,10 @@ Each Google Sheets contain the following five sheets "pages":
     - [Team, Kills,	Errors,	Attempts, Percent,	Kills_Per_Set,	Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Errors, Aces_Per_Set, Errors, Errors_Per_Set, Digs, Digs_Per_Set, Solo, Assists, Errors, Blocks, Blocks_Per_Set]
 - "ind_stats"
     -[Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
+
+Carleton's schedule sheet looks like this:
+- "schedule"
+    - columns in schedule: [team, date, location, outcome]
 
 ## Notes for interacting with the API
 
