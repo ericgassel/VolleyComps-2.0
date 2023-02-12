@@ -89,10 +89,20 @@
 })
 
 
+
+
  app.get("/data/:spreadsheetId/:sheet", async (req, res) =>{
 
-    const spreadsheetId = req.params.spreadsheetId
+    var spreadsheetId = req.params.spreadsheetId
     const sheet = req.params.sheet
+
+    if(spreadsheetId == "carleton" || spreadsheetId == "Carleton"){
+        spreadsheetId = "1mvABHHmHdPpfyBM3RXDKs5hU-XvAc6EV1mhrDc4T-rk";
+        if(sheet != "schedule"){
+            res.status(500).json({"error": "Did you mean to access the sheet 'schedule'?"});
+            return;
+        }
+    }
 
     var col = []
     if(req.query.col){
@@ -108,7 +118,25 @@
 
         const data = getRows.data.values
         const headers = data.shift()
-        const jsonObject = createJsonObject(headers, data, col);
+        var jsonObject = createJsonObject(headers, data, col);
+        if(spreadsheetId == "1mvABHHmHdPpfyBM3RXDKs5hU-XvAc6EV1mhrDc4T-rk" && sheet == "schedule"){
+            try{
+                const getRows = await googleSheets.spreadsheets.values.get({
+                    auth,
+                    spreadsheetId: "1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss",
+                    range: "schools"
+                })
+        
+                const schools = createSchoolsJson(getRows.data.values)
+                console.log(schools)
+                var jsonObject2 = addIdToTeams(jsonObject, schools);
+                console.log(jsonObject2);
+        
+            } catch(error){
+                res.status(500).send(error);
+                return
+            }
+        }
         
         res.status(200).send(jsonObject);
 
@@ -124,6 +152,10 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     const spreadsheetId = req.params.spreadsheetId
     const sheet = req.params.sheet
     var data = req.body.data
+
+    if(!data){
+        res.status(500).json({"error": "Invalid request body. Check that you are sending a json object with the key 'data', and that 'data' represents an array of arrays. See the readme for more details"})
+    }
 
     if(sheet == "roster"){
         data = addUniqueId(data, sheet)
@@ -155,13 +187,15 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
         return
     }
     const toedit = req.body.toedit
-    console.log(toedit)
     if(!req.body.newvalue){
         res.status(500).json({"error": "Specify a new value"})
         return
     }
-    const newvalue = req.body.newvalue
-    console.log(newvalue)
+    if (!Array.isArray(req.body.newvalue)) {
+        res.status(500).json({"error": "newvalue must be an array of objects"})
+        return
+    }
+    const newvalues = req.body.newvalue
 
 
     try{
@@ -181,55 +215,52 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
 
         const data = sheetInfo.data.values;
 
-        var valid = checkValidFilters(Object.keys(toedit), data[0])
-        console.log(valid)
-        if(!valid[0]){
-            res.status(500).json({"error": `Column '${valid[1]}' does not exist in worksheet '${sheet}'`})
-            return;
-        }
-        valid = checkValidFilters([newvalue.var], data[0])
-        console.log(valid)
-        if(!valid[0]){
-            res.status(500).json({"error": `Column '${valid[1]}' does not exist in worksheet '${sheet}'`})
-            return;
-        }
-        const headers = data[0]
-        console.log(headers)
-        
-        columnIndex = headers.indexOf(newvalue.var);
-        if(columnIndex == -1){
-            res.status(500).json({"error": `specified "var" is not a valid variable`})
-            return
-        }
-
-
-        const rowsToEdit = findRowsToMatch(data, toedit)
-        console.log(rowsToEdit)
-
         const requests = []
-        for (const rowIndex of rowsToEdit) {
-            requests.push({
-            updateCells: {
-                range: {
-                    sheetId,
-                    startRowIndex: rowIndex - 1,
-                    endRowIndex: rowIndex,
-                    startColumnIndex: columnIndex,
-                    endColumnIndex: columnIndex + 1
-                },
-                rows: [{
-                      values: [{
-                          userEnteredValue: {
-                            stringValue: newvalue.value
-                          }
-                        }]
-                    }],
-                  fields: "userEnteredValue"
-            }
-            });
-        }
 
-        console.log(requests)
+        for (const newvalue of newvalues){
+            var valid = checkValidFilters(Object.keys(toedit), data[0])
+            if(!valid[0]){
+                res.status(500).json({"error": `Column '${valid[1]}' does not exist in worksheet '${sheet}'`})
+                return;
+            }
+            valid = checkValidFilters([newvalue.var], data[0])
+            if(!valid[0]){
+                res.status(500).json({"error": `Column '${valid[1]}' does not exist in worksheet '${sheet}'`})
+                return;
+            }
+            const headers = data[0]
+            
+            columnIndex = headers.indexOf(newvalue.var);
+            if(columnIndex == -1){
+                res.status(500).json({"error": `specified "var" is not a valid variable`})
+                return
+            }
+
+
+            const rowsToEdit = findRowsToMatch(data, toedit)
+
+            for (const rowIndex of rowsToEdit) {
+                requests.push({
+                updateCells: {
+                    range: {
+                        sheetId,
+                        startRowIndex: rowIndex - 1,
+                        endRowIndex: rowIndex,
+                        startColumnIndex: columnIndex,
+                        endColumnIndex: columnIndex + 1
+                    },
+                    rows: [{
+                        values: [{
+                            userEnteredValue: {
+                                stringValue: newvalue.value
+                            }
+                            }]
+                        }],
+                    fields: "userEnteredValue"
+                }
+                });
+            }
+        }
 
         const response = await googleSheets.spreadsheets.batchUpdate({
             auth,
@@ -345,6 +376,59 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
     }
 
 })
+
+function addIdToTeams(teamObjs, idObj) {
+    for (let teamObj of teamObjs) {
+      for (let [key, value] of Object.entries(idObj)) {
+        if (matchStrings(teamObj["team"], key)) {
+          teamObj["id"] = value;
+          break;
+        }
+      }
+    }
+    return teamObjs;
+  }
+
+  function matchStrings(str1, str2) {
+    // Remove any apostrophes and periods from both strings and convert to lowercase
+    const cleanStr1 = str1.replace(/['.]/g, '').toLowerCase();
+    const cleanStr2 = str2.replace(/['.]/g, '').toLowerCase();
+  
+    // Check if one string is a substring of the other
+    if (cleanStr1.includes(cleanStr2) || cleanStr2.includes(cleanStr1)) {
+      return true;
+    }
+  
+    // Check if the strings are similar using the Levenshtein distance algorithm
+    const maxDistance = 2; // Maximum allowed Levenshtein distance
+    const distance = getLevenshteinDistance(cleanStr1, cleanStr2);
+    return distance <= maxDistance;
+  }
+  
+  // Helper function to calculate the Levenshtein distance between two strings
+  function getLevenshteinDistance(str1, str2) {
+    const m = str1.length;
+    const n = str2.length;
+    const dp = Array.from(Array(m+1), () => Array(n+1).fill(0));
+  
+    for (let i = 0; i <= m; i++) {
+      for (let j = 0; j <= n; j++) {
+        if (i === 0) {
+          dp[i][j] = j;
+        } else if (j === 0) {
+          dp[i][j] = i;
+        } else if (str1[i-1] === str2[j-1]) {
+          dp[i][j] = dp[i-1][j-1];
+        } else {
+          dp[i][j] = 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+        }
+      }
+    }
+  
+    return dp[m][n];
+  }
+  
+  
 
 
 function findRowsToMatch(data, tomatch) {

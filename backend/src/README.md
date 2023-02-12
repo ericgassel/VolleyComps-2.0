@@ -26,7 +26,7 @@ Each Google Sheets contain the following five sheets "pages":
 - "spray_chart"
     - columns in spray_chart: [player_id, type, result, start_x, start_y, end_x, end_y, date]
 - "rotations"
-    - columns in rotations: [rotation_number, line, additional, notes, blocking_scheme, serve_recieve, transition]
+    - columns in rotations: [rotation_number, line, notes, blocking_scheme, serve_recieve, transition]
 - "team_stats"
     - [Team, Kills,	Errors,	Attempts, Percent,	Kills_Per_Set,	Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Errors, Aces_Per_Set, Errors, Errors_Per_Set, Digs, Digs_Per_Set, Solo, Assists, Errors, Blocks, Blocks_Per_Set]
 - "ind_stats"
@@ -137,6 +137,30 @@ the example API call "GET data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rost
 ]
 ```
 
+#### Accessing Carleton's schedule
+
+To access Carleton's schedule, call the following: `GET /data/carleton/schedule`. If a school from the schedule exists in our database, it's spreadsheet ID will be returned with the key "id".
+
+Example:
+```
+[
+    {
+        "team": "Crown College",
+        "date": "\nSep 2 (Fri)\n5:00 PM \n",
+        "location": "St. Paul, MN / Leonard Center",
+        "outcome": "\n\nW,\n3-0\n\n",
+        "id": "1ozhIeSb3M9TWoreLKBQpsR9UurZUoU6mComA47FlVr4"
+    },
+    {
+        "team": "University of Wisconsin-Platteville",
+        "date": "\nSep 3 (Sat)\n12:00 PM \n",
+        "location": "St. Paul, MN / Leonard Center",
+        "outcome": "\n\nL,\n1-3\n\n",
+        "id": "1n-j1edLbh4a8Zb-aucbEhSlIWqQ46vDLH54QAmkWuTY"
+    }
+]
+```
+
 #### Requesting by columns (variables)
 
 If you are only interested in certain columns (variables) in a sheet, you can request data from a sheet by columns by adding a query to the end of the endpoint as follows: 
@@ -227,9 +251,9 @@ notes:
 
 ### POST /write/:spreadsheetId/:sheet/edit
 
-This endpoint allows you to edit single cell values by specifying which rows you want to edit, the column to make changes to, and the value to upload.
+This endpoint allows you to edit single cell values by specifying which rows you want to edit, the column(s) to make changes to, and the value to upload.
 
-Please follow the following format, where the row filtering is in "toedit", and the column to edit and value are provided in "newvalue".
+Please follow the following format, where the row filtering is in "toedit", and the column(s) to edit and values are provided in the array "newvalue".
 
 "var" is the column you want to edit, and "value" is the actual value you want to upload.
 
@@ -238,12 +262,23 @@ Please follow the following format, where the row filtering is in "toedit", and 
     "toedit":{
         "player_id": "1856"
     },
-    "newvalue":{
-        "var": "notes",
-        "value": "here is my new note for this player!"
-    }
+    "newvalue":[
+        {
+            "var": "notes",
+            "value": "here is my new note for this player!"
+        },
+        {
+            "var": "number",
+            "value": "23"
+        }
+    ]
 }
 ```
+
+notes:
+- "newvalue" should be an array even if you're making edits to one column
+- values will be edited in every row that matches the filtering provided in "toedit". Be careful that you're not making changes to rows that you don't want to change
+- you will get a 400 error with the message "Must specify at least one request." if no rows match the filters provided
 
 ### POST /delete/:spreadsheetId/:sheet
 
