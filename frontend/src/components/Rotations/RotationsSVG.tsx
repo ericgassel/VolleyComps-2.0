@@ -3,7 +3,7 @@ import React from 'react';
 import * as d3 from 'd3';
 
 import { getSystemErrorMap } from 'util';
-import Rotations, { Point, Rotation, disableButton, enableButton, sendEditRotation, sendNewRotation } from './Rotations';
+import Rotations, { Player, Point, Rotation, disableButton, enableButton, sendEditRotation, sendNewRotation } from './Rotations';
 
 let point_tracking = false;
 
@@ -147,10 +147,10 @@ export const newSelection = (rotationInput : Rotation) => {
 }
 
 // to be called to delete from rotation data
-export const deletePlayerRotation = (rotationObject : Rotation, player_number_selected: number) => {
+export const deletePlayerRotation = (rotationObject : Rotation, colorSelected: string) => {
     // removes player info from svg
     
-    rotation = rotation.filter(function(d) {return d.player_number.toString() !== player_number_selected.toString() })
+    rotation = rotation.filter(function(d) {return d.color.toString() !== colorSelected })
     rotationObject.points = rotation;
     sendEditRotation(rotationObject);
     createRotSvg(rotationObject);

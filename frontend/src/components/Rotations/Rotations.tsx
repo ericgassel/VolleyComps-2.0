@@ -760,7 +760,8 @@ const buttonClickCurrentRotation = (player : Player) => {
         // new player selected with no existing rotation added
         
         button.style.background = colors_available[0];
-        globalThis.current_color = colors_available[0];
+        // to RGB
+        globalThis.current_color = button.style.background;
         disableButton("deleteRouteButton");
     }
     else
@@ -821,7 +822,7 @@ const addRoute = () : void=> {
         }
         
         rotation.movement_colors[index] = current_button.style.backgroundColor;
-        console.log(rotation.movement_colors);
+       
         addRotationToSVG(all_existing_rotations[current_rotation_selected!]);
         
         let rgbColors : any = hexToRgb(colors_available[0]);
@@ -897,7 +898,7 @@ const deleteRoute = () => {
         
     
         // gets rid of player info on SVG
-        deletePlayerRotation(all_existing_rotations[current_rotation_selected!],globalThis.current_selected_player.player_num);
+        deletePlayerRotation(all_existing_rotations[current_rotation_selected!],globalThis.current_color);
         current_button.style.background = "";
         current_button.style.border = "none";
         globalThis.current_color="";
@@ -1008,7 +1009,6 @@ async function getRotations() : Promise<Rotation[]>{
         }
         rotationList.push(rotation);
       }
-      //console.log(rotationList.sort(function(rot1 : Rotation, rot2: Rotation) : number {return rot1.rotation_number - rot2.rotation_number}));
       return rotationList.sort(function(rot1 : Rotation, rot2: Rotation) : number {return rot1.rotation_number - rot2.rotation_number});
   }
 
@@ -1072,7 +1072,7 @@ export interface Rotation{
 
 
         data.newvalue = [newPlayerID,newPlayerNum,newColors,newLine,newNotes,newBlockingScheme,newServeRecieve,newTransition];
-        console.log(data);
+        
         /*
         newValue.line = rotation.points;
         
