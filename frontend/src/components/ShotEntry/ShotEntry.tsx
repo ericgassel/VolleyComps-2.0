@@ -270,6 +270,8 @@ async function getPlayers() : Promise<Player[]>{
 // adds the calendar to the page if is on ShotEntry page
 window.addEventListener("load", async (event) => {
   if (window.location.href.includes("ShotEntry")){
+    let allHTML : HTMLDivElement = document.getElementById("allHTML") as HTMLDivElement;
+    allHTML.style.display = "none";
     // set default value of date element
 
     let today : Date = new Date();
@@ -286,10 +288,12 @@ window.addEventListener("load", async (event) => {
     let currentPlayers : Player[]  = await getPlayers();
     playerOptions(currentPlayers);
     disableFields();
-
+    allHTML.style.display = "";
     
   }
-});
+}
+
+);
 
 // INTPUT: N/A
 // OUTPUT: returns url path to get to rotations page
@@ -327,6 +331,7 @@ async function deleteShot() : Promise<void> {
   }
   globalThis.data_graph = newDataGraph;
   createSvg();
+  disableButton("delete");
 
   // --------------------
   // delete shot from database
@@ -361,7 +366,7 @@ async function deleteShot() : Promise<void> {
 // what they still need to do.
 
 const ShotEntry=() =>{
-    return <div className='ShotEntry'>
+    return <div className='ShotEntry' id="allHTML">
           
           
             <h1 >Shot Entry</h1>

@@ -2,12 +2,12 @@ import React from 'react'
 import Square from './square.png'
 import './Rotations.css';
 import {createRotSvg,addRotationToSVG, deletePlayerRotation, newSelection, sendAndReset} from './RotationsSVG'
-import { StringLiteral } from 'typescript';
 
 
 declare global {
     var current_color: string;
-    var current_selected_player : string;
+    //represents the current selected player in the rotation (by jersey number)
+    var current_selected_player : Player | null;
     var able_to_add_rotation : boolean;
 }
 
@@ -31,29 +31,24 @@ export interface Notes {
 
 // interface representing a rotation object
 export interface Rotation{
-    rotation_id : string;
     rotation_number : number;
     players_in_rotation : Player[];
     movement_colors : string[];
     notes : Notes;
-    colors_available : string[];
-    
-
+    points : Point[]
 }
 
 export interface Point{
     x : number;
     y : number;
     color : string;
-    player_id : string;
+    player_number : string;
 }
 
 
 // represents the 6 players that are currently selected as part of the rotation
 let current_players_on_rotation : Player[] = [];
 
-//represents the current selected player in the rotation (by jersey number)
-globalThis.current_selected_player = "";
 
 // represents the current selected color in the rotation
 globalThis.current_color = "";
@@ -65,13 +60,12 @@ let colors : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b
 let colors_available : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b928"];
 //                                ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","f6b928"]
 // the rotation that the user selects --> is the index of rotation in all_existing_rotations.
-let current_rotation_selected: number = 0;
+let current_rotation_selected: number | null = null;
 
 // all rotations that exist for scouting report
 let rotation1 : Rotation = {
-    rotation_id : "abc",
     rotation_number : 1,
-    players_in_rotation : [{player_num:8,player_id:"abc123"},{player_num:24,player_id:"abc123"},{player_num:12,player_id:"abc123"},{player_num:92,player_id:"abc123"},{player_num:36,player_id:"abc123"},{player_num:88,player_id:"abc123"}],
+    players_in_rotation : [{player_num:8,player_id:"d33fceaeb51f135d"},{player_num:24,player_id:"04baab5ac56162cc"},{player_num:12,player_id:"137a7bf09e7393e7"},{player_num:92,player_id:"daa381b7fb1a799f"},{player_num:36,player_id:"727dcdeddca6d072"},{player_num:88,player_id:"8bed1eaafe0abfe5"}],
     movement_colors : ["","","","","",""],
     notes : {additional_notes : "string",
         blocking_scheme : "string",
@@ -81,11 +75,11 @@ let rotation1 : Rotation = {
         transition_primary : "string",
         transition_secondary : "string",
         transition_tertiary : "string",},
-    colors_available : []
+    points: []
+
 }
 
 let rotation2 : Rotation = {
-    rotation_id : "abc",
     rotation_number : 1,
     players_in_rotation : [{player_num:1,player_id:"abc123"},{player_num:2,player_id:"abc123"},{player_num:3,player_id:"abc123"},{player_num:4,player_id:"abc123"},{player_num:5,player_id:"abc123"},{player_num:6,player_id:"abc123"}],
     movement_colors : ["","","","","",""],
@@ -97,11 +91,11 @@ let rotation2 : Rotation = {
         transition_primary : "string",
         transition_secondary : "string",
         transition_tertiary : "string",},
-    colors_available : []
+    points : []
+
 }
 
 let rotation3 : Rotation = {
-    rotation_id : "abc",
     rotation_number : 1,
     players_in_rotation : [{player_num:11,player_id:"abc123"},{player_num:22,player_id:"abc123"},{player_num:33,player_id:"abc123"},{player_num:44,player_id:"abc123"},{player_num:55,player_id:"abc123"},{player_num:66,player_id:"abc123"}],
     movement_colors : ["","","","","",""],
@@ -113,7 +107,7 @@ let rotation3 : Rotation = {
         transition_primary : "string",
         transition_secondary : "string",
         transition_tertiary : "string",},
-    colors_available : []
+    points : []
 }
 
 let all_existing_rotations : Rotation[] = [rotation1,rotation2,rotation3];
@@ -133,22 +127,13 @@ let success_color : string =  "#009fa1";
 // color that is used when more than one player is selected for adding new rotation.
 let too_many_color : string = "#b33647";
 
-// list of items for each rotation which stores serve/recieve text box info.
-// each item of list is list of format: *Primary*, *Secondary*, *Tertiary*
-let all_existing_serve_options : string[][] = [["","",""],["","",""],["","",""]]
 
-// list of items for each rotation which stores Transition text box info.
-// each item of list is list of format: *Primary*, *Secondary*, *Tertiary*
-let all_existing_transition_options : string[][] = [["","",""],["","",""],["","",""]]
-
-let all_existing_additional_notes : string[] = ["","",""]
-
-let all_existing_blocking_schemes : string[] = ["", "" , ""]
 
 // INPUT: list of players that are part of the current rotation
 // OUTPUT: N/A
 //      - sets the current rotation to those 6 players and establishes their onClick function to buttonClickCurrentRotation
 const currentRotationButtonsLower = (rotation: Rotation) : void => {
+
     let appended : HTMLDivElement= document.getElementById("currentRotation") as HTMLDivElement;
     appended.innerHTML = "";
     current_players_on_rotation = [];
@@ -158,7 +143,7 @@ const currentRotationButtonsLower = (rotation: Rotation) : void => {
         // need to get rgb of colors[i]
         let rgbColors : any = hexToRgb(colors[i]);
         let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
-        if (rotation.colors_available.indexOf(rgbString) == -1){
+        if (rotation.movement_colors.indexOf(rgbString) == -1){
             colors_available.push(colors[i]);
         }
     }
@@ -170,8 +155,8 @@ const currentRotationButtonsLower = (rotation: Rotation) : void => {
         element.id = "player" + players[i].player_num.toString();
         element.type = "rotationButton";
         element.innerHTML=players[i].player_num.toString();
-        element.style.background = rotation.colors_available[i]
-        element.onclick = () => buttonClickCurrentRotation(players[i].player_num.toString());
+        element.style.background = rotation.movement_colors[i]
+        element.onclick = () => buttonClickCurrentRotation(players[i]);
         appended.append(element);
         current_players_on_rotation.push(players[i]);
     }
@@ -183,8 +168,8 @@ const currentRotationButtonsLower = (rotation: Rotation) : void => {
         element.id = "player" + players[i].player_num.toString();
         element.type = "rotationButton";
         element.innerHTML=players[i].player_num.toString();
-        element.style.background = rotation.colors_available[i]
-        element.onclick = () => buttonClickCurrentRotation(players[i].player_num.toString());
+        element.style.background = rotation.movement_colors[i]
+        element.onclick = () => buttonClickCurrentRotation(players[i]);
         appended.append(element); 
         current_players_on_rotation.push(players[i]);
     }
@@ -193,53 +178,54 @@ const currentRotationButtonsLower = (rotation: Rotation) : void => {
 // INPUT: N/A
 // OUTPUT: N/A
 //      - sets all different note pieces on the page with corresponding saved info
-const setNotes = () : void => {
+const setNotes = (rotation : Rotation) : void => {
     
     let primaryServerRecieve : HTMLInputElement = document.getElementById("primaryServerRecieve") as HTMLInputElement;
     let secondaryServerRecieve : HTMLInputElement = document.getElementById("secondaryServerRecieve") as HTMLInputElement;
     let tertiaryServerRecieve : HTMLInputElement = document.getElementById("tertiaryServerRecieve") as HTMLInputElement;
     
-    primaryServerRecieve.value = all_existing_serve_options[current_rotation_selected][0];
-    secondaryServerRecieve.value = all_existing_serve_options[current_rotation_selected][1];
-    tertiaryServerRecieve.value = all_existing_serve_options[current_rotation_selected][2];
+    primaryServerRecieve.value = rotation.notes.serve_primary;
+    secondaryServerRecieve.value = rotation.notes.serve_secondary;
+    tertiaryServerRecieve.value = rotation.notes.serve_tertiary;
     
     let primaryTransition : HTMLInputElement = document.getElementById("primaryTransition") as HTMLInputElement;
     let secondaryTransition : HTMLInputElement = document.getElementById("secondaryTransition") as HTMLInputElement;
     let tertiaryTransition : HTMLInputElement = document.getElementById("tertiaryTransition") as HTMLInputElement;
     
-    primaryTransition.value = all_existing_transition_options[current_rotation_selected][0];
-    secondaryTransition.value = all_existing_transition_options[current_rotation_selected][1];
-    tertiaryTransition.value = all_existing_transition_options[current_rotation_selected][2];
+    primaryTransition.value = rotation.notes.transition_primary;
+    secondaryTransition.value = rotation.notes.transition_secondary;
+    tertiaryTransition.value = rotation.notes.transition_tertiary;
     
     let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
     let blockingNotes : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
-    additionalNotes.value = all_existing_additional_notes[current_rotation_selected];
-    blockingNotes.value = all_existing_blocking_schemes[current_rotation_selected];
+    additionalNotes.value = rotation.notes.additional_notes;
+    blockingNotes.value = rotation.notes.blocking_scheme;
 
     let extraNotesHeader : HTMLHeadingElement = document.getElementById("rotationNotesText") as HTMLHeadingElement;
-    extraNotesHeader.innerText = "Rotation " +  (current_rotation_selected + 1).toString() +  " Extra Info";
+    extraNotesHeader.innerText = "Rotation " +  (current_rotation_selected! + 1).toString() +  " Extra Info";
 }
 
 // INPUT: N/A
 // OUTPUT: N/A
 //      - saves all transition and serve notes for the selected rotation
 const saveTransitionServeNotes = () : void => {
+    let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
     let primaryServerRecieve : HTMLInputElement = document.getElementById("primaryServerRecieve") as HTMLInputElement;
     let secondaryServerRecieve : HTMLInputElement = document.getElementById("secondaryServerRecieve") as HTMLInputElement;
     let tertiaryServerRecieve : HTMLInputElement = document.getElementById("tertiaryServerRecieve") as HTMLInputElement;
     
-    all_existing_serve_options[current_rotation_selected][0] = primaryServerRecieve.value;
-    all_existing_serve_options[current_rotation_selected][1] = secondaryServerRecieve.value;
-    all_existing_serve_options[current_rotation_selected][2] = tertiaryServerRecieve.value;
+    rotation.notes.serve_primary = primaryServerRecieve.value;
+    rotation.notes.serve_secondary = secondaryServerRecieve.value;
+    rotation.notes.serve_tertiary = tertiaryServerRecieve.value;
 
     let primaryTransition : HTMLInputElement = document.getElementById("primaryTransition") as HTMLInputElement;
     let secondaryTransition : HTMLInputElement = document.getElementById("secondaryTransition") as HTMLInputElement;
     let tertiaryTransition : HTMLInputElement = document.getElementById("tertiaryTransition") as HTMLInputElement;
 
-    all_existing_transition_options[current_rotation_selected][0] = primaryTransition.value;
-    all_existing_transition_options[current_rotation_selected][1] = secondaryTransition.value;
-    all_existing_transition_options[current_rotation_selected][2] = tertiaryTransition.value;
-
+    rotation.notes.transition_primary = primaryTransition.value;
+    rotation.notes.transition_secondary = secondaryTransition.value;
+    rotation.notes.transition_tertiary = tertiaryTransition.value;
+    sendEditRotation(rotation);
 }
 
 // INTPUT: N/A
@@ -248,8 +234,9 @@ const saveTransitionServeNotes = () : void => {
 const saveAddtionalAndBlockingNotes = () : void => {
     let additionalNotes : HTMLTextAreaElement = document.getElementById("additionalNotes") as HTMLTextAreaElement;
     let blockingNotes : HTMLTextAreaElement = document.getElementById("blockingScheme") as HTMLTextAreaElement;
-    all_existing_additional_notes[current_rotation_selected] = additionalNotes.value;
-    all_existing_blocking_schemes[current_rotation_selected] = blockingNotes.value;
+    all_existing_rotations[current_rotation_selected!].notes.additional_notes = additionalNotes.value;
+    all_existing_rotations[current_rotation_selected!].notes.blocking_scheme = blockingNotes.value;
+    sendEditRotation(all_existing_rotations[current_rotation_selected!]);
 }
 
 // INPUT: selected player number from roster of all existing players
@@ -258,17 +245,19 @@ const saveAddtionalAndBlockingNotes = () : void => {
 //      - changes the color of the corresponding button when adding a new rotation.
 //      - sets add_rotation_player_selected to the currently selected player.
 const selectPlayer = (selectedPlayerNum : string) : void=> {
+    fillAddRotationWithCurrentlySelectedColors();
     let selectedPlayer : HTMLButtonElement = document.getElementById("player" + selectedPlayerNum) as HTMLButtonElement;
-    selectedPlayer.style.background =  "#533178";
+    selectedPlayer.style.background =  "#51558B";
     add_rotation_player_selected = selectedPlayerNum;
     for (let i : number = 0; i<all_players.length; i++){
-        let otherPlayer : HTMLButtonElement = document.getElementById("player" + all_players[i]) as HTMLButtonElement;
-        let rgbColors : any = hexToRgb("#533178");
+        let otherPlayer : HTMLButtonElement = document.getElementById("player" + all_players[i].player_num.toString()) as HTMLButtonElement;
+        let rgbColors : any = hexToRgb("#51558B");
         let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
         if (otherPlayer != selectedPlayer && otherPlayer.style.background == rgbString) {
             otherPlayer.style.background = "";
         }
     }
+    
 }
 
 // INPUT: N/A
@@ -291,7 +280,7 @@ const fillAddRotationWithCurrentlySelectedColors = () : void => {
     // ------------------
     // clear coloring for all buttons
     for(let i : number = 0; i<all_players.length; i++){
-        let player : HTMLButtonElement = document.getElementById("player" + all_players[i]) as HTMLButtonElement;
+        let player : HTMLButtonElement = document.getElementById("player" + all_players[i].player_num.toString()) as HTMLButtonElement;
         player.style.background = "";
     }
     for (let i : number = 0; i<6; i++){
@@ -341,39 +330,40 @@ const selectSpotInRotation = (spotInRotation : string) => {
 //      - used after pressing buttons "Add Rotation" -> "Add"
 const addNewRotation = () => {
     let count : number = 0;
-    let rotation : string[] = [];
+    let rotationPlayers : Player[] = [];
     for(let i : number = 0; i < 6; i++){
         let rotationItem : HTMLButtonElement = document.getElementById("ele" + i.toString()) as HTMLButtonElement;
         let itemWithSuccessColor : HTMLButtonElement = document.createElement("button");
         itemWithSuccessColor.style.background = success_color;
         if(rotationItem.style.background == itemWithSuccessColor.style.background){
             count += 1;
-            rotation.push(rotationItem.innerHTML);
+            // get player associated with rotationItem.innerHTML which is player number.
+            let player : Player | null = getPlayerWithNumber(rotationItem.innerHTML);
+            if(player != null) {
+                rotationPlayers.push(player);
+            }
         }
     }
 
+        
     
     if(count == 6){
+        
+        // ----------------
+        // send new rotation to DB
         let newRotation : Rotation = {
-            rotation_id : "abc",
-            rotation_number : 1,
-            players_in_rotation : [{player_num:11,player_id:"abc123"},{player_num:22,player_id:"abc123"},{player_num:33,player_id:"abc123"},{player_num:44,player_id:"abc123"},{player_num:55,player_id:"abc123"},{player_num:66,player_id:"abc123"}],
+            rotation_number : all_existing_rotations.length+1,
+            players_in_rotation : rotationPlayers,
             movement_colors : ["","","","","",""],
-            notes : {additional_notes : "",
-                blocking_scheme : "",
-                serve_primary : "",
-                serve_secondary : "",
-                serve_tertiary : "",
-                transition_primary : "",
-                transition_secondary : "",
-                transition_tertiary : "",},
-            colors_available : []
+            notes : blankNotes(),
+            points: []
         }
+        sendNewRotation(newRotation);
         all_existing_rotations.push(newRotation);
-
         current_rotation_selected = all_existing_rotations.length - 1;
         allRotationButtonsUpper(all_existing_rotations);
         currentRotationButtonsLower(all_existing_rotations[all_existing_rotations.length - 1]);
+        createRotSvg(newRotation);
         // -----------------
         // set default for display of lower table
         let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
@@ -386,6 +376,10 @@ const addNewRotation = () => {
         // set default for display of switch buttons
         let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
         htmlSwitchButtons.style.display="";
+        // ----------------
+        // set default for display of additional notes and blocking scheme
+        let noteArea : HTMLDivElement = document.getElementById("bigNotesArea") as HTMLDivElement;
+        noteArea.style.display = "";
     } else {
         alert("Invalid rotation selected.");
     }
@@ -434,10 +428,10 @@ const addNewRotationButtonSelected = ()=>{
         if (i < all_players.length){
             let element = document.createElement("button");
             // id is player[*player number*]
-            element.id = "player" + all_players[i];
+            element.id = "player" + all_players[i].player_num.toString();
             element.type = "rotationButton";
             element.innerHTML=all_players[i].player_num.toString();
-            element.onclick = () => selectPlayer(all_players[i].toString());
+            element.onclick = () => selectPlayer(all_players[i].player_num.toString());
             divElement.append(element);
         }}
         k = k+4;
@@ -508,8 +502,7 @@ const editRotationConfirm = () => {
     let count : number = 0;
 
     // ------- TODO --------
-    // call API to create rotation
-    let id : string = 'abcdefg'
+    // call API to edit rotation
     // -------------------
     
 
@@ -530,20 +523,14 @@ const editRotationConfirm = () => {
         }
     }
     
-    let rotation : Rotation = {
-        rotation_id : id,
-        rotation_number : current_rotation_selected+1,
-        players_in_rotation : rotationPlayers,
-        movement_colors : ["","","","","",""],
-        notes : blankNotes(),
-        colors_available : colors
-    }
+  
 
 
     if(count == 6){
-        all_existing_rotations[current_rotation_selected] = rotation;
+        all_existing_rotations[current_rotation_selected!].players_in_rotation = rotationPlayers;
+        sendEditRotation(all_existing_rotations[current_rotation_selected!]);
         allRotationButtonsUpper(all_existing_rotations);
-        currentRotationButtonsLower(all_existing_rotations[current_rotation_selected]);
+        currentRotationButtonsLower(all_existing_rotations[current_rotation_selected!]);
         // ----------------
         // change lower HTML to display
         let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
@@ -558,7 +545,7 @@ const editRotationConfirm = () => {
         htmlSwitchButtons.style.display="";
         // set defaults
         globalThis.able_to_add_rotation = false;
-        createRotSvg();
+        createRotSvg(all_existing_rotations[current_rotation_selected!]);
 
 
     } else {
@@ -596,7 +583,7 @@ const editASelectedRotation = (current_rotation : number) => {
     // ----------------
     // change paragraph html element with id "SelectRotationText" 
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
-    rotationText.innerHTML = "Editing Rotation " + (current_rotation_selected + 1).toString();
+    rotationText.innerHTML = "Editing Rotation " + (current_rotation_selected! + 1).toString();
     // ----------------
     // change div element with id "allRotations" to have buttons for all possible players possible players
     let divElement : HTMLDivElement = document.getElementById("allRotations") as HTMLDivElement;
@@ -607,10 +594,10 @@ const editASelectedRotation = (current_rotation : number) => {
         if (i < all_players.length){
             let element = document.createElement("button");
             // id is player[*player number*]
-            element.id = "player" + all_players[i];
+            element.id = "player" + all_players[i].player_num.toString();
             element.type = "rotationButton";
             element.innerHTML=all_players[i].player_num.toString();
-            element.onclick = () => selectPlayer(all_players[i].toString());
+            element.onclick = () => selectPlayer(all_players[i].player_num.toString());
             divElement.append(element);
         }}
         k = k+4;
@@ -652,28 +639,35 @@ const editASelectedRotation = (current_rotation : number) => {
 // OUTPUT: N/A
 //      - sets the current rotation buttons to represent the existing rotation
 //      - sets notes for current rotation
-const selectRotation = (selectedRotation : number) => {
-    globalThis.current_selected_player = "";
+const selectRotation = (rotationInput : Rotation) => {
+    
+    globalThis.current_selected_player = null;
     globalThis.current_color = "";
-    // send data for 
-    sendAndReset(current_rotation_selected);
+   
+    
     // --------------------
     // clear button formatting
     for (let i : number = 0; i < all_existing_rotations.length; i++){
-        let button : HTMLButtonElement = document.getElementById("rotation" + i.toString()) as HTMLButtonElement;
+        let button : HTMLButtonElement = document.getElementById("rotation" + all_existing_rotations[i].rotation_number.toString()) as HTMLButtonElement;
         button.style.background = "";
+        if (all_existing_rotations[i].rotation_number == rotationInput.rotation_number){
+            current_rotation_selected = i;
+        }
     }
     // --------------------
     // set selected button to have red background
-    let rotationButton : HTMLButtonElement = document.getElementById("rotation" + selectedRotation.toString()) as HTMLButtonElement;
+
+    let rotationButton : HTMLButtonElement = document.getElementById("rotation" + rotationInput.rotation_number.toString()) as HTMLButtonElement;
     rotationButton.style.background = "#51558b";
     // --------------------
     // change current_rotation_selected and update HTML
-    current_rotation_selected = selectedRotation;
-    currentRotationButtonsLower(all_existing_rotations[selectedRotation])
+    
+    currentRotationButtonsLower(rotationInput);
+    createRotSvg(rotationInput);
+
     // --------------------
     // change the rotation notes text
-    setNotes();
+    setNotes(rotationInput);
     
 }
 
@@ -684,10 +678,7 @@ const selectRotation = (selectedRotation : number) => {
 //      - also displays all main html page elements
 const allRotationButtonsUpper = (allRotations : Rotation[]) => {
     
-    let allRotationNums : number[] = []
-    for (let i : number = 0; i<allRotations.length; i++){
-        allRotationNums.push(i);
-    }
+    
     // ----------------
     // set defaults for buttons with ids "AddButton" and "EditOrCancelButton"
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
@@ -696,7 +687,7 @@ const allRotationButtonsUpper = (allRotations : Rotation[]) => {
     editOrCancelButton.innerHTML = "Edit Rotation";
     addButton.className="changeButton";
     addButton.onclick = addNewRotationButtonSelected;
-    editOrCancelButton.onclick = () => editASelectedRotation(current_rotation_selected);
+    editOrCancelButton.onclick = () => editASelectedRotation(current_rotation_selected!);
     editOrCancelButton.className="changeButton";
     // -----------------
     // change switch buttons to default
@@ -705,7 +696,12 @@ const allRotationButtonsUpper = (allRotations : Rotation[]) => {
     // -----------------
     // set default for paragraph html element with id "SelectRotationText" and default for div html element with id "rotationToAdd"
     let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
-    rotationText.innerHTML = "Select Rotation";
+    if(allRotations.length == 0){
+        rotationText.innerHTML = "No Rotations Added"
+    } else {
+        rotationText.innerHTML = "Select Rotation";
+    }
+    
     let rotationToAdd : HTMLDivElement = document.getElementById("rotationToAdd") as HTMLDivElement;
     rotationToAdd.innerHTML = "";
     // -----------------
@@ -721,15 +717,15 @@ const allRotationButtonsUpper = (allRotations : Rotation[]) => {
     let appended : HTMLDivElement= document.getElementById("allRotations") as HTMLDivElement;
     appended.innerHTML = "";
     let k : number = 0;
-    while (k < allRotationNums.length){
+    while (k < allRotations.length){
         for(let i : number = k; i < 3+k; i++){
-            if (i < allRotationNums.length){
+            if (i < allRotations.length){
                 let element = document.createElement("button");
-                element.id = "rotation" + i.toString();
+                element.id = "rotation" + allRotations[i].rotation_number.toString();
                 element.type = "rotationButton";
-                element.innerHTML=(allRotationNums[i] + 1).toString();
-                // allRotationNums[i] is a number 1 to X where X is the number of rotations that exist
-                element.onclick = () => selectRotation(allRotationNums[i]);
+                element.innerHTML=(allRotations[i].rotation_number).toString();
+                // the rotation number is 1 + its index
+                element.onclick = () => selectRotation(allRotations[i]);
                 appended.append(element);
                 
             }
@@ -739,28 +735,33 @@ const allRotationButtonsUpper = (allRotations : Rotation[]) => {
         lineBreak.innerHTML="</br>";
         appended.append(lineBreak);
   }
-  selectRotation(current_rotation_selected);
+  if (current_rotation_selected != null) {
+   
+    selectRotation(all_existing_rotations[current_rotation_selected]);
+  }
+  
 }
 
 // INPUT: the player number of the current selected player
 // OUTPUT: N/A
 //      - Sets the boarder around the player button. Also sets the background color of selected player if player does not have any
 //          already added rotational movements.
-const buttonClickCurrentRotation = (number : string) => {
+const buttonClickCurrentRotation = (player : Player) => {
     
     // delete temporary data on SVG
-    newSelection();
+    newSelection(all_existing_rotations[current_rotation_selected!]);
     globalThis.able_to_add_rotation = true;
     disableButton("addRouteButton");
-    let button : HTMLButtonElement = document.getElementById("player"+ number) as HTMLButtonElement;
+    let button : HTMLButtonElement = document.getElementById("player"+ player.player_num) as HTMLButtonElement;
     
-    globalThis.current_selected_player = number;
+    globalThis.current_selected_player = player;
 
     if (button.style.background == ""){
         // new player selected with no existing rotation added
         
         button.style.background = colors_available[0];
-        globalThis.current_color = colors_available[0];
+        // to RGB
+        globalThis.current_color = button.style.background;
         disableButton("deleteRouteButton");
     }
     else
@@ -775,10 +776,10 @@ const buttonClickCurrentRotation = (number : string) => {
     button.style.borderColor = "#454977";
     button.style.borderWidth = "5px";
     
-    let rotation : Rotation = all_existing_rotations[current_rotation_selected];
+    let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
     // resent colors for other players
     for(let i : number = 0; i<rotation.players_in_rotation.length;i++){
-        if (rotation.players_in_rotation[i].player_num.toString() != number){
+        if (rotation.players_in_rotation[i].player_num != player.player_num){
             let non_selected_player : HTMLButtonElement = document.getElementById("player"+ rotation.players_in_rotation[i].player_num.toString()) as HTMLButtonElement;
             if (colors_available.length > 0) {
                 let rgbColors : any = hexToRgb(colors_available[0]);
@@ -800,30 +801,29 @@ const buttonClickCurrentRotation = (number : string) => {
 // INPUT: N/A
 // OUTPUT: N/A
 //      - adds the drawn route to routes and sets new color for future players.
-const addRoute = () => {
-    if (globalThis.current_selected_player != "") {
-        let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
+const addRoute = () : void=> {
+    if (globalThis.current_selected_player != null) {
+        let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player.player_num) as HTMLButtonElement;
         // move the temp drawn info on SVG to rotation storage
         // include the notes in this call
-        addRotationToSVG(all_existing_rotations[current_rotation_selected]);
+
+        
         
         // ------------------
         // find index in rotation that is the spot of the player
-        let rotation : Rotation = all_existing_rotations[current_rotation_selected];
+        let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
+        
+
         let index : number = 0;
-        let stop : boolean = false;
-        let rotationPlayers : Player[]= rotation.players_in_rotation;
-        for(let i : number = 0; i < rotationPlayers.length; i++){
-            if(rotationPlayers[i].player_num.toString() == globalThis.current_selected_player){
-                stop = true;
-            }
-            if (!stop){
-                index += 1;
+        for(let i : number = 0; i< rotation.players_in_rotation.length;i++){
+            if(globalThis.current_selected_player.player_num == rotation.players_in_rotation[i].player_num){
+                index = i;
             }
         }
         
-        rotation.colors_available[index] = current_button.style.backgroundColor;
+        rotation.movement_colors[index] = current_button.style.backgroundColor;
        
+        addRotationToSVG(all_existing_rotations[current_rotation_selected!]);
         
         let rgbColors : any = hexToRgb(colors_available[0]);
         let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
@@ -832,7 +832,7 @@ const addRoute = () => {
             colors_available.shift();
         } 
         // remove current_selected_player
-        globalThis.current_selected_player = "";
+        globalThis.current_selected_player = null;
         // remove the button border
         current_button.style.border = "none";
         // remove the current color
@@ -864,50 +864,48 @@ function hexToRgb(hex:string) {
 // OUTPUT: N/A
 //      - deletes the drawn route from routes
 const deleteRoute = () => {
-    if (globalThis.current_selected_player != "") {
-        let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player) as HTMLButtonElement;
+    
+    
+    if (globalThis.current_selected_player != null) {
+        let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player.player_num) as HTMLButtonElement;
         
         
         // ------------------
         // find index in rotation that is the spot of the player
-        let rotation : Rotation = all_existing_rotations[current_rotation_selected];
-        let index : number = 0;
-        let stop : boolean = false;
+        let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
         let rotationPlayers : Player[] = rotation.players_in_rotation;
-        for(let i : number = 0; i < rotationPlayers.length; i++){
-            if(rotationPlayers[i].player_num.toString() == globalThis.current_selected_player){
-                stop = true;
-            }
-            if (!stop){
-                index += 1;
+        let index : number = 0;
+        for(let i : number = 0; i< rotation.players_in_rotation.length;i++){
+            if(globalThis.current_selected_player.player_num == rotation.players_in_rotation[i].player_num){
+                index = i;
             }
         }
-        rotation.colors_available[index] = "";
+
+        // should always have an index here as the player will be part of the current rotation
+        rotation.movement_colors[index] = "";
         
-        // I think this adds back too many availible colors...
        
         colors_available = [];
         for (let i : number = 0; i < colors.length; i++) {
-            
-            
             let rgbColors : any = hexToRgb(colors[i]);
             let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
             
 
-            if (rotation.colors_available.indexOf(rgbString) == -1){
+            if (rotation.movement_colors.indexOf(rgbString) == -1){
                 colors_available.push(colors[i]);
             }
         }
         
     
         // gets rid of player info on SVG
-       
-        deletePlayerRotation(parseInt(globalThis.current_selected_player));
+        deletePlayerRotation(all_existing_rotations[current_rotation_selected!],globalThis.current_color);
         current_button.style.background = "";
         current_button.style.border = "none";
         globalThis.current_color="";
-        globalThis.current_selected_player ="";
+        globalThis.current_selected_player = null;
 
+        // get rid of 
+        
         // disable add rotation button and delete rotation button
         disableButton("addRouteButton");
         disableButton("deleteRouteButton");
@@ -919,6 +917,7 @@ const deleteRoute = () => {
     } else {
         alert("Please select a player.");
     }
+ 
 }
 
 // INPUT: id of HTML button element
@@ -937,16 +936,235 @@ export const disableButton = (id : string) : void =>{
     field.disabled = false;
   }
 
+// INPUT: N/A
+// OUTPUT: a list of players
+//    - calls API and returns list of player numbers
+async function getPlayers() : Promise<Player[]>{
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/'+ id +'/roster?col=number,player_id', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+      })
+      .then(result => result.json());
+  
+      let playerList : Player[] = []
+      for (let i : number = 0; i < response.length; i++){
+        let player : Player = {player_num: response[i].number,player_id: response[i].player_id}
+        playerList.push(player);
+      }
+      
+      return playerList;
+  }
 
+// INPUT: N/A
+// OUTPUT: a list of players
+//    - calls API and returns list of player numbers
+async function getRotations() : Promise<Rotation[]>{
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/'+ id +'/rotations', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+      })
+      .then(result => result.json())
+    
+      
+      let rotationList : Rotation[] = [];
+      all_players = await getPlayers();
+     
+      for (let i : number = 0; i < response.length; i++){
+        let rotationPlayers : Player[] = [];
+        // add players to rotationPlayers that are part of the rotation.
+      
+        for(let k : number = 0; k<all_players.length; k++){
+           
+            if (response[i].player_id.indexOf(all_players[k].player_id.toString()) != -1){
+                rotationPlayers.push(all_players[k]);
+            }
+        }
+        
+        // set up rotation recieved from database
+        let serve_recieve : string[] = JSON.parse(response[i].serve_recieve);
+        let transition : string[] = JSON.parse(response[i].transition);
+        
+        let noteToAdd : Notes = {
+            additional_notes: JSON.parse(response[i].notes),
+            blocking_scheme: JSON.parse(response[i].blocking_scheme),
+            serve_primary: serve_recieve[0],
+            serve_secondary : serve_recieve[1],
+            serve_tertiary : serve_recieve[2],
+            transition_primary : transition[0],
+            transition_secondary : transition[1],
+            transition_tertiary : transition[2]
+
+        }
+        
+     
+        let rotation : Rotation = {rotation_number: parseInt(response[i].rotation_number),
+            players_in_rotation: rotationPlayers,
+            movement_colors: JSON.parse(response[i].movement_colors),
+            notes: noteToAdd,
+            points : JSON.parse(response[i].line)
+        }
+        rotationList.push(rotation);
+      }
+      return rotationList.sort(function(rot1 : Rotation, rot2: Rotation) : number {return rot1.rotation_number - rot2.rotation_number});
+  }
+
+  /*
+// interface representing a rotation object
+export interface Rotation{
+    rotation_id : string;
+    rotation_number : number;
+    players_in_rotation : Player[];
+    movement_colors : string[];
+    notes : Notes;
+    colors_available : string[];
+}
+*/
+    // THIS IS THE LAST THING THAT IS MISSING.
+    export const sendEditRotation = (rotation : Rotation) : void => {
+        // ------------------
+        // get sheets id
+        let url : string = window.location.href;
+        let id : string = url.substring(url.lastIndexOf("/") + 1);
+        // -----------
+        let data : {[key: string] : any} = {};
+
+        let toEdit : {[key: string] : any} = {};
+        let newLine : {[key : string] : any} = {};
+        let newColors : {[key : string] : any} = {};
+        let newPlayerID : {[key : string] : any} = {};
+        let newPlayerNum : {[key : string] : any} = {};
+        let newNotes : {[key : string] : any} = {};
+        let newBlockingScheme : {[key : string] : any} = {};
+        let newServeRecieve : {[key : string] : any} = {};
+        let newTransition : {[key : string] : any} = {};
+
+        let playerIDs : string[] = [];
+        let playerNums : number[] = [];
+        for(let i : number = 0; i<rotation.players_in_rotation.length; i++){
+            playerIDs.push(rotation.players_in_rotation[i].player_id);
+            playerNums.push(rotation.players_in_rotation[i].player_num);
+        }
+        toEdit.rotation_number = rotation.rotation_number.toString();
+        data.toedit = toEdit;
+
+
+        newLine.var = "line";
+        newLine.value = JSON.stringify(rotation.points);
+        newColors.var = "movement_colors";
+        newColors.value = JSON.stringify(rotation.movement_colors);
+        newPlayerID.var = "player_id";
+        newPlayerID.value = JSON.stringify(playerIDs);
+        newPlayerNum.var = "player_number";
+        newPlayerNum.value = JSON.stringify(playerNums);
+        newNotes.var = "notes";
+        newNotes.value = JSON.stringify(rotation.notes.additional_notes);
+        newBlockingScheme.var = "blocking_scheme";
+        newBlockingScheme.value = JSON.stringify(rotation.notes.blocking_scheme);
+        newServeRecieve.var = "serve_recieve";
+        newServeRecieve.value = JSON.stringify([rotation.notes.serve_primary, rotation.notes.serve_secondary,rotation.notes.serve_tertiary]);
+        newTransition.var = "transition";
+        newTransition.value = JSON.stringify([rotation.notes.transition_primary, rotation.notes.transition_secondary,rotation.notes.transition_tertiary]);
+
+
+
+        data.newvalue = [newPlayerID,newPlayerNum,newColors,newLine,newNotes,newBlockingScheme,newServeRecieve,newTransition];
+        
+        /*
+        newValue.line = rotation.points;
+        
+        newValue.player_id = playerIDs;
+        newValue.player_number = playerNums;
+        newValue.movement_colors = rotation.movement_colors;
+        
+        newValue.notes = rotation.notes.additional_notes;
+        newValue.blocking_scheme = rotation.notes.blocking_scheme;
+        
+        newValue.serve_recieve = [rotation.notes.serve_primary, rotation.notes.serve_secondary,rotation.notes.serve_tertiary];
+        newValue.transition = [rotation.notes.transition_primary, rotation.notes.transition_secondary,rotation.notes.transition_tertiary];
+        */
+        
+        
+        fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/'+ id +'/rotations/edit', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+
+    }
+    export const sendNewRotation = (rotation : Rotation) : void => {
+          // ------------------
+        // get sheets id
+        let url : string = window.location.href;
+        let id : string = url.substring(url.lastIndexOf("/") + 1);
+        // --------------
+        // send new rotation info
+        let playerIDs : string[] = [];
+        let playerNums : number[] = [];
+        for(let i : number = 0; i<rotation.players_in_rotation.length; i++){
+            playerIDs.push(rotation.players_in_rotation[i].player_id);
+            playerNums.push(rotation.players_in_rotation[i].player_num);
+        }
+        
+        fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/'+ id + '/rotations', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "data": [[rotation.rotation_number.toString(), JSON.stringify(playerIDs), JSON.stringify(playerNums) , JSON.stringify(rotation.movement_colors),JSON.stringify(rotation.points), JSON.stringify(rotation.notes.additional_notes), JSON.stringify(rotation.notes.blocking_scheme), JSON.stringify([rotation.notes.serve_primary, rotation.notes.serve_secondary,rotation.notes.serve_tertiary]), JSON.stringify([rotation.notes.transition_primary, rotation.notes.transition_secondary,rotation.notes.transition_tertiary])]] })
+        })
+        .then(response => response.json())
+       
+    }
 // adds the appropriate items to the page if Rotations is loaded
-window.addEventListener("load", (event) => {
+window.addEventListener("load", async (event) => {
     if (window.location.href.includes("Rotations")){
-        currentRotationButtonsLower(all_existing_rotations[0]); 
+        let allHTML : HTMLDivElement = document.getElementById("allHTML") as HTMLDivElement;
+        allHTML.style.display = "none";
+       
+        try {
+            all_existing_rotations = await getRotations()
+           
+            
+        } catch (error) {
+            all_existing_rotations = [];
+        }
+       
+        
+        if (all_existing_rotations.length > 0){
+            current_rotation_selected = 0;
+            createRotSvg(all_existing_rotations[current_rotation_selected]);
+        }
         allRotationButtonsUpper(all_existing_rotations);
-       // selectRotation(0);
-        createRotSvg();
+        
+        if(all_existing_rotations.length != 0){
+            currentRotationButtonsLower(all_existing_rotations[0]); 
+            current_rotation_selected = 0;
+        }else {
+            // hide the bottom section
+            let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
+            table.style.display = "none";
+            // hide EditOrCancelButton
+            let button : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
+            button.style.display = "none";
+            // hide additional notes and blocking scheme
+            let noteArea : HTMLDivElement = document.getElementById("bigNotesArea") as HTMLDivElement;
+            noteArea.style.display = "none";
+           
+            
+        }
         disableButton("addRouteButton");
         disableButton("deleteRouteButton");
+        allHTML.style.display = "";
+
     }
     
    });
@@ -968,19 +1186,22 @@ const getScountingReportURL = () : string => {
     return "/report/" + id + "/playerStatsTab";
   }
 
+//rotationNotesText needs to be applied if there is a rotation.
+
+
 
 // HTML backbone
 function Rotations() {
   return (
-    <div>
+    <div id="allHTML">
         <h1>Rotations</h1>
         <div className='left' id="leftSide">
             <div id='chart' className='left'></div>
 
-            <h2 id="rotationNotesText">Rotation {current_rotation_selected + 1} Extra Info</h2>
+            <h2 id="rotationNotesText"></h2>
 
             <br/>
-            <div>
+            <div id='bigNotesArea'>
                 
             <div className='inLine left'>
                     Additional Notes:
