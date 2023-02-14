@@ -31,6 +31,55 @@ let new_rotation : any = [];
 
 let rotation : Point[] = [];
 
+const svgPath = (points: any, command:any, color: any) => {
+    // build the d attributes by looping over the points
+    const d = points.reduce((acc:any, point:any, i:any, a:any) => i === 0
+      // if first point
+      ? `M ${point[0]},${point[1]}`
+      // else
+      : `${acc} ${command(point, i, a)}`
+    , '')
+    return `<path d="${d}" fill="none" stroke="${color}", stroke-width=3 />`
+  }
+
+const line = (pointA: any, pointB:any) => {
+    const lengthX = pointB[0] - pointA[0]
+    const lengthY = pointB[1] - pointA[1]
+    return {
+      length: Math.sqrt(Math.pow(lengthX, 2) + Math.pow(lengthY, 2)),
+      angle: Math.atan2(lengthY, lengthX)
+    }
+}
+
+const controlPoint = (current:any, previous:any, next:any, reverse:any) => {
+    // When 'current' is the first or last point of the array
+    // 'previous' or 'next' don't exist.
+    // Replace with 'current'
+    const p = previous || current
+    const n = next || current
+    // The smoothing ratio
+    const smoothing = 0.2
+    // Properties of the opposed-line
+    const o = line(p, n)
+    // If is end-control-point, add PI to the angle to go backward
+    const angle = o.angle + (reverse ? Math.PI : 0)
+    const length = o.length * smoothing
+    // The control point position is relative to the current point
+    const x = current[0] + Math.cos(angle) * length
+    const y = current[1] + Math.sin(angle) * length
+    return [x, y]
+  }
+
+  const bezierCommand = (point:any, i:any, a:any) => {
+    // start control point
+    const [cpsX, cpsY] = controlPoint(a[i - 1], a[i - 2], point, false)
+    // end control point
+    const [cpeX, cpeY] = controlPoint(point, a[i - 1], a[i + 1], true)
+    return `C ${cpsX},${cpsY} ${cpeX},${cpeY} ${point[0]},${point[1]}`
+  }
+
+let points = [[5, 10], [10, 40], [40, 30], [60, 5], [90, 45], [120, 10], [150, 45], [400, 10]]
+
 export const createRotSvg = (rotationInput : Rotation) => {
     
     rotation = rotationInput.points; 
@@ -54,19 +103,33 @@ export const createRotSvg = (rotationInput : Rotation) => {
         .attr("stroke", "black")
         .attr("stroke-width", 2);
 
-    for (let j =0; j < rotation.length;j++)
-    {
-        
-            
-            svg.append("rect")
-            .attr("id", "court")
-            .attr("x", rotation[j].x)
-            .attr("y", rotation[j].y)
-            .attr("width", 4)
-            .attr("height", 4)
-            .attr("fill", rotation[j].color)
-            .attr("stroke", rotation[j].color)
-            .attr("stroke-width", 2);
+    if (rotation.length !== 0)
+        {
+        let cur_player = rotation[0].player_number;
+        let new_points: any[] = []
+        for (let j = 0; j < rotation.length;j++)
+        {      
+            if (cur_player == rotation[j].player_number && j !== rotation.length-1)
+            {
+                new_points.push([rotation[j].x, rotation[j].y])
+            }
+            else
+            {
+                console.log("drawing path!")
+                console.log(new_points)
+                //console.log(new_points)
+                const svg = document.querySelector('g')
+                svg.innerHTML = svg.innerHTML + svgPath(new_points, bezierCommand, rotation[j-1].color)
+                cur_player = rotation[j].player_number;
+                new_points = [[rotation[j].x, rotation[j].y]]
+            }
+            // let new_points = []
+            // for (let k = 0; k < rotation[j].length; k++)
+            // {
+                
+            // }
+        } 
+
         
     }
 
