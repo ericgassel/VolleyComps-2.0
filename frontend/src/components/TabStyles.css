@@ -131,6 +131,10 @@
   padding-left: 7%;
 }
 
+.selected {
+  background-color: lightgrey;
+}
+
 .selectedPlayerImg {
   height: 100%;
 }
@@ -155,7 +159,8 @@
 }
 
 .playerName {
-  margin: 10px 0px 10px 0px;
+  margin: 5px 0px 5px 0px;
+  padding: 5px 5px 5px 5px;
   cursor: pointer;
 }
 
