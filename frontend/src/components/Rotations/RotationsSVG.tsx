@@ -119,7 +119,7 @@ export const createRotSvg = (rotationInput : Rotation) => {
                 console.log(new_points)
                 //console.log(new_points)
                 const svg = document.querySelector('g')
-                svg.innerHTML = svg.innerHTML + svgPath(new_points, bezierCommand, rotation[j-1].color)
+                svg!.innerHTML = svg!.innerHTML + svgPath(new_points, bezierCommand, rotation[j-1].color)
                 cur_player = rotation[j].player_number;
                 new_points = [[rotation[j].x, rotation[j].y]]
             }
