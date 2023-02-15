@@ -31,7 +31,7 @@ let new_rotation : any = [];
 
 let rotation : Point[] = [];
 
-const svgPath = (points: any, command:any, color: any) => {
+export const svgPath = (points: any, command:any, color: any) => {
     // build the d attributes by looping over the points
     const d = points.reduce((acc:any, point:any, i:any, a:any) => i === 0
       // if first point
@@ -70,7 +70,7 @@ const controlPoint = (current:any, previous:any, next:any, reverse:any) => {
     return [x, y]
   }
 
-  const bezierCommand = (point:any, i:any, a:any) => {
+export const bezierCommand = (point:any, i:any, a:any) => {
     // start control point
     const [cpsX, cpsY] = controlPoint(a[i - 1], a[i - 2], point, false)
     // end control point

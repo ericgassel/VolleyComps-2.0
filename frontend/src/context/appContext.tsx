@@ -47,6 +47,25 @@ export type team_stats = {
   Team: string;
 }
 
+export type rotation_line = {
+  color: string
+  player_number: string
+  x: number
+  y: number
+}
+
+export type rotation_type = {
+  blocking_scheme: string
+  line: rotation_line[]
+  movement_colors: string[]
+  notes: string
+  player_id: string[]
+  player_number: string[]
+  rotation_number: Number
+  serve_recieve: string[]
+  transition: string[]
+}
+
 type State = {
     error: Error | AxiosError;
     api_base_url: string;
@@ -56,7 +75,7 @@ type State = {
     spray_chart: spray_line[];
     teams_stats: team_stats[];
     stats: any;
-    rotations: any;
+    rotations: rotation_type[];
     teams: any;
     currTeamData: {name:string; id:string}, 
     isCurrTeamFilled: boolean
@@ -143,7 +162,13 @@ const appReducer = (state: any, action: Action) => {
         case "rotation_success": {
           const { data } = action;
           console.log('ratation data: ', data);
-          const convertedData = data.map((element: any) => ({ ...element, line: JSON.parse(element.line)}));
+          const convertedData = data.map((rotation: any) => {
+            const parsedRotation: any = {};
+            for (const key in rotation) {
+              parsedRotation[key] = JSON.parse(rotation[key]);
+            }
+            return parsedRotation;
+          })
           console.log('convertedData: ', convertedData);
           return {
             ...state,
@@ -191,7 +216,7 @@ const appReducer = (state: any, action: Action) => {
             }
             return stats;
           });
-          console.log('formatedData:', formatedData);
+
           return {
             ...state,
             stats: [...data],
@@ -205,7 +230,7 @@ const appReducer = (state: any, action: Action) => {
             }
             return player;
           });
-          console.log('data in appContext:', value);
+
           return {
             ...state,
             roster: [...updatedRoster],
