@@ -23,6 +23,30 @@ export type spray_line = {
   date: string;
 }
 
+export type team_stats = {
+  Aces: string;
+  Aces_Errors: string;
+  Aces_Per_Set: string;
+  Assists_Per_Set: string;
+  Attack_Errors: string;
+  Attempts: string;
+  Ball_Handling_Errors: string;
+  Blocking_Assists: string;
+  Blocking_Errors: string;
+  Blocks: string;
+  Blocks_Per_Set: string;
+  Digs: string;
+  Digs_Per_Set: string;
+  Kills: string;
+  Kills_Per_Set: string;
+  Percent: string;
+  Serve_Errors: string;
+  Serve_Errors_Per_Set: string;
+  Set_Assists: string;
+  Solo: string;
+  Team: string;
+}
+
 type State = {
     error: Error | AxiosError;
     api_base_url: string;
@@ -30,7 +54,7 @@ type State = {
     fetchedRoster: boolean;
     schedule: any;
     spray_chart: spray_line[];
-    team_stats: any;
+    teams_stats: team_stats[];
     stats: any;
     rotations: any;
     teams: any;
@@ -41,7 +65,7 @@ type State = {
 // -- Global react state managed by React Context API --
 let initialState: any = {
     error: null,
-    team_stats: [],
+    teams_stats: [],
     roster: [],
     fetchedRoster: false,
     teams: [],
@@ -140,22 +164,19 @@ const appReducer = (state: any, action: Action) => {
             spray_chart: [...data]
           }
         }
-        case "team_stats_success": {
+        case "teams_stats_success": {
           const { data } = action;
-          // console.log('data:', data)
-          // const formatedData = data.map((stats: any) => {
-          //   for (const key in stats) {
-          //     if (key !== 'Height' && key !== "Image" && key !== 'Name' && 
-          //     key !== 'Position(s)'&& key !== 'Year' && key !== 'Notes' && key !== 'Seasons') {
-          //       stats[key] = Number(stats[key]);
-          //     }
-          //   }
-          //   return stats;
-          // });
-          // console.log('formatedData:', formatedData);
+          const formatedData = data.map((team_stats: any) => {
+            for (const key in team_stats) {
+              if (key !== 'Team') {
+                team_stats[key] = String(team_stats[key]);
+              }
+            }
+            return team_stats;
+          });
           return {
             ...state,
-            team_stats: [...data],
+            teams_stats: [...formatedData],
           }
         }
         case "stats_success": {
