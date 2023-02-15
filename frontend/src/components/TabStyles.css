@@ -173,13 +173,13 @@
   height: 100%;
 }
 
-.bestPlayersContainer {
+.teamsStatsContainer {
   border: 1px solid black;
   width: 35%;
   overflow-y: scroll;
   }
 
-.bestPlayerStatsTable {
+.teamsStatsTable {
   width: 100%;
   border: 1px solid black;
   /* table-layout: fixed; */
