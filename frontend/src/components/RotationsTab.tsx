@@ -23,17 +23,26 @@ const  RotationsTab = () => {
     columnData.push(rotations.slice(i * numOfRows, (i + 1) * numOfRows));
   }
 
+
+
   return (
     <div className='rotationsTab'>
-      <div className='rotationsTab__columns'>
-        {columnData.map((column: rotation_type[], i) => (
-          <div className='rotationsTab__column' key={i}>
-            {column.map((rotation: rotation_type, j: React.Key) => (
-              <Rotation key={j} rotation={rotation} />
-            ))}
-          </div>
-        ))}
-      </div>
+      {rotations.length ? (
+        <div className='rotationsTab__columns'>
+          {columnData.map((column: rotation_type[], i) => (
+            <div className='rotationsTab__column' key={i}>
+              {column.map((rotation: rotation_type, j: React.Key) => (
+                <Rotation key={j} rotation={rotation} />
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className='noAPIContainer'>
+          <div>There is no Rotation to show!</div>
+          <a className='shotEntryLink' href={`/Rotations/${teamID}`}>Add Rotation</a>
+        </div>
+      )}
     </div>
   );
 }

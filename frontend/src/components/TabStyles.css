@@ -133,6 +133,7 @@
 
 .selected {
   background-color: lightgrey;
+  font-weight: 600;
 }
 
 .selectedPlayerImg {
@@ -159,9 +160,16 @@
 }
 
 .playerName {
+  display: flex;
+  flex-direction: row;
   margin: 5px 0px 5px 0px;
   padding: 5px 5px 5px 5px;
   cursor: pointer;
+}
+
+.rosterNumber {
+  display: flex;
+  width: 15%;
 }
 
 /* TeamStatsTab Styles */
@@ -350,12 +358,12 @@ th {
   padding: 5px;
 }
 
-/* RotationsTab Styles */
-
-
-.playsTab {
+.noAPIContainer {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 20%;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-evenly;
 }
