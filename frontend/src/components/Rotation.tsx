@@ -44,8 +44,6 @@ const RotationChart: FC<RotationChartProps> = ({ line }: RotationChartProps) => 
     return newList;
   }, [line]);
 
-  console.log('formattedLines:', formattedLines);
-
   return (
     <svg className='rotationChartSVG' width={400} height={400}>
       <g>
@@ -117,6 +115,7 @@ const Rotation: FC<RotationProps> = ({rotation}: RotationProps) => {
         <div>Blocking Scheme</div>
         <div className='blockingSchemeContent'>{blocking_scheme}</div>
       </div>
+      {/* Add additional notes */}
     </div>
   )
 }

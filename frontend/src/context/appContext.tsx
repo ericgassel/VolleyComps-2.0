@@ -161,7 +161,6 @@ const appReducer = (state: any, action: Action) => {
         }
         case "rotation_success": {
           const { data } = action;
-          console.log('ratation data: ', data);
           const convertedData = data.map((rotation: any) => {
             const parsedRotation: any = {};
             for (const key in rotation) {
@@ -169,7 +168,6 @@ const appReducer = (state: any, action: Action) => {
             }
             return parsedRotation;
           })
-          console.log('convertedData: ', convertedData);
           return {
             ...state,
             rotations: convertedData,

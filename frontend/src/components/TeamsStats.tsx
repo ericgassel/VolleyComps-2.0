@@ -1,4 +1,5 @@
 import React, { useEffect, FC } from 'react'
+import { useParams } from 'react-router-dom';
 import { getTeamStats } from '../action/action';
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
 import { team_stats } from '../context/appContext';
@@ -6,7 +7,7 @@ import { team_stats } from '../context/appContext';
 type TeamsStatsTableProps = { teams_stats: team_stats[] }
 
 const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTableProps) => {
-  const[carleton, opponent] = teams_stats;
+  const [carleton, opponent] = teams_stats;
   return (
     <table className='teamsStatsTable'>
       <thead>
@@ -128,9 +129,10 @@ const TeamsStats = () => {
   const state = useAppContext();
   const { api_base_url, teams_stats } = state;
   const dispatch = useAppDispatchContext();
+  const { teamID } = useParams();
 
   useEffect(() => {
-    getTeamStats(dispatch, `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/team_stats`);
+    getTeamStats(dispatch, `${api_base_url}/data/${teamID}/team_stats`);
   }, [])
 
   return (

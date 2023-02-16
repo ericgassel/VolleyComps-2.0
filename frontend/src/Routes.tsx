@@ -5,7 +5,6 @@ import Home from "./components/Home"
 import PlayerStatsTab from "./components/PlayerStatsTab"
 import TeamStatsTab from "./components/TeamStatsTab"
 import RotationsTab from "./components/RotationsTab"
-import PlaysTab from "./components/PlaysTab"
 import ManageTeam from './components/ManageTeam'
 
 
@@ -39,7 +38,6 @@ const MainRoutes = () => (
 					<Route path="playerStatsTab" element={<PlayerStatsTab />} />
 					<Route path="teamStatsTab" element={<TeamStatsTab />} />
 					<Route path="rotationsTab" element={<RotationsTab />} />
-					<Route path="playsTab" element={<PlaysTab />} />
 				</Route>
 				<Route path="history" element={<History />} />
 				<Route path="ShotEntry/:id" element={<ShotEntry/>}/>

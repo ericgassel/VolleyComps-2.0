@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { getRotation } from '../action/action';
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
 import { rotation_type } from '../context/appContext';
@@ -9,9 +10,10 @@ const  RotationsTab = () => {
   const state = useAppContext();
   const { api_base_url, rotations } = state;
   const dispatch = useAppDispatchContext();
+  const { teamID } = useParams();
 
   useEffect(() => {
-    getRotation(dispatch, `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/rotations`)
+    getRotation(dispatch, `${api_base_url}/data/${teamID}/rotations`)
   }, [])
   
   const numOfColumns = 2;

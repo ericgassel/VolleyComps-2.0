@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { getStats } from '../action/action';
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
 
@@ -13,15 +14,16 @@ import { useAppContext, useAppDispatchContext } from '../context/appContext';
 // Temporary mock data
 const tableSecondHeaders = ['K','K/S','E','TA','PCT','A','A/S','SA','SE','SA/S','DIG','DIG/S','BS','BA','BLK','BLK/S','BE'];
 const tableValues = ['Number', 'Name', 'SP', 'K','K/S','E','TA','PCT','A','A/S','SA','SE','SA/S', 'RE', 'DIG','D/S','BS','BA','TB','B/S','BE', 'BHE', 'PTS'];
-const mockData = [5, 'Dani Friedges', 36, 12, 89, 0.270,	35,	17,	6, 2,	37,	1, 12, 4,	7, 0];
+// const mockData = [5, 'Dani Friedges', 36, 12, 89, 0.270,	35,	17,	6, 2,	37,	1, 12, 4,	7, 0];
 
 const IndividualStats = () => {
   const state = useAppContext();
   const { stats, api_base_url } = state;
   const dispatch = useAppDispatchContext();
+  const { teamID } = useParams();
 
   useEffect(() => {
-    getStats(dispatch, `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/ind_data`);
+    getStats(dispatch, `${api_base_url}/data/${teamID}/ind_data`);
   }, [])
 
   return (

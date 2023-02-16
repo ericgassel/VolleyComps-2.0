@@ -4,6 +4,7 @@ import './TabStyles.css'
 import { getRoster, getSprayChart } from '../action/action';
 import * as d3 from 'd3';
 import Comment from './Comment';
+import { useParams } from 'react-router-dom';
 
 const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: any, selected_player_id: any}) => {
   const x_scale = d3.scaleLinear()
@@ -48,6 +49,7 @@ const PlayerStatsTab = () => {
   const state = useAppContext();
   const { roster, spray_chart, api_base_url } = state;
   const dispatch = useAppDispatchContext();
+  const { teamID  }= useParams();
 
   const [selectedPlayer, setSelectedPlayer]: [player | undefined, Dispatch<SetStateAction<player | undefined>>] = useState();
 
@@ -67,13 +69,13 @@ const PlayerStatsTab = () => {
 
   useEffect(() => {
     // 1. Fetch api
-    getRoster(dispatch, `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster`);
+    getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`);
       // 2. Load svg
-    getSprayChart(dispatch, `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart`);
+    getSprayChart(dispatch, `${api_base_url}/data/${teamID}/spray_chart`);
   
-    // 3. Clean up function: exit load
+    // 3. Clean up function: clean localStorage
     return () => {
-      
+      localStorage.removeItem('selectedPlayer');
     }
   }, [])
 
@@ -102,9 +104,15 @@ const PlayerStatsTab = () => {
             </div>
 
             <div className='selectedPlayerInfoContainer'>
-              <p className='selectedPlayerInfoText'>Name: {selectedPlayer.name}</p>
-              <p className='selectedPlayerInfoText'>Position: {selectedPlayer.position}</p>
-              <p className='selectedPlayerInfoText'>Number: {selectedPlayer.number}</p>
+              {selectedPlayer ? (
+                <>
+                  <p className='selectedPlayerInfoText'>Name: {selectedPlayer.name}</p>
+                  <p className='selectedPlayerInfoText'>Position: {selectedPlayer.position}</p>
+                  <p className='selectedPlayerInfoText'>Number: {selectedPlayer.number}</p>
+                </>
+              ) : (
+                <div>Loading...</div>
+              )}
             </div>
           </div>
 
@@ -131,7 +139,8 @@ const PlayerStatsTab = () => {
           </div>
           <div className='chartCommentContainer'>
             <div className='commentTitle'>Comment</div>
-            <Comment 
+            <Comment
+              teamID={teamID}
               notes={notes} 
               selectedPlayer={selectedPlayer} 
               setSelectedPlayer={setSelectedPlayer} 
