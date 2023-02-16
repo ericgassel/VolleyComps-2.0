@@ -3,7 +3,7 @@ import { updateComment } from '../action/action';
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
 import './TabStyles.css';
 
-const Comment = ({notes, selectedPlayer, isEditing, setIsEditing }: any) => {
+const Comment = ({ teamID, notes, selectedPlayer, isEditing, setIsEditing }: any) => {
   const state = useAppContext();
   const { api_base_url } = state;
   const dispatch = useAppDispatchContext();
@@ -21,14 +21,16 @@ const Comment = ({notes, selectedPlayer, isEditing, setIsEditing }: any) => {
         "toedit":{
           "player_id": selectedPlayer.player_id,
         },
-        "newvalue":{
-          "var": "notes",
-          "value": notesRef.current,
-        }
+        "newvalue": [
+          {
+            "var": "notes",
+            "value": notesRef.current,
+          }
+        ]
       };
       // Save it to the localStorage to persist previously selected player after re-rendering
       localStorage.setItem('selectedPlayer', JSON.stringify({ ...selectedPlayer, notes: notesRef.current }));
-      updateComment(dispatch, `${api_base_url}/write/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/roster/edit`, data);
+      updateComment(dispatch, `${api_base_url}/write/${teamID}/roster/edit`, data);
     } 
     setIsEditing(!isEditing);
   };
@@ -36,9 +38,6 @@ const Comment = ({notes, selectedPlayer, isEditing, setIsEditing }: any) => {
   const handleChange = (event: any) => {
     notesRef.current = event.target.value;
   };
-
-  console.log('notes:', selectedPlayer);
-  console.log('notesRef:', notesRef);
 
   return (
     <div className='commentContents'>
