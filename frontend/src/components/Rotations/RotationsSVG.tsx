@@ -115,11 +115,25 @@ export const createRotSvg = (rotationInput : Rotation) => {
             }
             else
             {
+                let first_points = new_points[0]
+                let second_point = new_points[1]
+                console.log("first point: ")
+                console.log(first_points)
+                svg.append("text")
+                    .text(cur_player)
+                    .attr("x", function(d) {if (first_points[0] > second_point[0]) {return first_points[0] - 11} else {return first_points[0] + 6}})
+                    .attr("y",  function(d) {if (first_points[1] > second_point[1]) {return first_points[1] + 25} else {return first_points[1] - 2}})
+                    .attr("fill", rotation[j-1].color)
+                    .attr('style', "font-size: 25px;");
+
+
+                
+
                 console.log("drawing path!")
                 console.log(new_points)
                 //console.log(new_points)
-                const svg = document.querySelector('g')
-                svg!.innerHTML = svg!.innerHTML + svgPath(new_points, bezierCommand, rotation[j-1].color)
+                const svg_int = document.querySelector('g')
+                svg_int!.innerHTML = svg_int!.innerHTML + svgPath(new_points, bezierCommand, rotation[j-1].color)
                 cur_player = rotation[j].player_number;
                 new_points = [[rotation[j].x, rotation[j].y]]
             }
