@@ -119,13 +119,16 @@ const PlayerStatsTab = () => {
           <h2 className='rosterHeader'>Team Roster</h2>
           <div className='teamRosterContainer'>
             <ul className='teamRosterList'>
+              {/* Show player numbers, too */}
               {roster.map((player: any, i: Number) => 
                 <li className={selectedPlayer.player_id === player.player_id ? 'selected playerName' : 'playerName'} 
-                // <li className='playerName' 
-                key={player.player_id} 
-                id={player.player_id}
-                // style={{ fontWeight : selectedPlayer.Player_ID === player.Player_ID ? 'bold' : 'normal' }} 
-                onClick={handleSelectedPlayer}>{player.name}</li>
+                  key={player.player_id} 
+                  id={player.player_id}
+                  onClick={handleSelectedPlayer}
+                >
+                  <p className='rosterNumber'>{player.number}</p>
+                  <p>{player.name}</p>
+                </li>
               )}
             </ul>
           </div>
@@ -150,7 +153,12 @@ const PlayerStatsTab = () => {
         </div>
 
       </div>
-      ) : (<div>Loading...</div>)
+      ) : (        
+      <div className='noAPIContainer'>
+        <div>There is no Player to show!</div>
+        <a className='shotEntryLink' href={`/management/${teamID}`}>Manage Roster</a>
+      </div>
+      )
     )
   );
 }
