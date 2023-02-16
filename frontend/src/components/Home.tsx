@@ -11,20 +11,20 @@ const Home=() =>{
   const state = useAppContext();
   const dispatch = useAppDispatchContext();
 
-  const {api_base_url, schedule, teams} = state;
+  const {api_base_url, schedule} = state;
 
-  let scheduleAPI = `${api_base_url}/data/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/schedule`
+  let scheduleAPI = `${api_base_url}/data/carleton/schedule`
 
   useEffect(() => {
     if (!schedule.length) {
       getSchedule(dispatch, scheduleAPI);
     }
 
-    if (!teams.length) {
-      let getTeamsAPI = `${api_base_url}/data/schools`
-      getTeams(dispatch, getTeamsAPI);
-    }
-    }, [schedule, teams]);
+    // if (!teams.length) {
+    //   let getTeamsAPI = `${api_base_url}/data/schools`
+    //   getTeams(dispatch, getTeamsAPI);
+    // }
+    }, [schedule]);
 
   // console.log(schedule)
 
@@ -46,12 +46,12 @@ const Home=() =>{
 
         {schedule.map((val: any, key: any) => {
 
-          let currTeam = teams.find((team: {name:string; id:string}) => team.name === val.team) || {name: "Dummy_school", id: "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM"}
+          let currTeam = val || {team: "Dummy_school", id: "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM"}
 
           return (
             <tr className="ScheduleTableTr" key={key}>
               <td className="ScheduleTableTd">{val.date}</td>
-              <td className="ScheduleTableTd"><Link className="reportLink" to={`/report/${currTeam.id}`} onClick={() => updateCurrentTeam(dispatch, {name:currTeam.name, id: currTeam.id})}>{val.team}</Link></td>
+              <td className="ScheduleTableTd"><Link className="reportLink" to={`/report/${currTeam.id}`} onClick={() => updateCurrentTeam(dispatch, {name:currTeam.team, id: currTeam.id})}>{val.team}</Link></td>
               <td className="ScheduleTableTd">{val.location}</td>
               <td className="ScheduleTableTd">{val.outcome}</td>
             </tr>

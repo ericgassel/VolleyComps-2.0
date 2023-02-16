@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+
 import {Outlet} from "react-router-dom"
 import {Link, useLocation} from 'react-router-dom'
 
@@ -11,11 +12,13 @@ import AddModal from './AddModal'
 // import "./Teams.css"
 import "./teamtable.css"
 import ManageTeam from './ManageTeam'
+import {  FadeLoader } from 'react-spinners';
 
 
 const Teams = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [loadingInProgress, setLoading] = useState(false);
 
   const openModal = () => {
     setModalOpen(true);
@@ -37,25 +40,25 @@ const Teams = () => {
 
    // Modal for adding school
   const onSubmitTeam = async (e: any) => {
+    setLoading(true)
+    console.log(loadingInProgress)
     e.preventDefault()
 
     let newTeam = e.target[0].value
     let addTeamAPI = `${api_base_url}/newteam`
-
-    await addTeam(dispatch, newTeam, addTeamAPI)
-
     setModalOpen(false);
-
+    addTeam(dispatch, newTeam, addTeamAPI).then(() => setLoading(false))
   };
+
 
 
   let getTeamsAPI = `${api_base_url}/data/schools`
   useEffect(() => {
     if (!teams.length) {
-      getTeams(dispatch, getTeamsAPI);
+      setLoading(true)
+      getTeams(dispatch, getTeamsAPI).then(() => setLoading(false));
     }
   }, [teams]);
-
 
   return (
     <div className='Teams'>
@@ -66,8 +69,8 @@ const Teams = () => {
         <React.Fragment>
           <h2><button className='AddTeamButton' onClick={openModal}>Add Team</button></h2>
           
+
           <AddModal open={modalOpen} close={closeModal} header="Add a New Team">
-            
           <form onSubmit={onSubmitTeam}>
           <div className="col-25">
             <label>School Name:</label>
@@ -76,17 +79,21 @@ const Teams = () => {
             <input className='schoolName' type="text" name="name" />
           <button className='SubmitTeamButton' type="submit">Submit</button>
           </div>
-
           </form>
-
-
           </AddModal>
+
+
         </React.Fragment>
       </div>
     </div>
 
 
+    {loadingInProgress ? (
 
+    <div style={{position: "fixed", top: "30%", left: "55%", transform: "translate(-50%, -50%)"}}>
+      <FadeLoader color={"#36d7b7"} />
+    </div>
+        ) : (
     <div>
       <table className="TeamsTable">
         <tbody>        
@@ -104,7 +111,7 @@ const Teams = () => {
 
         </tbody>
       </table>
-    </div>
+    </div>)}
 
   </div>)
 }
