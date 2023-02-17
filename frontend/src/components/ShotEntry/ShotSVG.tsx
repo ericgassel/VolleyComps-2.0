@@ -53,7 +53,7 @@ let x_scale_click = d3.scaleLinear()
     .range([100, 0]);
 
 let y_scale_click = d3.scaleLinear()
-    .domain([650, 0])
+    .domain([650, 50])
     .range([100, 0]);
 
 
@@ -137,8 +137,9 @@ export function createSvg(){
         .attr("y1", y_scale(45))
         .attr("x2", x_scale(100))
         .attr("y2", y_scale(45))
-        .attr("stroke", "black")
+        .attr("stroke", "white")
         .attr("stroke-width", 4)
+        .attr("opacity", .5)
 
     svg.append("circle")
         .attr("id", "net_posts")
@@ -163,7 +164,7 @@ export function createSvg(){
         .attr('y2', function(d, i){return y_scale(d.end_y)})
         
         .attr("opacity", function (d) {if (d.shot_type === "serve"){return .5} else {return 1}})
-        .attr("stroke-width",function(d, i){return 2})
+        .attr("stroke-width",function(d, i){return 4})
         .on("click", function(event,d){
             // i is the shot thing
             
@@ -190,7 +191,7 @@ export function createSvg(){
         })
         .on('mouseout', function(event, d) {
             if (d.clicked == false){
-                d3.select(this).attr("stroke-width", 2);
+                d3.select(this).attr("stroke-width", 4);
                 
             }
             onLine = false;
