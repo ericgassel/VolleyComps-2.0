@@ -131,6 +131,7 @@ export function createSvg(){
         .attr("stroke", "white")
         .attr("stroke-width", 4)
 
+        //net drawing
     svg.append("line")
         .attr("id", "net")
         .attr("x1", x_scale(0))
@@ -154,48 +155,6 @@ export function createSvg(){
         .attr("cy", y_scale(15))
         .attr("r", 10)
         .attr("fill", "black")
-
-    for (let i = 0; i < globalThis.data_graph.length; i++)  
-    {
-        let current_shot = globalThis.data_graph[i];
-        if (current_shot.result == "out")
-        {
-
-        }
-        else if (current_shot.result == "kill")
-        {
-            svg.append("circle")
-            .attr("id", "net_posts")
-            .attr("cx", x_scale(current_shot.end_x))
-            .attr("cy", y_scale(current_shot.end_y))
-            .attr("r", 10)
-            .attr("fill", "transparent")
-            .attr("stroke", "black")
-            .attr("stroke-width", 4)
-
-        }
-        else if (current_shot.result == "returned")
-        {
-            let x_size = 7;
-            svg.append("line")
-            .attr("id", "net")
-            .attr("x1", x_scale(current_shot.end_x)-x_size)
-            .attr("y1", y_scale(current_shot.end_y)-x_size)
-            .attr("x2", x_scale(current_shot.end_x)+x_size)
-            .attr("y2", y_scale(current_shot.end_y)+x_size)
-            .attr("stroke", "black")
-            .attr("stroke-width", 4)
-
-            svg.append("line")
-            .attr("id", "net")
-            .attr("x1", x_scale(current_shot.end_x)-x_size)
-            .attr("y1", y_scale(current_shot.end_y)+x_size)
-            .attr("x2", x_scale(current_shot.end_x)+x_size)
-            .attr("y2", y_scale(current_shot.end_y)-x_size)
-            .attr("stroke", "black")
-            .attr("stroke-width", 4)
-        }
-    }
 
 
     svg.selectAll('shots')
@@ -249,6 +208,51 @@ export function createSvg(){
 
         let width = 500;
         let height = 500;
+
+        
+        
+    //shot markers    
+    for (let i = 0; i < globalThis.data_graph.length; i++)  
+    {
+        let current_shot = globalThis.data_graph[i];
+        if (current_shot.result == "out")
+        {
+
+        }
+        else if (current_shot.result == "kill")
+        {
+            svg.append("circle")
+            .attr("id", "net_posts")
+            .attr("cx", x_scale(current_shot.end_x))
+            .attr("cy", y_scale(current_shot.end_y))
+            .attr("r", 10)
+            .attr("fill", "#fac476")
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+
+        }
+        else if (current_shot.result == "returned")
+        {
+            let x_size = 7;
+            svg.append("line")
+            .attr("id", "net")
+            .attr("x1", x_scale(current_shot.end_x)-x_size)
+            .attr("y1", y_scale(current_shot.end_y)-x_size)
+            .attr("x2", x_scale(current_shot.end_x)+x_size)
+            .attr("y2", y_scale(current_shot.end_y)+x_size)
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+
+            svg.append("line")
+            .attr("id", "net")
+            .attr("x1", x_scale(current_shot.end_x)-x_size)
+            .attr("y1", y_scale(current_shot.end_y)+x_size)
+            .attr("x2", x_scale(current_shot.end_x)+x_size)
+            .attr("y2", y_scale(current_shot.end_y)-x_size)
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+        }
+    }
 
     svg.on("click", function() {
         
