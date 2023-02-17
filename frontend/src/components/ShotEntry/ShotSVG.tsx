@@ -155,6 +155,49 @@ export function createSvg(){
         .attr("r", 10)
         .attr("fill", "black")
 
+    for (let i = 0; i < globalThis.data_graph.length; i++)  
+    {
+        let current_shot = globalThis.data_graph[i];
+        if (current_shot.result == "out")
+        {
+
+        }
+        else if (current_shot.result == "kill")
+        {
+            svg.append("circle")
+            .attr("id", "net_posts")
+            .attr("cx", x_scale(current_shot.end_x))
+            .attr("cy", y_scale(current_shot.end_y))
+            .attr("r", 10)
+            .attr("fill", "transparent")
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+
+        }
+        else if (current_shot.result == "returned")
+        {
+            let x_size = 7;
+            svg.append("line")
+            .attr("id", "net")
+            .attr("x1", x_scale(current_shot.end_x)-x_size)
+            .attr("y1", y_scale(current_shot.end_y)-x_size)
+            .attr("x2", x_scale(current_shot.end_x)+x_size)
+            .attr("y2", y_scale(current_shot.end_y)+x_size)
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+
+            svg.append("line")
+            .attr("id", "net")
+            .attr("x1", x_scale(current_shot.end_x)-x_size)
+            .attr("y1", y_scale(current_shot.end_y)+x_size)
+            .attr("x2", x_scale(current_shot.end_x)+x_size)
+            .attr("y2", y_scale(current_shot.end_y)-x_size)
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+        }
+    }
+
+
     svg.selectAll('shots')
         .data(globalThis.data_graph)
         .join('line')
@@ -162,8 +205,14 @@ export function createSvg(){
         .attr('x2', function(d, i){return x_scale(d.end_x)})
         .attr('y1', function(d, i){return y_scale(d.start_y)})
         .attr('y2', function(d, i){return y_scale(d.end_y)})
-        
-        .attr("opacity", function (d) {if (d.shot_type === "serve"){return .5} else {return 1}})
+        .attr('class',function(d){
+            if(d.shot_type == "serve"){ 
+               return 'dashed';
+            } else {
+               return 'solid'
+            }
+         })
+        .attr("opacity", function (d) {if (d.shot_type === "serve"){return 1} else {return 1}})
         .attr("stroke-width",function(d, i){return 4})
         .on("click", function(event,d){
             // i is the shot thing
@@ -185,7 +234,7 @@ export function createSvg(){
 
             
         })
-        .attr("stroke", function(d) {if (d.result === "kill"){return "#000"} else if (d.result === "out"){return "red"} else {return "green"}}).on('mouseover', function(event, d) {
+        .attr("stroke", function(d) {if (d.result === "kill"){return "#000"} else if (d.result === "out"){return "red"} else {return "black"}}).on('mouseover', function(event, d) {
         d3.select(this).attr("stroke-width", 6);
         onLine = true;
         })
