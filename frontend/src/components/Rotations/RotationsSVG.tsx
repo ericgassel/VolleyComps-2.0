@@ -126,9 +126,6 @@ export const createRotSvg = (rotationInput : Rotation) => {
                     .attr("fill", rotation[j-1].color)
                     .attr('style', "font-size: 25px;");
 
-
-                
-
                 console.log("drawing path!")
                 console.log(new_points)
                 //console.log(new_points)
@@ -161,7 +158,8 @@ export const createRotSvg = (rotationInput : Rotation) => {
       )
 */
     
-    svg.on("pointerdown", function() {
+    svg.on("pointerdown", function(event) {
+        this.setPointerCapture(event.pointerId);
         new_rotation = [];
         point_tracking = true;
     })
