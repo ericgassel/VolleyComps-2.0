@@ -102,7 +102,7 @@ export function createSvg(){
     .select("#chart")
     .append("svg")
     .attr("width", 900)
-    .attr("height", 600)
+    .attr("height", 800)
     .append("g");
 
 
@@ -254,6 +254,103 @@ export function createSvg(){
         }
     }
 
+        svg.append("line")
+            .attr("id", "key")
+            .attr("x1", x_scale(0))
+            .attr("y1", 580)
+            .attr("x2", x_scale(21))
+            .attr("y2", 580)
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+            .attr("opacity", 1)
+
+        svg.append("text")
+            .attr("id", "key")
+            .attr("x", x_scale(22))
+            .attr("y", 588)
+            .text("Shot")
+            .attr('style', "font-size: 20px;")
+
+        svg.append("line")
+            .attr("id", "key")
+            .attr("x1", x_scale(0))
+            .attr("y1", 610)
+            .attr("x2", x_scale(22))
+            .attr("y2", 610)
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+            .attr("opacity", 1)
+            .attr('class',function(d){
+                   return 'dashed';
+             })
+
+
+        svg.append("text")
+            .attr("id", "key")
+            .attr("x", x_scale(22))
+            .attr("y", 618)
+            .text("Serve")
+            .attr('style', "font-size: 20px;")
+
+        svg.append("line")
+            .attr("id", "key")
+            .attr("x1", x_scale(0))
+            .attr("y1", 640)
+            .attr("x2", x_scale(21))
+            .attr("y2", 640)
+            .attr("stroke", "red")
+            .attr("stroke-width", 4)
+            .attr("opacity", 1)
+
+        svg.append("text")
+            .attr("id", "key")
+            .attr("x", x_scale(22))
+            .attr("y", 648)
+            .text("Out")
+            .attr('style', "font-size: 20px;")
+
+        svg.append("circle")
+            .attr("id", "key")
+            .attr("cx", x_scale(0)+10)
+            .attr("cy", 670)
+            .attr("r", 10)
+            .attr("fill", "white")
+            .attr("stroke", "black")
+            .attr("stroke-width", 4)
+
+        svg.append("text")
+            .attr("id", "key")
+            .attr("x", x_scale(0) + 26)
+            .attr("y", 676)
+            .text("Kill")
+            .attr('style', "font-size: 20px;")
+
+        let x_size = 9;
+        svg.append("line")
+        .attr("id", "net")
+        .attr("x1", x_scale(2)-x_size)
+        .attr("y1", 709-x_size)
+        .attr("x2", x_scale(2)+x_size)
+        .attr("y2", 709+x_size)
+        .attr("stroke", "black")
+        .attr("stroke-width", 4)
+
+        svg.append("line")
+        .attr("id", "net")
+        .attr("x1", x_scale(2)-x_size)
+        .attr("y1", 709+x_size)
+        .attr("x2", x_scale(2)+x_size)
+        .attr("y2", 709-x_size)
+        .attr("stroke", "black")
+        .attr("stroke-width", 4)
+
+        svg.append("text")
+        .attr("id", "key")
+        .attr("x", x_scale(0) + 26)
+        .attr("y", 716)
+        .text("Returned")
+        .attr('style', "font-size: 20px;")
+
     svg.on("click", function() {
         
         let vals = d3.pointer(event, svg.node())
@@ -266,11 +363,11 @@ export function createSvg(){
                 .attr("id", "selected")
                 .attr("cx", vals[0])
                 .attr("cy", vals[1])
-                .attr("r", 20)
+                .attr("r", 15)
                 .attr("height", 500)
                 .attr("fill", "white")
                 .attr("stroke", "green")
-                .attr("stroke-width", 2);
+                .attr("stroke-width", 4);
         }
         else if (globalThis.second_click == null && !onLine) {
             globalThis.second_click = {x : x_scale_click(vals[0]), y : y_scale_click(vals[1])};
@@ -279,11 +376,11 @@ export function createSvg(){
                 .attr("id", "selected")
                 .attr("cx", vals[0])
                 .attr("cy", vals[1])
-                .attr("r", 20)
+                .attr("r", 15)
                 .attr("height", 500)
                 .attr("fill", "white")
                 .attr("stroke", "red")
-                .attr("stroke-width", 2);
+                .attr("stroke-width", 4);
 
 
         }
