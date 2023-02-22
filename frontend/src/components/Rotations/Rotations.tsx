@@ -621,6 +621,7 @@ const editRotationConfirm = () => {
     if(count == 6){
         let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
         let oldPlayerIDs : string[] = [];
+        
         for(let i : number = 0; i<rotation.players_in_rotation.length; i++){
             oldPlayerIDs.push(rotation.players_in_rotation[i].player_id);
         }
@@ -1098,17 +1099,29 @@ async function getRotations() : Promise<Rotation[]>{
       
       let rotationList : Rotation[] = [];
       all_players = await getPlayers();
+
+      // get all player numbers
+      let allPlayerIDS : string[] = [];
+      for(let i : number = 0; i < all_players.length;i++){
+        allPlayerIDS.push(all_players[i].player_id.toString());
+      }
+   
      
       for (let i : number = 0; i < response.length; i++){
+     
         let rotationPlayers : Player[] = [];
-        // add players to rotationPlayers that are part of the rotation.
-      
-        for(let k : number = 0; k<all_players.length; k++){
-           
-            if (response[i].player_id.indexOf(all_players[k].player_id.toString()) != -1){
-                rotationPlayers.push(all_players[k]);
+        let rotPlayerIDS : string[] = JSON.parse(response[i].player_id);
+        for(let i : number = 0; i < rotPlayerIDS.length; i++){
+            
+            if (allPlayerIDS.indexOf(rotPlayerIDS[i]) != -1){
+                rotationPlayers.push(all_players[allPlayerIDS.indexOf(rotPlayerIDS[i])])
             }
+            
         }
+      
+        
+    
+       
         
         // set up rotation recieved from database
         let serve_recieve : string[] = JSON.parse(response[i].serve_recieve);
@@ -1133,6 +1146,7 @@ async function getRotations() : Promise<Rotation[]>{
             notes: noteToAdd,
             points : JSON.parse(response[i].line)
         }
+        console.log("adding rotation");
         rotationList.push(rotation);
       }
       return rotationList.sort(function(rot1 : Rotation, rot2: Rotation) : number {return rot1.rotation_number - rot2.rotation_number});

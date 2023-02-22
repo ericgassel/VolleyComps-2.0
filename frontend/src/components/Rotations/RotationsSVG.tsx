@@ -161,7 +161,10 @@ export const createRotSvg = (rotationInput : Rotation) => {
     svg.on("pointerdown", function(event) {
         this.setPointerCapture(event.pointerId);
         new_rotation = [];
-        point_tracking = true;
+        if (globalThis.current_color != ""){
+            point_tracking = true;
+        }
+        
     })
     svg.on("pointermove", function() {
         if (globalThis.current_color != "")
@@ -196,7 +199,9 @@ export const createRotSvg = (rotationInput : Rotation) => {
         if(globalThis.able_to_add_rotation == true){
             enableButton("addRouteButton");
         }
-        globalThis.able_to_add_rotation = true;
+        if (globalThis.current_color != ""){
+            globalThis.able_to_add_rotation = true;
+        }
         //addRotationToSVG(8);
     })
 }
