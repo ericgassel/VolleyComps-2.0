@@ -173,6 +173,11 @@ const currentRotationButtonsLower = (rotation: Rotation) : void => {
         appended.append(element); 
         current_players_on_rotation.push(players[i]);
     }
+
+    // ------------
+    // disable the add rotation button and delete route button
+    disableButton("deleteRouteButton");
+    disableButton("addRouteButton");
 }
 
 // INPUT: N/A
@@ -209,6 +214,7 @@ const setNotes = (rotation : Rotation) : void => {
 // OUTPUT: N/A
 //      - saves all transition and serve notes for the selected rotation
 const saveTransitionServeNotes = () : void => {
+    
     let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
     let primaryServerRecieve : HTMLInputElement = document.getElementById("primaryServerRecieve") as HTMLInputElement;
     let secondaryServerRecieve : HTMLInputElement = document.getElementById("secondaryServerRecieve") as HTMLInputElement;
@@ -225,8 +231,33 @@ const saveTransitionServeNotes = () : void => {
     rotation.notes.transition_primary = primaryTransition.value;
     rotation.notes.transition_secondary = secondaryTransition.value;
     rotation.notes.transition_tertiary = tertiaryTransition.value;
+    let saveButton : HTMLParagraphElement = document.getElementById("SavedTextServeTransition") as HTMLParagraphElement;
+    saveButton.style.transition = "all .2s";
+    saveButton.style.transitionDelay = "all 0s";
+    saveButton.style.opacity = "100%";
+    
     sendEditRotation(rotation);
+    
+    setTimeout(hideSaveServeTransition, 800);
+   
+    
 }
+
+function hideSaveServeTransition() {
+    let saveButton : HTMLParagraphElement = document.getElementById("SavedTextServeTransition") as HTMLParagraphElement;
+    saveButton.style.transition = "all 1s";
+    saveButton.style.transitionDelay = "all 2s";
+    saveButton.style.opacity = "0%";
+}
+
+function hideSaveBlockingNotes() {
+    let saveButton : HTMLParagraphElement = document.getElementById("SavedTextBlockingNotes") as HTMLParagraphElement;
+    saveButton.style.transition = "all 1s";
+    saveButton.style.transitionDelay = "all 2s";
+    saveButton.style.opacity = "0%";
+}
+
+
 
 // INTPUT: N/A
 // OUTPUT: N/A
@@ -237,6 +268,13 @@ const saveAddtionalAndBlockingNotes = () : void => {
     all_existing_rotations[current_rotation_selected!].notes.additional_notes = additionalNotes.value;
     all_existing_rotations[current_rotation_selected!].notes.blocking_scheme = blockingNotes.value;
     sendEditRotation(all_existing_rotations[current_rotation_selected!]);
+    // -----------
+    // save button feedback
+    let saveButton : HTMLParagraphElement = document.getElementById("SavedTextBlockingNotes") as HTMLParagraphElement;
+    saveButton.style.transition = "all .2s";
+    saveButton.style.transitionDelay = "all 0s";
+    saveButton.style.opacity = "100%";
+    setTimeout(hideSaveBlockingNotes, 800);
 }
 
 // INPUT: selected player number from roster of all existing players
@@ -289,6 +327,8 @@ const fillAddRotationWithCurrentlySelectedColors = () : void => {
     }
     // ------------------
     // color the used buttons appropriately 
+    let okayToAdd : number = 0
+    // okayToAdd counts if all 6 people in rotation are different and thus rotation can be added.
     for (let i : number = 0; i<existingPlayers.length; i++){
         let count : number = 0;
         for (let k = 0; k<existingPlayers.length; k++){
@@ -306,7 +346,13 @@ const fillAddRotationWithCurrentlySelectedColors = () : void => {
             // player only used once
             player.style.background = success_color;
             rotationButton.style.background = success_color;
+            okayToAdd += 1;
         } 
+    }
+    if (okayToAdd == 6){
+        enableButton("AddButton");
+    } else {
+        disableButton("AddButton");
     }
 }
 
@@ -403,43 +449,88 @@ const addNewRotationButtonSelected = ()=>{
     // set switch buttons to not display
     let htmlSwitchButtons : HTMLDivElement = document.getElementById("htmlSwitchButtons") as HTMLDivElement;
     htmlSwitchButtons.style.display="none";
+    
     // -----------------
     // change button actions and text for buttons with ids "AddButton" and "EditOrCancelButton"
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
     let editOrCancelButton : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
     addButton.innerHTML = "Add";
     addButton.className="changeButton";
+    disableButton("AddButton");
     editOrCancelButton.className="changeButton";
     editOrCancelButton.innerHTML = "Cancel";
+    editOrCancelButton.style.display = "";
     addButton.onclick = addNewRotation;
-    editOrCancelButton.onclick = () => allRotationButtonsUpper(all_existing_rotations);
-    // ----------------
-    // change paragraph html element with id "SelectRotationText" 
-    let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
-    rotationText.innerHTML = "Select Players";
-    // ----------------
+    if(all_existing_rotations.length > 0){
+        editOrCancelButton.onclick = () => allRotationButtonsUpper(all_existing_rotations);
+    } else {
+        editOrCancelButton.onclick = () => {
+            allRotationButtonsUpper(all_existing_rotations);
+            // hide the bottom section
+            let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
+            table.style.display = "none";
+            // hide EditOrCancelButton
+            let button : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
+            button.style.display = "none";
+            // hide additional notes and blocking scheme
+            let noteArea : HTMLDivElement = document.getElementById("bigNotesArea") as HTMLDivElement;
+            noteArea.style.display = "none";
+        }
+        
+
+    }
+    
+   
 
     // change div element with id "allRotations" to have buttons for all possible players possible players
     let divElement : HTMLDivElement = document.getElementById("allRotations") as HTMLDivElement;
     divElement.innerHTML = "";
-    let k : number = 0;
-    while (k < all_players.length){
-        for(let i : number = k; i < 4+k; i++){
-        if (i < all_players.length){
-            let element = document.createElement("button");
-            // id is player[*player number*]
-            element.id = "player" + all_players[i].player_num.toString();
-            element.type = "rotationButton";
-            element.innerHTML=all_players[i].player_num.toString();
-            element.onclick = () => selectPlayer(all_players[i].player_num.toString());
-            divElement.append(element);
-        }}
-        k = k+4;
-        let lineBreak : HTMLBRElement = document.createElement("br");
-        lineBreak.innerHTML="</br>";
-        divElement.append(lineBreak);
-    }
-    // ----------------
+    // consider the case when there are not enough players added to the school yet.
+    if (all_players.length < 6) {
+        // ----------------
+        // change paragraph html element with id "SelectRotationText" 
+        let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
+        rotationText.innerHTML = "";
+        // ----------------
+
+        let url : string = window.location.href;
+        let id : string = url.substring(url.lastIndexOf("/") + 1);
+        let noPlayerNotification : HTMLParagraphElement = document.createElement("p");
+        // different grammar for different cases.
+        if (all_players.length == 1){
+            // 1 playER
+            noPlayerNotification.innerHTML = "Currently "+ all_players.length.toString() + " player added. Need at least 6 to add a Rotation. Click <a href='/management/"+ id +"'>here</a> to add players";
+        } else {
+            // x playerS
+            noPlayerNotification.innerHTML = "Currently "+ all_players.length.toString() + " players added. Need at least 6 to add a Rotation. Click <a href='/management/"+ id +"'>here</a> to add players";
+        }
+        
+        divElement.append(noPlayerNotification);
+
+    } else {
+         // ----------------
+        // change paragraph html element with id "SelectRotationText" 
+        let rotationText : HTMLParagraphElement = document.getElementById("SelectRotationText") as HTMLParagraphElement;
+        rotationText.innerHTML = "Select Players";
+        // ----------------
+        let k : number = 0;
+        while (k < all_players.length){
+            for(let i : number = k; i < 4+k; i++){
+            if (i < all_players.length){
+                let element = document.createElement("button");
+                // id is player[*player number*]
+                element.id = "player" + all_players[i].player_num.toString();
+                element.type = "rotationButton";
+                element.innerHTML=all_players[i].player_num.toString();
+                element.onclick = () => selectPlayer(all_players[i].player_num.toString());
+                divElement.append(element);
+            }}
+            k = k+4;
+            let lineBreak : HTMLBRElement = document.createElement("br");
+            lineBreak.innerHTML="</br>";
+            divElement.append(lineBreak);
+        }
+        // ----------------
     // change div element with id "rotationToAdd" to have buttons that represent the rotation that will be added
     let addDivRotation : HTMLDivElement = document.getElementById("rotationToAdd") as HTMLDivElement;
     let lineBreak : HTMLElement = document.createElement("br");
@@ -465,6 +556,12 @@ const addNewRotationButtonSelected = ()=>{
         addDivRotation.append(element); 
       
     }
+
+    }
+   
+
+ 
+    
 
 } 
 
@@ -501,11 +598,6 @@ const blankNotes = () : Notes => {
 const editRotationConfirm = () => {
     let count : number = 0;
 
-    // ------- TODO --------
-    // call API to edit rotation
-    // -------------------
-    
-
     let rotationPlayers : Player[] = []
 
     for(let i : number = 0; i < 6; i++){
@@ -527,10 +619,43 @@ const editRotationConfirm = () => {
 
 
     if(count == 6){
-        all_existing_rotations[current_rotation_selected!].players_in_rotation = rotationPlayers;
-        sendEditRotation(all_existing_rotations[current_rotation_selected!]);
+        let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
+        let oldPlayerIDs : string[] = [];
+        for(let i : number = 0; i<rotation.players_in_rotation.length; i++){
+            oldPlayerIDs.push(rotation.players_in_rotation[i].player_id);
+        }
+
+        let usedColors : string[] = [];
+
+        // if rotation player no longer in the rotation, delete their rotation movement.
+        let newPoints : Point[] = []
+        for(let i : number = 0; i<rotation.players_in_rotation.length; i++){
+            // loop through all the players in the rotation, and add points of players that stayed the same.
+            if (oldPlayerIDs.indexOf(rotationPlayers[i].player_id) != -1){
+               for(let k : number = 0; k<rotation.points.length; k++){
+                if(rotation.points[k].player_number == rotationPlayers[i].player_num.toString()){
+                    newPoints.push(rotation.points[k]);
+                    if(usedColors.indexOf(rotation.points[k].color) == -1){
+                        // add to usedColors the color of the point if it has not been added yet.
+                        usedColors.push(rotation.points[k].color);
+                    }
+                }
+               }
+            }
+        }
+
+        for(let i : number = 0; i<rotation.movement_colors.length; i++){
+            // set movement color to not exist if no longer is a part of the points.
+            if(rotation.movement_colors[i] != "" && usedColors.indexOf(rotation.movement_colors[i]) == -1){
+                rotation.movement_colors[i] = "";
+            }
+        }
+        rotation.points = newPoints;
+        
+        rotation.players_in_rotation = rotationPlayers;
+        sendEditRotation(rotation);
         allRotationButtonsUpper(all_existing_rotations);
-        currentRotationButtonsLower(all_existing_rotations[current_rotation_selected!]);
+        currentRotationButtonsLower(rotation);
         // ----------------
         // change lower HTML to display
         let table : HTMLTableElement = document.getElementById("rotationTable") as HTMLTableElement;
@@ -545,7 +670,7 @@ const editRotationConfirm = () => {
         htmlSwitchButtons.style.display="";
         // set defaults
         globalThis.able_to_add_rotation = false;
-        createRotSvg(all_existing_rotations[current_rotation_selected!]);
+        createRotSvg(rotation);
 
 
     } else {
@@ -684,6 +809,7 @@ const allRotationButtonsUpper = (allRotations : Rotation[]) => {
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
     let editOrCancelButton : HTMLButtonElement = document.getElementById("EditOrCancelButton") as HTMLButtonElement;
     addButton.innerHTML = "Add Rotation";
+    enableButton("AddButton");
     editOrCancelButton.innerHTML = "Edit Rotation";
     addButton.className="changeButton";
     addButton.onclick = addNewRotationButtonSelected;
@@ -938,7 +1064,7 @@ export const disableButton = (id : string) : void =>{
 
 // INPUT: N/A
 // OUTPUT: a list of players
-//    - calls API and returns list of player numbers
+//    - calls API and returns list of players
 async function getPlayers() : Promise<Player[]>{
     let url : string = window.location.href;
     let id : string = url.substring(url.lastIndexOf("/") + 1);
@@ -1214,7 +1340,10 @@ function Rotations() {
                     <textarea className = 'notesField' id="blockingScheme"></textarea>
             </div>
             <br/><br/>
+            <div id='SaveButtonArea'>
             <button className='saveButton' onClick={saveAddtionalAndBlockingNotes}>Save</button>
+            <p id='SavedTextBlockingNotes'>Saved!</p>
+            </div>
             </div>
         </div>
         <div className='right' >
@@ -1306,7 +1435,11 @@ function Rotations() {
                         </table>
     
                         </div>
-                        <button className='saveButton' onClick={saveTransitionServeNotes}>Save</button>
+                        <div id = 'SaveButtonArea'>
+                        <button className='saveButton' onClick={saveTransitionServeNotes} id='SaveButtonBottom'>Save</button>
+                        <p id = 'SavedTextServeTransition'>Saved!</p>
+                        </div>
+                        
 
 
                     </th>

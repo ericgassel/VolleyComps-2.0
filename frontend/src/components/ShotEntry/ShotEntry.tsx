@@ -231,6 +231,16 @@ const playerOptions = (players: Player[]) => {
     appended.append(line_break);
   }
 
+  // ------------ 
+  // if there are no players, have button to go add players
+  if (players.length == 0){
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    let noPlayerNotification : HTMLParagraphElement = document.createElement("p");
+    noPlayerNotification.innerHTML = "No players added. Click <a href='/management/"+ id +"'>here</a> to add players";
+    appended.append(noPlayerNotification);
+  }
+
 }
 
 // INPUT: N/A
@@ -417,7 +427,7 @@ const ShotEntry=() =>{
                           
                           </td>
                         <td><button id='delete' className='tableButton' onClick={deleteShot} data-tooltip="Select a shot to delete.">Delete</button></td>
-                        <td><button id='undo' className='tableButton' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>CLEAR</button></td>
+                        <td><button id='undo' className='tableButton' onClick={() => {clearAllButtons(["serve","shot","kill","returned","out"])}}>Reset</button></td>
                         
                       </tr>
                       </tbody>
