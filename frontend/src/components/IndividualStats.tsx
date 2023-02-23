@@ -20,26 +20,31 @@ const IndividualStats:FC<IndividualStatsProps> = ({ stats }:IndividualStatsProps
         <table className='teamStatsTable'>
           <thead>
             <tr className='headerRow'>
-              <th rowSpan={2} colSpan={1} style={{ verticalAlign: 'middle' }}>#</th>
-              <th rowSpan={2} colSpan={1} style={{ verticalAlign: 'middle' }}>Player</th>
-              <th rowSpan={2} colSpan={1}>SP</th>
-              <th rowSpan={1} colSpan={5}>Attack</th>
-              <th rowSpan={1} colSpan={2}>Set</th>
-              <th rowSpan={1} colSpan={3}>Serve</th>
-              <th rowSpan={2} colSpan={1}>RE</th>
-              <th rowSpan={1} colSpan={2}>Dig</th>
-              <th rowSpan={1} colSpan={5}>Block</th>
-              <th rowSpan={2} colSpan={1}>BHE</th>
-              <th rowSpan={2} colSpan={1}>PTS</th>
+              <th rowSpan={2} colSpan={1} className='indivStatsTh'>#</th>
+              <th rowSpan={2} colSpan={1} className='indivStatsTh'>Player</th>
+              <th rowSpan={2} colSpan={1} className='indivStatsTh'>SP</th>
+              <th rowSpan={1} colSpan={5} className='indivStatsTh'>Attack</th>
+              <th rowSpan={1} colSpan={2} className='indivStatsTh'>Set</th>
+              <th rowSpan={1} colSpan={3} className='indivStatsTh'>Serve</th>
+              <th rowSpan={2} colSpan={1} className='indivStatsTh'>RE</th>
+              <th rowSpan={1} colSpan={2} className='indivStatsTh'>Dig</th>
+              <th rowSpan={1} colSpan={5} className='indivStatsTh'>Block</th>
+              <th rowSpan={2} colSpan={1} className='indivStatsTh'>BHE</th>
+              <th rowSpan={2} colSpan={1} className='indivStatsTh'>PTS</th>
             </tr>
             <tr className='headerRow'>
-              {tableSecondHeaders.map((title, i) => <th key={i}>{title}</th>)}
+              {tableSecondHeaders.map((title, i) => <th key={i} className='indivStatsTh'>{title}</th>)}
             </tr>
           </thead>
           <tbody>
               {stats.map((row: any) => 
                 <tr key={row['Name']}>
-                  {tableValues.map((col: any, i: any) => <td className='teamStatsCell' key={i}>{row[col]}</td>)}
+                  {tableValues.map((col: any, i: number) => 
+                    (i % 2 === 0 ? (
+                      <td className='teamStatsCell evenCell' key={i}>{row[col]}</td> ) : ( 
+                      <td className='teamStatsCell' key={i}>{row[col]}</td>
+                    ))
+                  )}
                 </tr>)}
           </tbody>
         </table>

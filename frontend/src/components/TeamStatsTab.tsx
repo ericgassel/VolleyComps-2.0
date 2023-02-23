@@ -20,7 +20,7 @@ const  TeamStatsTab=() => {
 
   return (
     <div className='teamStatsTab'>
-      {(teams_stats.length && stats.length) ? (
+      {(teams_stats && stats) ? (
         <>
           <TeamsStats teams_stats={teams_stats} />
     
