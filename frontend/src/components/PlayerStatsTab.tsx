@@ -9,21 +9,37 @@ import { useParams } from 'react-router-dom';
 const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: any, selected_player_id: any}) => {
   const x_scale = d3.scaleLinear()
   .domain([0, 100])
-  .range([100, 600]);
+  .range([0, 500]);
 
   const y_scale = d3.scaleLinear()
   .domain([0, 100])
   .range([0, 600]);
-  
+
   return (
-    <svg className='sprayChartSVG' width={700} height={500}>
+    <svg className='sprayChartSVG' width={500} height={500}>
       <g>
-        <rect className='sprayChartRect' width={500} height={500} x={100}></rect>
+        <rect className='sprayChartRect' width={500} height={500}></rect>
+        <line x1={0} x2={500} y1={90} y2={90} stroke="white" strokeWidth={4}></line>
+        <circle cx={0} cy={90} r={10} fill="black"></circle>
+        <circle cx={500} cy={90} r={10} fill="black"></circle>
+        <line x1={0} x2={500} y1={270} y2={270} stroke="white" strokeWidth={4} opacity={0.5}></line>
+        {/* <rect className='sprayChartRect' width={500} height={500} x={100}></rect> */}
         {spray_chart ? spray_chart.map((line: any, i: number) => {
           const { start_x, end_x, start_y, end_y, player_id, result } = line;
-          // Can be used after scraping proper data
-          // console.log('selected_player_id: ', selected_player_id);
-          if (player_id == selected_player_id) {
+
+          if (selected_player_id === '0') {
+            return (
+              <line key={i} 
+                x1={x_scale(start_x)} 
+                x2={x_scale(end_x)} 
+                y1={y_scale(start_y)} 
+                y2={y_scale(end_y)} 
+                opacity={1} 
+                stroke={result === 'kill' ? '#000' : (result === 'out' ? 'red' : 'green')}
+              >
+              </line>
+            )
+          } else if (player_id === selected_player_id) {
             return (
               <line key={i} 
                 x1={x_scale(start_x)} 
@@ -62,8 +78,12 @@ const PlayerStatsTab = () => {
 
   const handleSelectedPlayer = (e: React.MouseEvent) => {
     const { id } = e.currentTarget;
-    const newSelectedPlayer = roster.find((player: any) => player.player_id === id);
-    setSelectedPlayer(newSelectedPlayer);
+    if (id === '0') {
+      setSelectedPlayer(AllPlayer);
+    } else {
+      const newSelectedPlayer = roster.find((player: any) => player.player_id === id);
+      setSelectedPlayer(newSelectedPlayer);
+    }
     setIsEditing(false);
   }
 
@@ -85,12 +105,27 @@ const PlayerStatsTab = () => {
     const previousPlayer = localStorage.getItem('selectedPlayer');
     if (previousPlayer) {
       setSelectedPlayer(JSON.parse(previousPlayer));
-    } else if (roster[0]) {
-      setSelectedPlayer(roster[0]);
+    } 
+    // else if (roster[0]) {
+    //   setSelectedPlayer(roster[0]);
+    // } 
+    else {
+      setSelectedPlayer(AllPlayer);
     }
   }, [roster])
 
   // console.log('spray____chart:', spray_chart)
+
+  const AllPlayer = {
+    player_id: '0',
+    class: '',
+    height: '',
+    name: 'All',
+    number: '',
+    position: '',
+  }
+
+  // console.log('selectedPlayer:', selectedPlayer)
 
   return (
     (roster && selectedPlayer ? (
@@ -104,7 +139,9 @@ const PlayerStatsTab = () => {
             </div>
 
             <div className='selectedPlayerInfoContainer'>
-              {selectedPlayer ? (
+              {selectedPlayer ? selectedPlayer.player_id === AllPlayer.player_id ? (
+                  <p className='selectedPlayerInfoText'>All Spray lines on the chart</p>
+              ) : (
                 <>
                   <p className='selectedPlayerInfoText'>Name: {selectedPlayer.name}</p>
                   <p className='selectedPlayerInfoText'>Position: {selectedPlayer.position}</p>
@@ -119,8 +156,14 @@ const PlayerStatsTab = () => {
           <h2 className='rosterHeader'>Team Roster</h2>
           <div className='teamRosterContainer'>
             <ul className='teamRosterList'>
-              {/* Show player numbers, too */}
-              {roster.map((player: any, i: Number) => 
+              <li className={selectedPlayer.player_id === AllPlayer.player_id ? 'selected playerName' : 'playerName'}
+                id={AllPlayer.player_id}
+                onClick={handleSelectedPlayer}
+                style={{ justifyContent: 'center' }}
+              >
+                <p>{AllPlayer.name}</p>
+              </li>
+              {roster.map((player: any) => 
                 <li className={selectedPlayer.player_id === player.player_id ? 'selected playerName' : 'playerName'} 
                   key={player.player_id} 
                   id={player.player_id}
@@ -135,27 +178,35 @@ const PlayerStatsTab = () => {
         </div>
 
         <div className='playerChartContainer'>
-          <h2>Spray Chart - dropdown: Heat Map, Visualizations</h2>
-          <div className='chartSVGContainer'>
-            {/* <img src={require('../heatmap_zones.svg').default} alt='mySvgImage' /> */}
-            <SprayChart spray_chart={spray_chart} selected_player_id={selectedPlayer.player_id} />
-          </div>
-          <div className='chartCommentContainer'>
-            <div className='commentTitle'>Comment</div>
-            <Comment
-              teamID={teamID}
-              notes={notes} 
-              selectedPlayer={selectedPlayer} 
-              setSelectedPlayer={setSelectedPlayer} 
-              isEditing={isEditing} 
-              setIsEditing={setIsEditing} />
+          <div className='chartContents'>
+            <div className='chartSVGContainer'>
+              <h2>Spray Chart</h2>
+
+              <SprayChart spray_chart={spray_chart} selected_player_id={selectedPlayer.player_id} />
+            </div>
+
+            <div className='chartCommentContainer'>
+              <h2 className='commentTitle'>Comment</h2>
+              {selectedPlayer.player_id !== AllPlayer.player_id ? (
+                <Comment
+                  teamID={teamID}
+                  notes={notes} 
+                  selectedPlayer={selectedPlayer} 
+                  setSelectedPlayer={setSelectedPlayer} 
+                  isEditing={isEditing} 
+                  setIsEditing={setIsEditing} 
+                />
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
         </div>
 
       </div>
       ) : (        
       <div className='noAPIContainer'>
-        <div>There is no Player to show!</div>
+        <h2>There is no Player to show!</h2>
         <a className='shotEntryLink' href={`/management/${teamID}`}>Manage Roster</a>
       </div>
       )
