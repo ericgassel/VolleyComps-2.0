@@ -228,13 +228,14 @@ export const addRotationToSVG = (rotationObject: Rotation) => {
 export const newSelection = (rotationInput : Rotation) => {
     // this will delete the temporary data (anything not added)
     new_rotation = []
+    lock = 0
     createRotSvg(rotationInput);
 }
 
 // to be called to delete from rotation data
 export const deletePlayerRotation = (rotationObject : Rotation, colorSelected: string) => {
     // removes player info from svg
-    
+    lock = 0
     rotation = rotation.filter(function(d) {return d.color.toString() !== colorSelected })
     rotationObject.points = rotation;
     sendEditRotation(rotationObject);
