@@ -1,7 +1,7 @@
 
   .ManageTeamTable {
     border: 2px solid #003E7E;
-    width: 90%;
+    /* width: 100%; */
     height: 200%;
     margin-top: 30px;
     justify-content: center;
@@ -20,6 +20,7 @@
     color: white;
     padding: 12px;
     background-color: #2D538F;
+    /* white-space: nowrap; */
   }
 
   .ManageTeamTableTh_delete {
@@ -43,6 +44,8 @@
     text-align: center;
     padding: 10px;
     border: 1px solid;
+    white-space: nowrap;
+    width: 20%;
   }
 
   .ManageTeamsTableTd_delete {

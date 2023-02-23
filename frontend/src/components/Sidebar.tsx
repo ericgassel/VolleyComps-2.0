@@ -54,7 +54,7 @@ const Sidebar = () => {
 						))}
 						{navigationItems.currTeamName ? (<div className="sidebar_team">↳ {navigationItems.currTeamName}</div>) : ""}
 						{navigationItems.currTeamInfo.map((item: any) => (
-							item.name === "Edit Report " ?
+							item.name === "Shot Entry " || item.name === "Rotations " ?
 							<a
 								key={item.text}
 								href={item.href}

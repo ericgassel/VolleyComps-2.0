@@ -31,7 +31,17 @@ def updateRedirect(link):
         pass #incase too many redirects in which case we quit
     link = link.replace('/index.aspx','')
     link = link.replace('/landing/index', '')
-    link = link.replace('/splash.aspx?id=splash_16', '')
+    link = link.replace('/splash.aspx?id=splash_', '')
+    link = link.replace('0', '')
+    link = link.replace('1', '')
+    link = link.replace('2', '')
+    link = link.replace('3', '')
+    link = link.replace('4', '')
+    link = link.replace('5', '')
+    link = link.replace('6', '')
+    link = link.replace('7', '')
+    link = link.replace('8', '')
+    link = link.replace('9', '')
     if link[-1] == '/':
         link = link.rstrip(link[-1])
     return link
