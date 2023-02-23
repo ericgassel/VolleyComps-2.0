@@ -37,10 +37,15 @@ const NavigationItems = (currTeam: any) => {
         text:'report'
       },
       {
-        name: 'Edit Report ',
+        name: 'Shot Entry ',
         href: `/ShotEntry/${currTeam.id}`, 
         text:'ShotEntry'
-      }
+      },
+      {
+        name: 'Rotations ',
+        href: `/Rotations/${currTeam.id}`, 
+        text:'Rotations'
+      },
     ]
     navigationItems.currTeamInfo = currTeamInfo
   }

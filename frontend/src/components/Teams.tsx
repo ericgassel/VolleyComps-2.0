@@ -90,7 +90,7 @@ const Teams = () => {
         onChange={handleSearch}
         value={searchInput} />
 
-      <FontAwesomeIcon className='icon' icon={faMagnifyingGlass} bounce size='lg' />
+      <FontAwesomeIcon className='icon' icon={faMagnifyingGlass} size='lg' />
 
       <div className="TeamModal">
         <React.Fragment>
@@ -145,7 +145,8 @@ const Teams = () => {
               </td>
               <td className='TeamsTableTd'> <Link className='teamManagementLink' to={`/management/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Manage Roster</Link></td>
               <td className='TeamsTableTd'><Link className='teamReportLink' to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>View Scouting Report</Link></td>
-              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Edit Scouting Report</a></td>
+              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Shot Entry</a></td>
+              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/Rotations/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Rotations</a></td>
             </tr>
           )
         })}
