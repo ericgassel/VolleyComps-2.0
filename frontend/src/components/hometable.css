@@ -25,7 +25,7 @@
   .ScheduleTableTd {
     text-align: center;
     padding: 15px;
-    border: 1px solid;
+    border: 1px solid  #EEB111;
   }
 
   .reportLink {

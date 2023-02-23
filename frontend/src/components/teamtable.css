@@ -1,6 +1,6 @@
 
   .TeamsTable {
-    border: 2px solid #003E7E;
+    border: 2px solid #EEB111;
     width: 100%;
     height: 200%;
     margin-top: 25px;
@@ -14,7 +14,7 @@
   }
     
   .TeamsTableTh {
-    border: 2px solid forestgreen;
+    border: 2px solid #EEB111;
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -29,7 +29,7 @@
   .TeamsTableTd {
     text-align: center;
     padding: 15px;
-    border: 1px solid;
+    border: 1px solid #EEB111;
   }
 
   .teamManagementLink {
