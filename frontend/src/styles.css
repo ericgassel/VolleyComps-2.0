@@ -77,8 +77,13 @@ body{
     text-decoration: underline!important;
 }
 .tab-nav{
- margin-top: 20px;
- margin-bottom: 20px;   
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;   
 }
 .tab-nav a{    
     color:#A2A2A2;
@@ -87,6 +92,18 @@ body{
     padding:20px;
     text-decoration: none;
 }
+
+.tab-to-add-text {
+    color: #003069 !important;
+    padding: 10px !important;
+    border: 2px solid #003069;
+    border-radius: 10px;
+}
+
+.tab-to-add-text:hover {
+    color: white !important;
+    background-color: #003069;
+} 
 
 .inner-content{
     padding-top:30px;
