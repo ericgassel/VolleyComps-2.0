@@ -154,13 +154,14 @@ def createLinks(worksheet):
     spot = 2
     try:
         while(worksheet.get('B'+ str(spot)) != ''):
-            str1 = worksheet.get('B'+ str(spot))[0][0]
+            strn = worksheet.get('A'+ str(spot) + ':B'+ str(spot))
+            str1 = strn[0][1]
             str1 = re.sub("\\s+","-",str1)
-            str2 = worksheet.get('A'+ str(spot))[0][0]
+            str2 = strn[0][0]
             links.append(str1 + '/' + str2)
             ids.append(str2)
             spot += 1
-            time.sleep(2)
+            time.sleep(1)
     except:
         return (ids,links)
 
