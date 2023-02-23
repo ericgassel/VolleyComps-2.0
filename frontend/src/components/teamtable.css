@@ -5,7 +5,7 @@
     height: 200%;
     margin-top: 25px;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     table-layout: fixed;
   }
 
@@ -123,7 +123,7 @@
 }
 
 .search-container{
-  margin-left: 14%;
+  margin-left: 10%;
   text-align: center;
   width: 90%;
   height: 40px;
@@ -136,7 +136,7 @@
   display: flex;
   justify-content: space-evenly;
   /* margin-right: 10%; */
-  margin-left: 38%;
+  margin-left: 44%;
   width: 100%;
 }
 
@@ -149,4 +149,13 @@
 .icon {
   margin-top: 20px;
   margin-left: 10px;
+}
+
+.teamLogo {
+  margin-right: 10%;
+}
+
+.TeamName {
+  width: 35%;
+  text-align: left;
 }
