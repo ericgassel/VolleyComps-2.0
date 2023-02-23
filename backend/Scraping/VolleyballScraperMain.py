@@ -9,10 +9,10 @@ import time
 def main():
     filePath = "/Users/samuelgloss/.config/gspread/volleyball-schedule-375303-954371a472e5.json"
     #sheetName = "Dummy_school"
-    #URL = "https://athletics.carleton.edu/sports/womens-volleyball/schedule?path=wvball"
+    URL = "https://athletics.carleton.edu/sports/womens-volleyball/schedule?path=wvball"
 
     #updates/runs schedule for carleton
-    #schedule.run(filePath, "1mvABHHmHdPpfyBM3RXDKs5hU-XvAc6EV1mhrDc4T-rk", "schedule", URL)
+    schedule.run(filePath, "1mvABHHmHdPpfyBM3RXDKs5hU-XvAc6EV1mhrDc4T-rk", "schedule", URL)
 
     listSchools = get.run(filePath, "1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss", "schools") #all schools we have a DB on. 
     listLinks = get.run(filePath, "1s79U6G7kGcdViYJ51JzY-DG2DIR7fxEFPpq_XwbQCnI", "Logos") #update with real! #links for each schools website data 
