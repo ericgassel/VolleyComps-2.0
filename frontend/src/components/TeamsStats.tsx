@@ -1,7 +1,4 @@
-import React, { useEffect, FC } from 'react'
-import { useParams } from 'react-router-dom';
-import { getTeamStats } from '../action/action';
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
+import React, { FC } from 'react'
 import { team_stats } from '../context/appContext';
 
 type TeamsStatsTableProps = { teams_stats: team_stats[] }
@@ -125,16 +122,12 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
   )
 }
 
-const TeamsStats = () => {
-  const state = useAppContext();
-  const { api_base_url, teams_stats } = state;
-  const dispatch = useAppDispatchContext();
-  const { teamID } = useParams();
+type TeamStatsProps = {
+  teams_stats: team_stats[]
+}
 
-  useEffect(() => {
-    getTeamStats(dispatch, `${api_base_url}/data/${teamID}/team_stats`);
-  }, [])
-
+const TeamsStats:FC<TeamStatsProps> = ({ teams_stats }:TeamStatsProps) => {
+  console.log('teams_stats in TeamStats:', teams_stats)
   return (
     <div className='teamsStatsContainer'>
       {teams_stats.length ? (

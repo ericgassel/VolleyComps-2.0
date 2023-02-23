@@ -1,7 +1,4 @@
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getStats } from '../action/action';
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
+import React, { FC } from 'react';
 
 /**
  * Option 1: https://react-pdf-viewer.dev/
@@ -11,21 +8,12 @@ import { useAppContext, useAppDispatchContext } from '../context/appContext';
  * If we can get all the schools' stats pdf from the same source, we could embed the pdf viewer instead.
  */
 
-// Temporary mock data
 const tableSecondHeaders = ['K','K/S','E','TA','PCT','A','A/S','SA','SE','SA/S','DIG','DIG/S','BS','BA','BLK','BLK/S','BE'];
 const tableValues = ['Number', 'Name', 'SP', 'K','K/S','E','TA','PCT','A','A/S','SA','SE','SA/S', 'RE', 'DIG','D/S','BS','BA','TB','B/S','BE', 'BHE', 'PTS'];
-// const mockData = [5, 'Dani Friedges', 36, 12, 89, 0.270,	35,	17,	6, 2,	37,	1, 12, 4,	7, 0];
 
-const IndividualStats = () => {
-  const state = useAppContext();
-  const { stats, api_base_url } = state;
-  const dispatch = useAppDispatchContext();
-  const { teamID } = useParams();
+type IndividualStatsProps = { stats: any };
 
-  useEffect(() => {
-    getStats(dispatch, `${api_base_url}/data/${teamID}/ind_data`);
-  }, [])
-
+const IndividualStats:FC<IndividualStatsProps> = ({ stats }:IndividualStatsProps) => {
   return (
     <div className='teamStatsContainer'>
       {stats ? (

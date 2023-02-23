@@ -18,6 +18,7 @@ type lineDataType = {
   color: string
 }
 
+// Player number on each line
 const RotationChart: FC<RotationChartProps> = ({ line }: RotationChartProps) => {
   const x_scale = (x:number) => (x-200) * 0.8;
   const y_scale = (y:number) => (y-50) * 0.8;
