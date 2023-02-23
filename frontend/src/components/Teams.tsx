@@ -13,12 +13,15 @@ import AddModal from './AddModal'
 import "./teamtable.css"
 import ManageTeam from './ManageTeam'
 import {  FadeLoader } from 'react-spinners';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
 
 const Teams = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [loadingInProgress, setLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
 
   const openModal = () => {
     setModalOpen(true);
@@ -27,9 +30,10 @@ const Teams = () => {
     setModalOpen(false);
   };
 
-  const onSubmit = (event: any) => {
-    event.preventDefault(event);
-    setModalOpen(false);
+  const handleSearch = (e: any) => {
+    e.preventDefault();
+    let lowerCase = e.target.value
+    setSearchInput(lowerCase);
   };
 
   const state = useAppContext();
@@ -41,7 +45,7 @@ const Teams = () => {
    // Modal for adding school
   const onSubmitTeam = async (e: any) => {
     setLoading(true)
-    console.log(loadingInProgress)
+    // console.log(loadingInProgress)
     e.preventDefault()
 
     let newTeam = e.target[0].value
@@ -60,11 +64,34 @@ const Teams = () => {
     }
   }, [teams]);
 
+  let selectedTeams = teams;
+
+  if (searchInput.length > 0) {
+    selectedTeams = teams.filter((team: any) => {
+      return team.name.toLowerCase().includes(searchInput.toLowerCase())
+    })
+  }
+
+  // console.log(teams)
+
   return (
     <div className='Teams'>
 
     <div className="teamsTitle">
       <h1>Teams</h1>
+
+      <i className="fa-duotone fa-user"></i>
+
+      <div className="over_table">
+      <input
+        className='search-container fontAwesome'
+        type="search"
+        placeholder="Search Team"
+        onChange={handleSearch}
+        value={searchInput} />
+
+      <FontAwesomeIcon className='icon' icon={faMagnifyingGlass} bounce size='lg' />
+
       <div className="TeamModal">
         <React.Fragment>
           <h2><button className='AddTeamButton' onClick={openModal}>Add Team</button></h2>
@@ -85,6 +112,7 @@ const Teams = () => {
 
         </React.Fragment>
       </div>
+      </div>
     </div>
 
 
@@ -96,15 +124,25 @@ const Teams = () => {
         ) : (
     <div>
       <table className="TeamsTable">
+        {/* <thead className="ScheduleTableHead">
+          <tr>
+            <th className="ScheduleTableTh">School</th>
+            <th className="ScheduleTableTh">Manage Roster</th>
+            <th className="ScheduleTableTh">View Report</th>
+            <th className="ScheduleTableTh">Edit Report</th>
+          </tr>
+        </thead> */}
+
+
         <tbody>        
         
-        {teams.map((val:any, key:any) => {
+        {selectedTeams.map((val:any, key:any) => {
           return (
             <tr className='TeamsTableTr' key={key}>
               <td className='TeamsTableTd TeamName'>{val.name}</td>
               <td className='TeamsTableTd'> <Link className='teamManagementLink' to={`/management/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Manage Roster</Link></td>
-              <td className='TeamsTableTd'><Link className='teamReportLink' to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Scout Report</Link></td>
-              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Add Report</a></td>
+              <td className='TeamsTableTd'><Link className='teamReportLink' to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>View Scouting Report</Link></td>
+              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Edit Scouting Report</a></td>
             </tr>
           )
         })}

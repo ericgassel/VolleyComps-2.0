@@ -4,11 +4,14 @@ import AddModal from './AddModal'
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
 import { addMember, deleteMember, getRoster, getTeams, updateCurrentTeam } from '../action/action';
 import { useParams } from 'react-router-dom';
+import {  FadeLoader } from 'react-spinners';
 
 const ManageTeam = () => {
 
     const state = useAppContext();
     const dispatch = useAppDispatchContext();
+
+    const [loadingInProgress, setLoading] = useState(false);
 
     const {api_base_url, roster, currTeamData, teams, isCurrTeamFilled, fetchedRoster} = state;
 
@@ -18,6 +21,7 @@ const ManageTeam = () => {
       return currTeam;
     }
     let {teamID} = useParams()
+
     let currTeam = isCurrTeamFilled ? currTeamData : getCurrentTeamFromURL()
 
     const onSubmitForm = (event: any) => {
@@ -36,26 +40,30 @@ const ManageTeam = () => {
     // Modal for adding member
     const onSubmitModal = async (event: any) => {
       event.preventDefault()
+      setLoading(true)
       let newMember = [event.target[0].value, event.target[1].value, event.target[2].value, event.target[3].value, event.target[4].value, event.target[5].value]
-      await addMember(dispatch, newMember, `${api_base_url}/write/${currTeam.id}/roster`)
-
       setModalOpen(false);
+      addMember(dispatch, newMember, `${api_base_url}/write/${currTeam.id}/roster`).then(() => setLoading(false));
+
     };
     
     const deleteMemberButton = async (memberID: string) => {
+      setLoading(true)
       let deleteMemberAPI = `${api_base_url}/delete/${currTeam.id}/roster`
-      await deleteMember(dispatch, memberID, deleteMemberAPI);
+      deleteMember(dispatch, memberID, deleteMemberAPI).then(() => setLoading(false));
     }
 
     useEffect(() => {
       if (!teams.length) {
         let getTeamsAPI = `${api_base_url}/data/schools`
-        getTeams(dispatch, getTeamsAPI);
+        setLoading(true)
+        getTeams(dispatch, getTeamsAPI).then(() => setLoading(false));
       }
 
       // 1. Fetch api
       if (!roster.length && fetchedRoster === false) {
-        getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`);
+        setLoading(true)
+        getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`).then(() => setLoading(false));
       }
     }, [roster, teams])
 
@@ -119,14 +127,20 @@ const ManageTeam = () => {
         </React.Fragment>
         </div>
 
+        {loadingInProgress ? (
+
+        <div style={{position: "fixed", top: "30%", left: "55%", transform: "translate(-50%, -50%)"}}>
+          <FadeLoader color={"#36d7b7"} />
+        </div>
+            ) : (
 
         <div>
             <table className="ManageTeamTable">
                 <thead className="ManageTeamTableHead">
                   <tr>
                       <th className='ManageTeamTableTh'>Team Member</th>
-                      <th className='ManageTeamTableTh'>Position</th>
                       <th className='ManageTeamTableTh'>Height</th>
+                      <th className='ManageTeamTableTh'>Position</th>
                       <th className='ManageTeamTableTh'>Class</th>
                       <th className='ManageTeamTableTh'>Number</th>
                       <th className='ManageTeamTableTh_delete'></th>
@@ -146,10 +160,11 @@ const ManageTeam = () => {
                     </tr>
                 )
                 })}
-
                 </tbody>
             </table>
-        </div>
+        </div>)}
+
+
 
     </div>)
 

@@ -87,6 +87,13 @@ th,tr[class="rotationTable"] {
 
 }
 
+#switchShotEntry:hover{
+    transform: translate(0px, 3px);
+    -webkit-transform: translate(0px, 3px);
+    box-shadow: 0px 1px 0px 0px;
+    background-color: #4a3882
+}
+
 button[type="rotationButton"]{
     background-color: #797B9F; /* Green */
     border: none;
@@ -103,7 +110,7 @@ button[type="rotationButton"]:hover{
     transform: translate(0px, 3px);
     -webkit-transform: translate(0px, 3px);
     box-shadow: 0px 1px 0px 0px;
-    background-color: #8487af
+    background-color: #6b6c96
 }
 
 
@@ -169,4 +176,28 @@ button[type="rotationButton"]:hover{
 .notesField{
     overflow: auto;
     outline: none;
+}
+
+#SaveButtonArea{
+    white-space: nowrap;
+}
+
+#SavedTextBlockingNotes{
+    display: inline;
+    padding-left: 10px;
+    opacity: 0%;
+    
+    
+}
+#SavedTextServeTransition{
+    display: inline;
+    padding-left: 10px;
+    opacity: 0%;
+    
+    
+}
+
+#SaveButtonBottom{
+    text-align: center;
+    margin-left: 60px;
 }

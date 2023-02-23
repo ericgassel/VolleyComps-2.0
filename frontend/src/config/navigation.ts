@@ -1,4 +1,9 @@
-export const navigationItems = {
+import { useAppContext} from '../context/appContext';
+import { useParams } from 'react-router-dom';
+
+
+const NavigationItems = (currTeam: any) => {
+  const navigationItems: any = {
     sidebar: [
       {
         name: 'Home ',
@@ -6,25 +11,41 @@ export const navigationItems = {
         text: 'home',
         
       },
-      // {
-      //   name: 'Carleton Knights ',
-      //   to: '/knights', 
-      //   text:'carletonKnights'
-      // },
       {
         name: 'Teams ',
         to: '/teams', 
         text:'teams'
       },
-      // {
-      //   name: 'History (Archived) ',
-      //   to: '/history', 
-      //   text:'history'
-      // },
     ], 
-    footer: [], 
-    
-  
-  
+    footer: [],  
+    currTeamName: "",
+    currTeamInfo: []
   }
-  export default navigationItems
+
+  if (currTeam) {
+    navigationItems.currTeamName = currTeam.name
+    let currTeamInfo = [
+      {
+        name: 'Manage Roster ',
+        to: `/management/${currTeam.id}`, 
+        text: 'management',
+        
+      },
+      {
+        name: 'View Report ',
+        to: `/report/${currTeam.id}`, 
+        text:'report'
+      },
+      {
+        name: 'Edit Report ',
+        href: `/ShotEntry/${currTeam.id}`, 
+        text:'ShotEntry'
+      }
+    ]
+    navigationItems.currTeamInfo = currTeamInfo
+  }
+
+  return navigationItems;
+}
+
+export default NavigationItems

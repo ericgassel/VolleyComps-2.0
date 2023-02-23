@@ -6,6 +6,8 @@ import { getSystemErrorMap } from 'util';
 import Rotations, { Player, Point, Rotation, disableButton, enableButton, sendEditRotation, sendNewRotation } from './Rotations';
 
 let point_tracking = false;
+//determines if a new line can be drawn
+let lock = 0;
 
 // the current dateID for the page
 let current_date_ID : string = "";
@@ -126,9 +128,6 @@ export const createRotSvg = (rotationInput : Rotation) => {
                     .attr("fill", rotation[j-1].color)
                     .attr('style', "font-size: 25px;");
 
-
-                
-
                 console.log("drawing path!")
                 console.log(new_points)
                 //console.log(new_points)
@@ -160,10 +159,15 @@ export const createRotSvg = (rotationInput : Rotation) => {
       .y(function(d) { return d.y })
       )
 */
-    
-    svg.on("pointerdown", function() {
-        new_rotation = [];
-        point_tracking = true;
+
+    svg.on("pointerdown", function(event) {
+        if (lock == 0 && globalThis.current_color != "")
+        {
+            this.setPointerCapture(event.pointerId);
+            new_rotation = [];
+            point_tracking = true;
+            lock = 1;
+        }
     })
     svg.on("pointermove", function() {
         if (globalThis.current_color != "")
@@ -198,7 +202,9 @@ export const createRotSvg = (rotationInput : Rotation) => {
         if(globalThis.able_to_add_rotation == true){
             enableButton("addRouteButton");
         }
-        globalThis.able_to_add_rotation = true;
+        if (globalThis.current_color != ""){
+            globalThis.able_to_add_rotation = true;
+        }
         //addRotationToSVG(8);
     })
 }
@@ -212,6 +218,8 @@ export const addRotationToSVG = (rotationObject: Rotation) => {
     sendEditRotation(rotationObject);
     // -------------
     // recreate SVG
+    lock = 0;
+
     createRotSvg(rotationObject);
     
 }
@@ -220,13 +228,14 @@ export const addRotationToSVG = (rotationObject: Rotation) => {
 export const newSelection = (rotationInput : Rotation) => {
     // this will delete the temporary data (anything not added)
     new_rotation = []
+    lock = 0
     createRotSvg(rotationInput);
 }
 
 // to be called to delete from rotation data
 export const deletePlayerRotation = (rotationObject : Rotation, colorSelected: string) => {
     // removes player info from svg
-    
+    lock = 0
     rotation = rotation.filter(function(d) {return d.color.toString() !== colorSelected })
     rotationObject.points = rotation;
     sendEditRotation(rotationObject);

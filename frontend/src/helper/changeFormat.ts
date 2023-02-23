@@ -12,8 +12,8 @@ export function formatMember(memberData: string[]): {player_id: string; name:str
         player_id:memberData[0], 
         name: memberData[1],
         number: memberData[2],
-        height: memberData[3],
-        position: memberData[4],
+        height: memberData[4],
+        position: memberData[3],
         class: memberData[5],
         notes: memberData[6]
     }

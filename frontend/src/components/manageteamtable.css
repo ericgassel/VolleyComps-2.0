@@ -1,6 +1,6 @@
 
   .ManageTeamTable {
-    border: 2px solid forestgreen;
+    border: 2px solid #003E7E;
     width: 90%;
     height: 200%;
     margin-top: 30px;
@@ -19,7 +19,7 @@
     font-weight: bold;
     color: white;
     padding: 12px;
-    background-color: #86B049;
+    background-color: #2D538F;
   }
 
   .ManageTeamTableTh_delete {
@@ -74,7 +74,7 @@
 .AddMemberButton {
     background-color: white; 
     color: black; 
-    border: 2px solid #4CAF50;
+    border: 2px solid #003E7E;
     padding: 16px 32px;
     text-align: center;
     text-decoration: none;
@@ -86,7 +86,7 @@
 }
 
 .AddMemberButton:hover {
-    background-color: #4CAF50;
+    background-color: #003E7E;
     color: white;
 }
 

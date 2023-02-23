@@ -2,10 +2,9 @@ import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom'
 
 const TabNav = () => {
-  const location = useLocation()
-  // const teamID = 0;
+  const location = useLocation();
   const { teamID } = useParams();
-
+  
   return <div className='tab-nav'>
     <div>
       <Link to={`/report/${teamID}/playerStatsTab`} className={location.pathname===`/report/${teamID}/playerStatsTab` ?'tab_active':''}>Player Stats</Link>
