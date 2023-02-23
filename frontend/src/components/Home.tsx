@@ -57,7 +57,10 @@ const Home=() =>{
               return (
                 <tr className="ScheduleTableTr" key={key}>
                   <td className="ScheduleTableTd">{val.date}</td>
-                  <td className="ScheduleTableTd"><Link className="reportLink" to={`/report/${currTeam.id}`} onClick={() => updateCurrentTeam(dispatch, {name:currTeam.team, id: currTeam.id})}>{val.team}</Link></td>
+                  <td className="ScheduleTableTd teamName">
+                    <img className='teamLogo' src={val.logo} height="50" width="50"></img>
+                    <Link className="reportLink" to={`/report/${currTeam.id}`} onClick={() => updateCurrentTeam(dispatch, {name:currTeam.team, id: currTeam.id})}>{val.team}</Link>  
+                  </td>
                   <td className="ScheduleTableTd">{val.location}</td>
                   <td className="ScheduleTableTd">{val.outcome}</td>
                 </tr>

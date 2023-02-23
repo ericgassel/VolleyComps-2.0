@@ -1,11 +1,11 @@
 
 .ScheduleTable {
     border: 2px solid #EEB111;
-    width: 100%;
+    /* width: 100%; */
     height: 200%;
     margin-top: 50px;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     table-layout: fixed;
   }
 
@@ -34,3 +34,16 @@
   }
 
   .ScheduleTableTr:hover {background-color: #FFD248;}
+
+  .ScheduleTableTr{
+    padding: 8px;
+  }
+
+  .teamLogo {
+    margin-right: 10%;
+  }
+
+  .teamName {
+    width: 36%;
+    text-align: left;
+  }
