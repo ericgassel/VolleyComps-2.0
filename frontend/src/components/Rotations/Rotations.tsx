@@ -370,6 +370,31 @@ const selectSpotInRotation = (spotInRotation : string) => {
    
 }
 
+async function getSchoolName() {
+    let url : string = window.location.href;
+    let id : string = url.substring(url.lastIndexOf("/") + 1);
+    let name : string = "";
+    let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/schools', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+      })
+      .then(result => result.json())
+      .then(result => {
+        Object.keys(result).forEach(function(key) {
+            if(result[key] == id){
+                name = key;
+            }
+        });
+
+
+      });
+      return name;
+      
+    
+    
+
+}
+
 // INPUT: N/A
 // OUTPUT: N/A
 //      - adds new rotation to the list of rotations if a valid rotation is selected.
@@ -1266,9 +1291,13 @@ export interface Rotation{
     }
 // adds the appropriate items to the page if Rotations is loaded
 window.addEventListener("load", async (event) => {
+    
     if (window.location.href.includes("Rotations")){
         let allHTML : HTMLDivElement = document.getElementById("allHTML") as HTMLDivElement;
         allHTML.style.display = "none";
+        let name = await getSchoolName();
+        let pageName : HTMLHeadingElement = document.getElementById("pageName") as HTMLHeadingElement;
+        pageName.innerHTML = "Rotations - " + name;
        
         try {
             all_existing_rotations = await getRotations()
@@ -1334,7 +1363,7 @@ const getScountingReportURL = () : string => {
 function Rotations() {
   return (
     <div id="allHTML">
-        <h1>Rotations</h1>
+        <h1 id='pageName'>Rotations</h1>
         <div className='left' id="leftSide">
             <div id='chart' className='left'></div>
 
@@ -1355,7 +1384,7 @@ function Rotations() {
             </div>
             <br/><br/>
             <div id='SaveButtonArea'>
-            <button className='saveButton' onClick={saveAddtionalAndBlockingNotes}>Save</button>
+            <button className='saveButton' onClick={saveAddtionalAndBlockingNotes}>Save Extra Info</button>
             <p id='SavedTextBlockingNotes'>Saved!</p>
             </div>
             </div>
@@ -1450,7 +1479,7 @@ function Rotations() {
     
                         </div>
                         <div id = 'SaveButtonArea'>
-                        <button className='saveButton' onClick={saveTransitionServeNotes} id='SaveButtonBottom'>Save</button>
+                        <button className='saveButton' onClick={saveTransitionServeNotes} id='SaveButtonBottom'>Save Notes</button>
                         <p id = 'SavedTextServeTransition'>Saved!</p>
                         </div>
                         

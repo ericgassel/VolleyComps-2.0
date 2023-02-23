@@ -254,7 +254,28 @@ const changeSVG = () => {
   fullNewLoadSvg(getDateString(date));
 }
 
+async function getSchoolName() {
+  let url : string = window.location.href;
+  let id : string = url.substring(url.lastIndexOf("/") + 1);
+  let name : string = "";
+  let response : any = await fetch('http://cs400volleyball.mathcs.carleton.edu:5000/data/schools', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+    })
+    .then(result => result.json())
+    .then(result => {
+      Object.keys(result).forEach(function(key) {
+          if(result[key] == id){
+              name = key;
+          }
+      });
 
+
+    });
+    return name;
+    
+  
+}
 
 // INPUT: N/A
 // OUTPUT: a list of players
@@ -282,6 +303,10 @@ window.addEventListener("load", async (event) => {
   if (window.location.href.includes("ShotEntry")){
     let allHTML : HTMLDivElement = document.getElementById("allHTML") as HTMLDivElement;
     allHTML.style.display = "none";
+
+    let name = await getSchoolName();
+    let pageName : HTMLHeadingElement = document.getElementById("pageName") as HTMLHeadingElement;
+    pageName.innerHTML = "Shot Entry - " + name;
     // set default value of date element
 
     let today : Date = new Date();
@@ -379,7 +404,7 @@ const ShotEntry=() =>{
     return <div className='ShotEntry' id="allHTML">
           
           
-            <h1 >Shot Entry</h1>
+            <h1 id="pageName">Shot Entry</h1>
             
             
            
