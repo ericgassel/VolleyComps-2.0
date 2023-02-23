@@ -6,39 +6,94 @@ import * as d3 from 'd3';
 import Comment from './Comment';
 import { useParams } from 'react-router-dom';
 
-const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: any, selected_player_id: any}) => {
+const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[], selected_player_id: string}) => {
   const x_scale = d3.scaleLinear()
   .domain([0, 100])
-  .range([100, 600]);
+  .range([0, 500]);
 
   const y_scale = d3.scaleLinear()
   .domain([0, 100])
   .range([0, 600]);
   
+  const returned_diff = 7;
+  let filteredChart;
+
+  if (spray_chart) {
+    if (selected_player_id === '0') {
+      filteredChart = spray_chart.slice();
+    } else {
+      filteredChart = spray_chart.filter((line: spray_line) => line.player_id === selected_player_id);
+    }
+  }
+
   return (
-    <svg className='sprayChartSVG' width={700} height={500}>
+    <svg className='sprayChartSVG'>
       <g>
-        <rect className='sprayChartRect' width={500} height={500} x={100}></rect>
-        {spray_chart ? spray_chart.map((line: any, i: number) => {
+        <rect className='sprayChartRect'></rect>
+        <line x1={0} x2={500} y1={90} y2={90} stroke="white" strokeWidth={4}></line>
+        <circle cx={0} cy={90} r={10} fill="black"></circle>
+        <circle cx={500} cy={90} r={10} fill="black"></circle>
+        <line x1={0} x2={500} y1={270} y2={270} stroke="white" strokeWidth={4} opacity={0.5}></line>
+        {/* <rect className='sprayChartRect' width={500} height={500} x={100}></rect> */}
+        {filteredChart ? filteredChart.map((line: any, i: number) => {
           const { start_x, end_x, start_y, end_y, player_id, result } = line;
-          // Can be used after scraping proper data
-          // console.log('selected_player_id: ', selected_player_id);
-          if (player_id == selected_player_id) {
-            return (
+          const scaled_start_x = x_scale(start_x);
+          const scaled_start_y = y_scale(start_y);
+          const scaled_end_x = x_scale(end_x);
+          const scaled_end_y = y_scale(end_y);
+          return (
+            <React.Fragment key={i}>
               <line key={i} 
-                x1={x_scale(start_x)} 
-                x2={x_scale(end_x)} 
-                y1={y_scale(start_y)} 
-                y2={y_scale(end_y)} 
+                x1={scaled_start_x} 
+                x2={scaled_end_x} 
+                y1={scaled_start_y} 
+                y2={scaled_end_y} 
                 opacity={1} 
-                stroke={result === 'kill' ? '#000' : (result === 'out' ? 'red' : 'green')}
+                stroke={result === 'out' ? 'red' : '#000'}
+                strokeWidth={2}
               >
               </line>
-            )
-          }
+              {result === 'kill' ? (
+                <circle cx={scaled_end_x} cy={scaled_end_y} r={7} fill="#fac476" stroke='black' strokeWidth={2}></circle>
+              ) : result === 'returned' ? (
+                <>
+                  <line x1={scaled_end_x-returned_diff}
+                    y1={scaled_end_y-returned_diff}
+                    x2={scaled_end_x+returned_diff}
+                    y2={scaled_end_y+returned_diff}
+                    stroke='black' 
+                    strokeWidth={2}
+                  ></line>
+                  <line x1={scaled_end_x-returned_diff}
+                    y1={scaled_end_y+returned_diff}
+                    x2={scaled_end_x+returned_diff}
+                    y2={scaled_end_y-returned_diff}
+                    stroke='black' 
+                    strokeWidth={2}
+                  ></line>
+                </>
+              ) : (<></>)}
+            </React.Fragment>
+          )
         }) : (
           <div>Loading...</div>
         )}
+        {/* Shot / Serve */}
+        <line x1={0} x2={50} y1={520} y2={520} stroke='black' strokeWidth={2}></line>
+        <text x={60} y={525}>Shot / Serve</text>
+
+        {/* Out */}
+        <line x1={0} x2={50} y1={540} y2={540} stroke='red' strokeWidth={2}></line>
+        <text x={60} y={545}>Out</text>
+
+        {/* Kill */}
+        <circle cx={10} cy={560} r={7} stroke='black' fill='white' strokeWidth={2}></circle>
+        <text x={25} y={565}>Kill</text>
+
+        {/* Returned */}
+        <line x1={10-returned_diff} x2={10+returned_diff} y1={580-returned_diff} y2={580+returned_diff} stroke='black' strokeWidth={2}></line>
+        <line x1={10-returned_diff} x2={10+returned_diff} y1={580+returned_diff} y2={580-returned_diff} stroke='black' strokeWidth={2}></line>
+        <text x={25} y={585}>Returned</text>
       </g>
     </svg>
   )
@@ -62,8 +117,12 @@ const PlayerStatsTab = () => {
 
   const handleSelectedPlayer = (e: React.MouseEvent) => {
     const { id } = e.currentTarget;
-    const newSelectedPlayer = roster.find((player: any) => player.player_id === id);
-    setSelectedPlayer(newSelectedPlayer);
+    if (id === '0') {
+      setSelectedPlayer(AllPlayer);
+    } else {
+      const newSelectedPlayer = roster.find((player: any) => player.player_id === id);
+      setSelectedPlayer(newSelectedPlayer);
+    }
     setIsEditing(false);
   }
 
@@ -76,6 +135,8 @@ const PlayerStatsTab = () => {
     // 3. Clean up function: clean localStorage
     return () => {
       localStorage.removeItem('selectedPlayer');
+      setSelectedPlayer(undefined);
+
     }
   }, [])
 
@@ -85,12 +146,27 @@ const PlayerStatsTab = () => {
     const previousPlayer = localStorage.getItem('selectedPlayer');
     if (previousPlayer) {
       setSelectedPlayer(JSON.parse(previousPlayer));
-    } else if (roster[0]) {
-      setSelectedPlayer(roster[0]);
+    } 
+    // else if (roster[0]) {
+    //   setSelectedPlayer(roster[0]);
+    // } 
+    else {
+      setSelectedPlayer(AllPlayer);
     }
   }, [roster])
 
   // console.log('spray____chart:', spray_chart)
+
+  const AllPlayer = {
+    player_id: '0',
+    class: '',
+    height: '',
+    name: 'All Players',
+    number: '',
+    position: '',
+  }
+
+  // console.log('selectedPlayer:', selectedPlayer)
 
   return (
     (roster && selectedPlayer ? (
@@ -104,7 +180,9 @@ const PlayerStatsTab = () => {
             </div>
 
             <div className='selectedPlayerInfoContainer'>
-              {selectedPlayer ? (
+              {selectedPlayer ? selectedPlayer.player_id === AllPlayer.player_id ? (
+                  <p className='selectedPlayerInfoText'>All the spray lines are displayed</p>
+              ) : (
                 <>
                   <p className='selectedPlayerInfoText'>Name: {selectedPlayer.name}</p>
                   <p className='selectedPlayerInfoText'>Position: {selectedPlayer.position}</p>
@@ -119,8 +197,14 @@ const PlayerStatsTab = () => {
           <h2 className='rosterHeader'>Team Roster</h2>
           <div className='teamRosterContainer'>
             <ul className='teamRosterList'>
-              {/* Show player numbers, too */}
-              {roster.map((player: any, i: Number) => 
+              <li className={selectedPlayer.player_id === AllPlayer.player_id ? 'selected playerName' : 'playerName'}
+                id={AllPlayer.player_id}
+                onClick={handleSelectedPlayer}
+                style={{ justifyContent: 'center' }}
+              >
+                <p>{AllPlayer.name}</p>
+              </li>
+              {roster.map((player: any) => 
                 <li className={selectedPlayer.player_id === player.player_id ? 'selected playerName' : 'playerName'} 
                   key={player.player_id} 
                   id={player.player_id}
@@ -135,27 +219,35 @@ const PlayerStatsTab = () => {
         </div>
 
         <div className='playerChartContainer'>
-          <h2>Spray Chart - dropdown: Heat Map, Visualizations</h2>
-          <div className='chartSVGContainer'>
-            {/* <img src={require('../heatmap_zones.svg').default} alt='mySvgImage' /> */}
-            <SprayChart spray_chart={spray_chart} selected_player_id={selectedPlayer.player_id} />
-          </div>
-          <div className='chartCommentContainer'>
-            <div className='commentTitle'>Comment</div>
-            <Comment
-              teamID={teamID}
-              notes={notes} 
-              selectedPlayer={selectedPlayer} 
-              setSelectedPlayer={setSelectedPlayer} 
-              isEditing={isEditing} 
-              setIsEditing={setIsEditing} />
+          <div className='chartContents'>
+            <div className='chartSVGContainer'>
+              <h2 className='chartContentHeader'>Spray Chart</h2>
+
+              <SprayChart spray_chart={spray_chart} selected_player_id={selectedPlayer.player_id} />
+            </div>
+
+            <div className='chartCommentContainer'>
+              <h2 className='chartContentHeader'>Comment</h2>
+              {selectedPlayer.player_id !== AllPlayer.player_id ? (
+                <Comment
+                  teamID={teamID}
+                  notes={notes} 
+                  selectedPlayer={selectedPlayer} 
+                  setSelectedPlayer={setSelectedPlayer} 
+                  isEditing={isEditing} 
+                  setIsEditing={setIsEditing} 
+                />
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
         </div>
 
       </div>
       ) : (        
       <div className='noAPIContainer'>
-        <div>There is no Player to show!</div>
+        <h2>There is no Player to show!</h2>
         <a className='shotEntryLink' href={`/management/${teamID}`}>Manage Roster</a>
       </div>
       )

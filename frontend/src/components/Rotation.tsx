@@ -7,21 +7,40 @@ type RotationProps = { rotation: rotation_type }
 
 type RotationChartProps = {
   line: rotation_line[]
-  // player_number: string[]
-  // movement_colors: string[]
 }
 
 type xy_point = [number, number]
 
 type lineDataType = {
+  cur_player: string
   d: string
   color: string
+  numTextPos: [number, number]
 }
 
 // Player number on each line
 const RotationChart: FC<RotationChartProps> = ({ line }: RotationChartProps) => {
   const x_scale = (x:number) => (x-200) * 0.8;
   const y_scale = (y:number) => (y-50) * 0.8;
+
+  const getNumTextXY = (new_points: xy_point[]) => {
+    let result: any = [];
+    let first_point = new_points[0];
+    let second_point = new_points[1];
+    // get x position
+    if (first_point[0] > second_point[0]) {
+      result.push(first_point[0] - 11);
+    } else {
+      result.push(first_point[0] + 6);
+    }
+    // get y position
+    if (first_point[1] > second_point[1]) {
+      result.push(first_point[1] + 25);
+    } else {
+      result.push(first_point[1] - 2);
+    }
+    return result;
+  }
 
   const formattedLines = useMemo(() => {
     const newList: lineDataType[] = [];
@@ -33,9 +52,10 @@ const RotationChart: FC<RotationChartProps> = ({ line }: RotationChartProps) => 
         if (cur_player === player_number && j !== line.length-1) {
           new_points.push([x_scale(x), y_scale(y)]);
         } else {
+          const numTextPos = getNumTextXY(new_points);
           const d = new_points.reduce((acc:string, point:xy_point, i:number, a:xy_point[]) => 
             i === 0 ? `M ${point[0]},${point[1]}` : `${acc} ${bezierCommand(point, i, a)}`, '');
-          const lineData: lineDataType = { d, color: line[j-1].color };
+          const lineData: lineDataType = { cur_player, d, color: line[j-1].color, numTextPos };
           newList.push(lineData);
           cur_player = player_number;
           new_points = [[x_scale(x), y_scale(y)]];
@@ -49,8 +69,11 @@ const RotationChart: FC<RotationChartProps> = ({ line }: RotationChartProps) => 
     <svg className='rotationChartSVG' width={400} height={400}>
       <g>
         <rect stroke='black' fill='white' strokeWidth={2}></rect>
-        {formattedLines && formattedLines.map((line: lineDataType, i:React.Key) => 
-          <path key={i} d={line.d} fill="none" stroke={line.color} strokeWidth='3' />
+        {formattedLines && formattedLines.map((line: lineDataType, i:React.Key) =>
+          <React.Fragment key={i}>
+            <text x={line.numTextPos[0]} y={line.numTextPos[1]} fill={line.color}>{line.cur_player}</text>
+            <path d={line.d} fill="none" stroke={line.color} strokeWidth='3' />
+          </React.Fragment> 
         )}
       </g>
     </svg>
@@ -69,19 +92,19 @@ const RotationTable:FC<RotationTableProps> = ({ title, tableArr }:RotationTableP
     <table className='rotationNotesTable'>
       <thead>
         <tr>
-          <th>{title}</th>
+          <th className='notesTableTh'>{title}</th>
         </tr>
       </thead>
       <tbody>
         {rowTitles.map((text:string, i:number) => 
-          <>
+          <React.Fragment key={i}>
             <tr>
               <td key={text} className='notesRowTitle teamStatsCell'>{text}</td>
             </tr>
             <tr>
-              <td key={i} className='teamStatsCell'>{tableArr[i]}</td>
+              <td className='teamStatsCell'>{tableArr[i]}</td>
             </tr>
-          </>
+          </React.Fragment>
         )}
       </tbody>
     </table>
@@ -93,6 +116,10 @@ const Rotation: FC<RotationProps> = ({rotation}: RotationProps) => {
 
   return (
     <div className='RotationContainer'>
+      <div>
+        <h2 className='rotationNumber'>Rotation {rotation_number}</h2>
+      </div>
+
       <div className='lineUpContainer'>
         {player_number.map((player:string, i:number) => 
           <div className='playerNumber' style={movement_colors[i] ? {backgroundColor: movement_colors[i], color: 'white'} : {}} key={player}>

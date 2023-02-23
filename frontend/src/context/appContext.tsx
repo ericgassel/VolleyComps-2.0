@@ -3,7 +3,7 @@ import React, { useReducer, createContext, useContext, Dispatch } from "react";
 import { Action } from "../action/action";
 
 export type player = {
-  player_id: Number; 
+  player_id: string; 
   class: string; 
   height: string; 
   name: string; 
@@ -13,13 +13,13 @@ export type player = {
 }
 
 export type spray_line = {
-  player_id: Number;
+  player_id: string;
   type: string;
   result: string;
-  start_x: Number;
-  start_y: Number;
-  end_x: Number;
-  end_y: Number;
+  start_x: number;
+  start_y: number;
+  end_x: number;
+  end_y: number;
   date: string;
 }
 
@@ -61,7 +61,7 @@ export type rotation_type = {
   notes: string
   player_id: string[]
   player_number: string[]
-  rotation_number: Number
+  rotation_number: number
   serve_recieve: string[]
   transition: string[]
 }

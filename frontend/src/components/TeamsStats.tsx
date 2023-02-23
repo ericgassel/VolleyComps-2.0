@@ -9,13 +9,13 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
     <table className='teamsStatsTable'>
       <thead>
         <tr className='headerRow'>
-          <th>Team Stats</th>
-          <th>{carleton.Team}</th>
-          <th>{opponent.Team}</th>
+          <th className='teamsStatsHeader'>Team Stats</th>
+          <th className='teamsStatsHeader'>{carleton.Team}</th>
+          <th className='teamsStatsHeader'>{opponent.Team}</th>
         </tr>
       </thead>
       <tbody>
-        <tr><td className='teamStatsCell' colSpan={3}>Attack</td></tr> 
+        <tr><td className='teamStatsCell teamStatsTitle' colSpan={3}>Attack</td></tr> 
         <tr>  
           <td className='teamStatsCell'>Kills</td>
           <td className='teamStatsCell'>{carleton.Kills}</td>
@@ -43,7 +43,7 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
         </tr> 
 
         <tr>
-          <td className='teamStatsCell' colSpan={3}>Set</td>
+          <td className='teamStatsCell teamStatsTitle' colSpan={3}>Set</td>
         </tr> 
         <tr>  
           <td className='teamStatsCell'>Assists</td>
@@ -57,7 +57,7 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
         </tr> 
 
         <tr>          
-          <td className='teamStatsCell' colSpan={3}>Serve</td>
+          <td className='teamStatsCell teamStatsTitle' colSpan={3}>Serve</td>
         </tr> 
         <tr>  
           <td className='teamStatsCell'>Aces</td>
@@ -76,7 +76,7 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
         </tr> 
 
         <tr>          
-          <td className='teamStatsCell' colSpan={3}>Defence</td>
+          <td className='teamStatsCell teamStatsTitle' colSpan={3}>Defence</td>
         </tr> 
         <tr>  
           <td className='teamStatsCell'>Digs</td>
@@ -90,7 +90,7 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
         </tr> 
 
         <tr>          
-          <td className='teamStatsCell' colSpan={3}>Blocking</td>
+          <td className='teamStatsCell teamStatsTitle' colSpan={3}>Blocking</td>
         </tr> 
         <tr>  
           <td className='teamStatsCell'>Solo</td>
