@@ -265,7 +265,7 @@ async function getSchoolName() {
     .then(result => result.json())
     .then(result => {
       Object.keys(result).forEach(function(key) {
-          if(result[key] == id){
+          if(result[key][0] == id){
               name = key;
           }
       });

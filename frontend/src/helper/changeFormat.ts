@@ -1,7 +1,7 @@
-export function changeTeams(teams: any): {name: string; id: string}[] {
+export function changeTeams(teams: any): {name: string; id: string; logo: string;}[] {
     let formattedTeams = []
     for (let team in teams) {
-        let newInfo: {name: string; id: string} = {name: team, id: teams[team]}
+        let newInfo: {name: string; id: string; logo: string} = {name: team, id: teams[team][0], logo: teams[team][1]}
         formattedTeams.push(newInfo);
     }
     return formattedTeams
