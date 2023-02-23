@@ -159,3 +159,11 @@ https://css-tricks.com/different-transitions-for-hover-on-hover-off/
     opacity: 1;
     transition: .2s ease-in .25s;
   }
+
+.solid{
+    stroke:solid;
+ }
+ 
+ .dashed{
+    stroke-dasharray: 5,5; 
+ }
