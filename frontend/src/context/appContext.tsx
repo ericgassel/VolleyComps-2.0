@@ -10,6 +10,7 @@ export type player = {
   number: string; 
   position: string;
   notes?: string | undefined;
+  image: string | undefined;
 }
 
 export type spray_line = {
@@ -151,6 +152,12 @@ const appReducer = (state: any, action: Action) => {
               roster: data, 
               fetchedRoster: true
             }
+            // const { data } = action;
+            // return {
+            //   ...state,
+            //   roster: data, 
+            //   fetchedRoster: true
+            // }
         }
         case "teams_success": {
             const { data } = action;
