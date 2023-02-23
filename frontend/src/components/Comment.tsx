@@ -50,7 +50,18 @@ const Comment = ({ teamID, notes, selectedPlayer, isEditing, setIsEditing }: any
           {selectedPlayer.notes && selectedPlayer.notes.split(/\r?\n/).map((line: string, i: React.Key) => <p className='commentLine' key={i}>{line}</p>)}
         </div>
       )}
-      <button className='commentBtn' onClick={handleEdit}>{isEditing ? 'Save' : 'Edit'}</button>
+      {isEditing ? (
+        <button className='commentBtn' onClick={handleEdit}>
+          <div className='commentBtnText'>Save</div> 
+          <img className='commentBtnIcon' src={require('../floppy-disk-regular.svg')} /> 
+        </button>
+      ) : (
+        <button className='commentBtn' onClick={handleEdit}>
+          <div className='commentBtnText'>Edit</div> 
+          <img className='commentBtnIcon' src={require('../edit-solid.svg')} /> 
+        </button>
+      )}
+      
     </div>
   );
 };
