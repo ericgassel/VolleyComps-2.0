@@ -139,11 +139,18 @@ const Rotation: FC<RotationProps> = ({rotation}: RotationProps) => {
         </div>
       </div>
 
-      <div className='blockingSchemeContainer'>
-        <div>Blocking Scheme</div>
-        <div className='blockingSchemeContent'>{blocking_scheme}</div>
+      <div className='schemeNoteContainer'>
+        <div className='blockingSchemeContainer'>
+          <div>Additional Note</div>
+          <div className='blockingSchemeContent'>{notes}</div>
+        </div>
+
+        {/* Add additional notes */}
+        <div className='blockingSchemeContainer'>
+          <div>Blocking Scheme</div>
+          <div className='blockingSchemeContent'>{blocking_scheme}</div>
+        </div>
       </div>
-      {/* Add additional notes */}
     </div>
   )
 }

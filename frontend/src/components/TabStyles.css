@@ -121,7 +121,6 @@
   margin-right: 5px;
 }
 
-
 .commentBtnIcon {
   width: 20px;
   height: 20px;
@@ -303,7 +302,8 @@
 .RotationContainer {
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
+  border: 2px solid black;
+  border-radius: 10px;
   width: 100%;
   height: 95%;
   align-items: center;
@@ -316,7 +316,6 @@
 .lineUpContainer {
   width: 60%;
   height: 15%;
-  border: 1px solid black;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -329,8 +328,8 @@
 }
 
 .playerNumber {
-  border: 1px solid black;
-  height: 49%;
+  border: 2px solid black;
+  height: 50%;
   text-align: center;
   display: flex;
   align-items: center;
@@ -399,11 +398,18 @@
   background-color: lightgrey;
 }
 
+.schemeNoteContainer {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  height: 25%;
+}
+
 .blockingSchemeContainer {
   display: flex;
   flex-direction: column;
   width: 85%;
-  height: 10%;
+  height: 90%;
   align-items: center;
 }
 
