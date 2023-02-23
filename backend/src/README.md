@@ -71,13 +71,22 @@ Please note that this function is slow and may take ~10 seconds to complete. Thi
 
 ### GET /data/schools
 
-This endpoint returns one JSON object where the keys are the school names, and the values are the corresponding spreadsheet ids in the database (as shown below).
+This endpoint returns one JSON object where the keys are the school names, and the values are arrays containing the corresponding spreadsheet ids in the database and logos (as shown below). The spreadsheet id is position 0, and the logo is position 2.
 
 ```
 {
-    "Dummy_school": "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM",
-    "Harvard": "F4wPRgJIc1antzWAXFlCijM1D5DQnXIo3drLnXyzIxB9",
-    "Yale": "PRgJIc1aIo3drLnXyzIxB9ntzWAXFlCijM1D5DQnXF4w"
+    "Dummy_school": [
+        "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM", 
+        "https://www.ncaa.com/sites/default/files/images/logos/schools/bgl/carleton.svg"
+    ],
+    "Crown College": [
+        "1ozhIeSb3M9TWoreLKBQpsR9UurZUoU6mComA47FlVr4",
+        "https://www.ncaa.com/sites/default/files/images/logos/schools/bgl/crown-mn.svg"
+    ],
+    "University of Wisconsin-Platteville": [
+        "1n-j1edLbh4a8Zb-aucbEhSlIWqQ46vDLH54QAmkWuTY",
+        "https://www.ncaa.com/sites/default/files/images/logos/schools/bgl/wis-platteville.svg"
+    ]
 }
 ```
 
@@ -151,14 +160,16 @@ Example:
         "date": "\nSep 2 (Fri)\n5:00 PM \n",
         "location": "St. Paul, MN / Leonard Center",
         "outcome": "\n\nW,\n3-0\n\n",
-        "id": "1ozhIeSb3M9TWoreLKBQpsR9UurZUoU6mComA47FlVr4"
+        "id": "1ozhIeSb3M9TWoreLKBQpsR9UurZUoU6mComA47FlVr4",
+        "logo": "https://www.ncaa.com/sites/default/files/images/logos/schools/bgl/crown-mn.svg"
     },
     {
         "team": "University of Wisconsin-Platteville",
         "date": "\nSep 3 (Sat)\n12:00 PM \n",
         "location": "St. Paul, MN / Leonard Center",
         "outcome": "\n\nL,\n1-3\n\n",
-        "id": "1n-j1edLbh4a8Zb-aucbEhSlIWqQ46vDLH54QAmkWuTY"
+        "id": "1n-j1edLbh4a8Zb-aucbEhSlIWqQ46vDLH54QAmkWuTY",
+        "logo": "https://www.ncaa.com/sites/default/files/images/logos/schools/bgl/wis-platteville.svg"
     }
 ]
 ```

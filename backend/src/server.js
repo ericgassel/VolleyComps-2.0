@@ -128,9 +128,8 @@
                 })
         
                 const schools = createSchoolsJson(getRows.data.values)
-                console.log(schools)
-                var jsonObject2 = addIdToTeams(jsonObject, schools);
-                console.log(jsonObject2);
+                addIdToTeams(jsonObject, schools);
+                
         
             } catch(error){
                 res.status(500).send(error);
@@ -381,7 +380,8 @@ function addIdToTeams(teamObjs, idObj) {
     for (let teamObj of teamObjs) {
       for (let [key, value] of Object.entries(idObj)) {
         if (matchStrings(teamObj["team"], key)) {
-          teamObj["id"] = value;
+          teamObj["id"] = value[0];
+          teamObj["logo"] = value[1];
           break;
         }
       }
@@ -514,7 +514,7 @@ function checkValidFilters(keys, headers){
 
 function createSchoolsJson(arr) {
     return arr.reduce((acc, cur) => {
-        acc[cur[0]] = cur[1];
+        acc[cur[0]] = [cur[1], cur[2]];
         return acc;
     }, {});
 }
