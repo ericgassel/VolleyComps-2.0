@@ -13,7 +13,7 @@ export type player = {
 }
 
 export type spray_line = {
-  player_id: number;
+  player_id: string;
   type: string;
   result: string;
   start_x: number;
