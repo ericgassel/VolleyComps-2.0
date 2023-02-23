@@ -12,7 +12,7 @@ type RotationChartProps = {
 type xy_point = [number, number]
 
 type lineDataType = {
-  player_number: string
+  cur_player: string
   d: string
   color: string
   numTextPos: [number, number]
@@ -55,7 +55,7 @@ const RotationChart: FC<RotationChartProps> = ({ line }: RotationChartProps) => 
           const numTextPos = getNumTextXY(new_points);
           const d = new_points.reduce((acc:string, point:xy_point, i:number, a:xy_point[]) => 
             i === 0 ? `M ${point[0]},${point[1]}` : `${acc} ${bezierCommand(point, i, a)}`, '');
-          const lineData: lineDataType = { player_number, d, color: line[j-1].color, numTextPos };
+          const lineData: lineDataType = { cur_player, d, color: line[j-1].color, numTextPos };
           newList.push(lineData);
           cur_player = player_number;
           new_points = [[x_scale(x), y_scale(y)]];
@@ -65,15 +65,13 @@ const RotationChart: FC<RotationChartProps> = ({ line }: RotationChartProps) => 
     return newList;
   }, [line]);
 
-  console.log('formattedLines:', formattedLines)
-
   return (
     <svg className='rotationChartSVG' width={400} height={400}>
       <g>
         <rect stroke='black' fill='white' strokeWidth={2}></rect>
         {formattedLines && formattedLines.map((line: lineDataType, i:React.Key) =>
           <React.Fragment key={i}>
-            <text x={line.numTextPos[0]} y={line.numTextPos[1]} fill={line.color}>{line.player_number}</text>
+            <text x={line.numTextPos[0]} y={line.numTextPos[1]} fill={line.color}>{line.cur_player}</text>
             <path d={line.d} fill="none" stroke={line.color} strokeWidth='3' />
           </React.Fragment> 
         )}
@@ -94,7 +92,7 @@ const RotationTable:FC<RotationTableProps> = ({ title, tableArr }:RotationTableP
     <table className='rotationNotesTable'>
       <thead>
         <tr>
-          <th>{title}</th>
+          <th className='notesTableTh'>{title}</th>
         </tr>
       </thead>
       <tbody>
@@ -118,6 +116,10 @@ const Rotation: FC<RotationProps> = ({rotation}: RotationProps) => {
 
   return (
     <div className='RotationContainer'>
+      <div>
+        <h2 className='rotationNumber'>Rotation {rotation_number}</h2>
+      </div>
+
       <div className='lineUpContainer'>
         {player_number.map((player:string, i:number) => 
           <div className='playerNumber' style={movement_colors[i] ? {backgroundColor: movement_colors[i], color: 'white'} : {}} key={player}>
