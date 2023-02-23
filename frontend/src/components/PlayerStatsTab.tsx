@@ -37,13 +37,16 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[
         <circle cx={0} cy={90} r={10} fill="black"></circle>
         <circle cx={500} cy={90} r={10} fill="black"></circle>
         <line x1={0} x2={500} y1={270} y2={270} stroke="white" strokeWidth={4} opacity={0.5}></line>
-        {/* <rect className='sprayChartRect' width={500} height={500} x={100}></rect> */}
+
         {filteredChart ? filteredChart.map((line: any, i: number) => {
-          const { start_x, end_x, start_y, end_y, player_id, result } = line;
+          const { start_x, end_x, start_y, end_y, type, result } = line;
           const scaled_start_x = x_scale(start_x);
           const scaled_start_y = y_scale(start_y);
           const scaled_end_x = x_scale(end_x);
           const scaled_end_y = y_scale(end_y);
+
+          // Serve is dotted line
+
           return (
             <React.Fragment key={i}>
               <line key={i} 
@@ -54,6 +57,7 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[
                 opacity={1} 
                 stroke={result === 'out' ? 'red' : '#000'}
                 strokeWidth={2}
+                strokeDasharray={type === 'serve' ? '5,5' : '0'}
               >
               </line>
               {result === 'kill' ? (
@@ -81,22 +85,26 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[
         }) : (
           <div>Loading...</div>
         )}
-        {/* Shot / Serve */}
+        {/* Shot */}
         <line x1={0} x2={50} y1={520} y2={520} stroke='black' strokeWidth={2}></line>
         <text x={60} y={525}>Shot / Serve</text>
 
+        {/* Serve */}
+        <line x1={0} x2={50} y1={540} y2={540} stroke='black' strokeWidth={2} strokeDasharray={'5,5'}></line>
+        <text x={60} y={525}>Shot</text>
+
         {/* Out */}
-        <line x1={0} x2={50} y1={540} y2={540} stroke='red' strokeWidth={2}></line>
-        <text x={60} y={545}>Out</text>
+        <line x1={0} x2={50} y1={560} y2={560} stroke='red' strokeWidth={2}></line>
+        <text x={60} y={545}>Serve</text>
 
         {/* Kill */}
-        <circle cx={10} cy={560} r={7} stroke='black' fill='white' strokeWidth={2}></circle>
-        <text x={25} y={565}>Kill</text>
+        <circle cx={10} cy={580} r={7} stroke='black' fill='white' strokeWidth={2}></circle>
+        <text x={25} y={585}>Kill</text>
 
         {/* Returned */}
-        <line x1={10-returned_diff} x2={10+returned_diff} y1={580-returned_diff} y2={580+returned_diff} stroke='black' strokeWidth={2}></line>
-        <line x1={10-returned_diff} x2={10+returned_diff} y1={580+returned_diff} y2={580-returned_diff} stroke='black' strokeWidth={2}></line>
-        <text x={25} y={585}>Returned</text>
+        <line x1={10-returned_diff} x2={10+returned_diff} y1={605-returned_diff} y2={605+returned_diff} stroke='black' strokeWidth={2}></line>
+        <line x1={10-returned_diff} x2={10+returned_diff} y1={605+returned_diff} y2={605-returned_diff} stroke='black' strokeWidth={2}></line>
+        <text x={25} y={610}>Returned</text>
       </g>
     </svg>
   )
@@ -160,8 +168,6 @@ const PlayerStatsTab = () => {
     }
   }, [roster])
 
-  // console.log('spray____chart:', spray_chart)
-
   const AllPlayer = {
     player_id: '0',
     class: '',
@@ -171,8 +177,6 @@ const PlayerStatsTab = () => {
     position: '',
     image: '',
   }
-
-  console.log('selectedPlayer:', selectedPlayer)
 
   return (
     (roster && selectedPlayer ? (
