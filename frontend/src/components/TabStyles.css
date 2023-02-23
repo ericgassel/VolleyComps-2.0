@@ -115,10 +115,6 @@
   color: white;
 }
 
-.commentBtn:hover .commentBtnIcon {
-  filter: invert(1);
-}
-
 .commentBtnText {
   font-size: large;
   font-weight: 600;

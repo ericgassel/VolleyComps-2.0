@@ -17,7 +17,6 @@ def main():
     listSchools = get.run(filePath, "1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss", "schools") #all schools we have a DB on. 
     listLinks = get.run(filePath, "1s79U6G7kGcdViYJ51JzY-DG2DIR7fxEFPpq_XwbQCnI", "Logos") #update with real! #links for each schools website data 
     lengthSchools = len(listSchools) + 1
-    del listLinks[:310]
     for link in listLinks:
         try:
           if any(link[3] in sublist for sublist in listSchools):

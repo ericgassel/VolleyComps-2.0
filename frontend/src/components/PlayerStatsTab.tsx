@@ -5,6 +5,9 @@ import { getRoster, getSprayChart } from '../action/action';
 import * as d3 from 'd3';
 import Comment from './Comment';
 import { useParams } from 'react-router-dom';
+import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 
 const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[], selected_player_id: string}) => {
   const x_scale = d3.scaleLinear()
@@ -128,7 +131,9 @@ const PlayerStatsTab = () => {
 
   useEffect(() => {
     // 1. Fetch api
-    getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`);
+    getRoster(dispatch, `${api_base_url}/data/${teamID}`);
+    // getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`);
+    // getPlayerImg(dispatch, `${api_base_url}/data/${teamID}/ind_data?col=Player_ID,Image`);
       // 2. Load svg
     getSprayChart(dispatch, `${api_base_url}/data/${teamID}/spray_chart`);
   
@@ -164,9 +169,10 @@ const PlayerStatsTab = () => {
     name: 'All Players',
     number: '',
     position: '',
+    image: '',
   }
 
-  // console.log('selectedPlayer:', selectedPlayer)
+  console.log('selectedPlayer:', selectedPlayer)
 
   return (
     (roster && selectedPlayer ? (
@@ -175,13 +181,17 @@ const PlayerStatsTab = () => {
         <div className='playersInfoContainer'>
           <div className='selectedPlayerContainer'>
             <div className='selectedPlayerImgContainer'>
-              {/* <img className='selectedPlayerImg' src={'https://images.sidearmdev.com/resize?url=https%3a%2f%2fdxbhsrqyrr690.cloudfront.net%2fsidearm.nextgen.sites%2fathletics.bethel.edu%2fimages%2f2022%2f8%2f24%2fDani_Friedges.jpg&width=300&type=jpeg'} /> */}
-              {/* <img className='selectedPlayerImg' src={selectedPlayer.Image} /> */}
+              {selectedPlayer.image ? (
+                <img className='selectedPlayerImg' src={selectedPlayer.image} />
+              ) : (
+                <FontAwesomeIcon className='selectedPlayerImg faUser' icon={faUser} />
+
+              )}
             </div>
 
             <div className='selectedPlayerInfoContainer'>
               {selectedPlayer ? selectedPlayer.player_id === AllPlayer.player_id ? (
-                  <p className='selectedPlayerInfoText'>All the spray lines are displayed</p>
+                  <p className='selectedPlayerInfoText'>All Players</p>
               ) : (
                 <>
                   <p className='selectedPlayerInfoText'>Name: {selectedPlayer.name}</p>

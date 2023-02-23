@@ -100,10 +100,13 @@ catch (error) {
 */
 export const getRoster = async (dispatch: any, api: string) => {
   try {
-      let response: AxiosResponse = await axios.get(api);
-      if (response.status == 200) {
-        const fetchedData = response.data;
-        dispatch({ type: ACTIONS.FECTH_ROSTER_SUCCESS, data: fetchedData });
+      let responseRoster: AxiosResponse = await axios.get(`${api}/roster`);
+      let responseImg: AxiosResponse = await axios.get(`${api}/ind_data?col=Image`);
+      if (responseRoster.status === 200 && responseImg.status === 200) {
+        const fetchedRoster = responseRoster.data;
+        const fetchedImg = responseImg.data;
+        const mergedData = fetchedRoster.map((roster:any, i:number) => ({...roster, image: fetchedImg[i].Image }))
+        dispatch({ type: ACTIONS.FECTH_ROSTER_SUCCESS, data: mergedData });
         return;
       }
       throw Error;
