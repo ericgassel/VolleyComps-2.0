@@ -32,25 +32,35 @@
   position: relative;
 }
 
-.chartSVGContainer {
-  border: 1px solid black;
+.chartContents {
+  display: flex;
+  flex-direction: row;
   height: 100%;
-  width: 100%;
+}
+
+.chartSVGContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: fit-content;
+  align-items: center;
+  /* justify-content: center; */
 }
 
 /* sprayChartSVG */
 
 .sprayChartSVG {
-  width: 900;
-  height: 600;
+  width: 500px;
+  /* height: 700px; */
+  height: 100%;
 }
 
 .sprayChartRect {
   /* x: 200;
   y: 50; */
-  width: 500;
-  height: 500;
-  fill: white;
+  width: 500px;
+  height: 500px;
+  fill: #fac476;
   stroke: black;
   stroke-width: 2;
 }
@@ -58,10 +68,16 @@
 
 
 .chartCommentContainer {
+  width: 100%;
+  height: 100%;
   margin-top: auto;
-  min-height: 20%;
   display: flex;
   flex-direction: column;
+  /* justify-content: center; */
+}
+
+.commentTitle {
+  text-align: center;
 }
 
 .commentForm {
@@ -87,18 +103,20 @@
 
 .commentBtn {
   /* float: right; */
-  width: 50px;
+  /* width: 50px; */
+  height: 30px;
   text-align: center;
   padding: 0%;
 }
 
 .commentContents {
   border: 1px solid black;
-  margin-top: auto;
-  height: 100%;
+  /* margin-top: auto; */
+  height: 500px;
   /* position: relative; */
   /* padding: 2%; */
   display: flex;
+  flex-direction: column;
 }
 
 .commentLine {

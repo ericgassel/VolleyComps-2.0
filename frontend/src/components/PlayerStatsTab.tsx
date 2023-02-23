@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 import Comment from './Comment';
 import { useParams } from 'react-router-dom';
 
-const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: any, selected_player_id: any}) => {
+const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[], selected_player_id: string}) => {
   const x_scale = d3.scaleLinear()
   .domain([0, 100])
   .range([0, 500]);
@@ -14,47 +14,82 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: any, select
   const y_scale = d3.scaleLinear()
   .domain([0, 100])
   .range([0, 600]);
+  
+  const returned_diff = 7;
+  let filteredChart;
+
+  if (spray_chart) {
+    if (selected_player_id === '0') {
+      filteredChart = spray_chart.slice();
+    } else {
+      filteredChart = spray_chart.filter((line: spray_line) => line.player_id === selected_player_id);
+    }
+  }
 
   return (
-    <svg className='sprayChartSVG' width={500} height={500}>
+    <svg className='sprayChartSVG'>
       <g>
-        <rect className='sprayChartRect' width={500} height={500}></rect>
+        <rect className='sprayChartRect'></rect>
         <line x1={0} x2={500} y1={90} y2={90} stroke="white" strokeWidth={4}></line>
         <circle cx={0} cy={90} r={10} fill="black"></circle>
         <circle cx={500} cy={90} r={10} fill="black"></circle>
         <line x1={0} x2={500} y1={270} y2={270} stroke="white" strokeWidth={4} opacity={0.5}></line>
         {/* <rect className='sprayChartRect' width={500} height={500} x={100}></rect> */}
-        {spray_chart ? spray_chart.map((line: any, i: number) => {
+        {filteredChart ? filteredChart.map((line: any, i: number) => {
           const { start_x, end_x, start_y, end_y, player_id, result } = line;
-
-          if (selected_player_id === '0') {
-            return (
+          const scaled_start_x = x_scale(start_x);
+          const scaled_start_y = y_scale(start_y);
+          const scaled_end_x = x_scale(end_x);
+          const scaled_end_y = y_scale(end_y);
+          return (
+            <React.Fragment key={i}>
               <line key={i} 
-                x1={x_scale(start_x)} 
-                x2={x_scale(end_x)} 
-                y1={y_scale(start_y)} 
-                y2={y_scale(end_y)} 
+                x1={scaled_start_x} 
+                x2={scaled_end_x} 
+                y1={scaled_start_y} 
+                y2={scaled_end_y} 
                 opacity={1} 
-                stroke={result === 'kill' ? '#000' : (result === 'out' ? 'red' : 'green')}
+                stroke={result === 'out' ? 'red' : '#000'}
+                strokeWidth={2}
               >
               </line>
-            )
-          } else if (player_id === selected_player_id) {
-            return (
-              <line key={i} 
-                x1={x_scale(start_x)} 
-                x2={x_scale(end_x)} 
-                y1={y_scale(start_y)} 
-                y2={y_scale(end_y)} 
-                opacity={1} 
-                stroke={result === 'kill' ? '#000' : (result === 'out' ? 'red' : 'green')}
-              >
-              </line>
-            )
-          }
+              {result === 'kill' ? (
+                <circle cx={scaled_end_x} cy={scaled_end_y} r={5} fill="#fac476" stroke='black' strokeWidth={2}></circle>
+              ) : result === 'returned' ? (
+                <>
+                  <line x1={scaled_end_x-returned_diff}
+                    y1={scaled_end_y-returned_diff}
+                    x2={scaled_end_x+returned_diff}
+                    y2={scaled_end_y+returned_diff}
+                    stroke='black' 
+                    strokeWidth={2}
+                  ></line>
+                  <line x1={scaled_end_x-returned_diff}
+                    y1={scaled_end_y+returned_diff}
+                    x2={scaled_end_x+returned_diff}
+                    y2={scaled_end_y-returned_diff}
+                    stroke='black' 
+                    strokeWidth={2}
+                  ></line>
+                </>
+              ) : (<></>)}
+            </React.Fragment>
+          )
         }) : (
           <div>Loading...</div>
         )}
+        <line x1={0} x2={50} y1={520} y2={520} stroke='black' strokeWidth={2}></line>
+        <text x={60} y={525}>Shot / Serve</text>
+
+        <line x1={0} x2={50} y1={540} y2={540} stroke='red' strokeWidth={2}></line>
+        <text x={60} y={545}>Out</text>
+
+        <circle cx={10} cy={560} r={7} stroke='black' fill='white' strokeWidth={2}></circle>
+        <text x={25} y={565}>Kill</text>
+
+        <line x1={10-returned_diff} x2={10+returned_diff} y1={580-returned_diff} y2={580+returned_diff} stroke='black' strokeWidth={2}></line>
+        <line x1={10-returned_diff} x2={10+returned_diff} y1={580+returned_diff} y2={580-returned_diff} stroke='black' strokeWidth={2}></line>
+        <text x={25} y={585}>Returned</text>
       </g>
     </svg>
   )
