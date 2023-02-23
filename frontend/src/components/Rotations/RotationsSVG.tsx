@@ -6,6 +6,8 @@ import { getSystemErrorMap } from 'util';
 import Rotations, { Player, Point, Rotation, disableButton, enableButton, sendEditRotation, sendNewRotation } from './Rotations';
 
 let point_tracking = false;
+//determines if a new line can be drawn
+let lock = 0;
 
 // the current dateID for the page
 let current_date_ID : string = "";
@@ -157,14 +159,15 @@ export const createRotSvg = (rotationInput : Rotation) => {
       .y(function(d) { return d.y })
       )
 */
-    
+
     svg.on("pointerdown", function(event) {
-        this.setPointerCapture(event.pointerId);
-        new_rotation = [];
-        if (globalThis.current_color != ""){
+        if (lock == 0 && globalThis.current_color != "")
+        {
+            this.setPointerCapture(event.pointerId);
+            new_rotation = [];
             point_tracking = true;
+            lock = 1;
         }
-        
     })
     svg.on("pointermove", function() {
         if (globalThis.current_color != "")
@@ -215,6 +218,8 @@ export const addRotationToSVG = (rotationObject: Rotation) => {
     sendEditRotation(rotationObject);
     // -------------
     // recreate SVG
+    lock = 0;
+
     createRotSvg(rotationObject);
     
 }
