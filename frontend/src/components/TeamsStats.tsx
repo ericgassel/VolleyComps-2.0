@@ -127,7 +127,6 @@ type TeamStatsProps = {
 }
 
 const TeamsStats:FC<TeamStatsProps> = ({ teams_stats }:TeamStatsProps) => {
-  console.log('teams_stats in TeamStats:', teams_stats)
   return (
     <div className='teamsStatsContainer'>
       {teams_stats.length ? (

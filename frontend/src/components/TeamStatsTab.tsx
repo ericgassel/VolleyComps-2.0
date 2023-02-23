@@ -16,8 +16,6 @@ const  TeamStatsTab=() => {
     getStats(dispatch, `${api_base_url}/data/${teamID}/ind_data`);
   }, [])
 
-  console.log('teams_stats in TeamStatsTab', teams_stats)
-
   return (
     <div className='teamStatsTab'>
       {(teams_stats && stats) ? (
