@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { updateComment } from '../action/action';
 import { useAppContext, useAppDispatchContext } from '../context/appContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons'
 import './TabStyles.css';
 
 const Comment = ({ teamID, notes, selectedPlayer, isEditing, setIsEditing }: any) => {
@@ -53,12 +55,14 @@ const Comment = ({ teamID, notes, selectedPlayer, isEditing, setIsEditing }: any
       {isEditing ? (
         <button className='commentBtn' onClick={handleEdit}>
           <div className='commentBtnText'>Save</div> 
-          <img className='commentBtnIcon' src={require('../floppy-disk-regular.svg')} /> 
+          <FontAwesomeIcon className='commentBtnIcon' icon={faSave} />
+
         </button>
       ) : (
         <button className='commentBtn' onClick={handleEdit}>
           <div className='commentBtnText'>Edit</div> 
-          <img className='commentBtnIcon' src={require('../edit-solid.svg')} /> 
+          <FontAwesomeIcon className='commentBtnIcon' icon={faEdit} />
+
         </button>
       )}
       
