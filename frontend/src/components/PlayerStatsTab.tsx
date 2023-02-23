@@ -54,7 +54,7 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[
               >
               </line>
               {result === 'kill' ? (
-                <circle cx={scaled_end_x} cy={scaled_end_y} r={5} fill="#fac476" stroke='black' strokeWidth={2}></circle>
+                <circle cx={scaled_end_x} cy={scaled_end_y} r={7} fill="#fac476" stroke='black' strokeWidth={2}></circle>
               ) : result === 'returned' ? (
                 <>
                   <line x1={scaled_end_x-returned_diff}
@@ -78,15 +78,19 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[
         }) : (
           <div>Loading...</div>
         )}
+        {/* Shot / Serve */}
         <line x1={0} x2={50} y1={520} y2={520} stroke='black' strokeWidth={2}></line>
         <text x={60} y={525}>Shot / Serve</text>
 
+        {/* Out */}
         <line x1={0} x2={50} y1={540} y2={540} stroke='red' strokeWidth={2}></line>
         <text x={60} y={545}>Out</text>
 
+        {/* Kill */}
         <circle cx={10} cy={560} r={7} stroke='black' fill='white' strokeWidth={2}></circle>
         <text x={25} y={565}>Kill</text>
 
+        {/* Returned */}
         <line x1={10-returned_diff} x2={10+returned_diff} y1={580-returned_diff} y2={580+returned_diff} stroke='black' strokeWidth={2}></line>
         <line x1={10-returned_diff} x2={10+returned_diff} y1={580+returned_diff} y2={580-returned_diff} stroke='black' strokeWidth={2}></line>
         <text x={25} y={585}>Returned</text>
@@ -131,6 +135,8 @@ const PlayerStatsTab = () => {
     // 3. Clean up function: clean localStorage
     return () => {
       localStorage.removeItem('selectedPlayer');
+      setSelectedPlayer(undefined);
+
     }
   }, [])
 
@@ -155,7 +161,7 @@ const PlayerStatsTab = () => {
     player_id: '0',
     class: '',
     height: '',
-    name: 'All',
+    name: 'All Players',
     number: '',
     position: '',
   }
@@ -175,7 +181,7 @@ const PlayerStatsTab = () => {
 
             <div className='selectedPlayerInfoContainer'>
               {selectedPlayer ? selectedPlayer.player_id === AllPlayer.player_id ? (
-                  <p className='selectedPlayerInfoText'>All Spray lines on the chart</p>
+                  <p className='selectedPlayerInfoText'>All the spray lines are displayed</p>
               ) : (
                 <>
                   <p className='selectedPlayerInfoText'>Name: {selectedPlayer.name}</p>
@@ -215,13 +221,13 @@ const PlayerStatsTab = () => {
         <div className='playerChartContainer'>
           <div className='chartContents'>
             <div className='chartSVGContainer'>
-              <h2>Spray Chart</h2>
+              <h2 className='chartContentHeader'>Spray Chart</h2>
 
               <SprayChart spray_chart={spray_chart} selected_player_id={selectedPlayer.player_id} />
             </div>
 
             <div className='chartCommentContainer'>
-              <h2 className='commentTitle'>Comment</h2>
+              <h2 className='chartContentHeader'>Comment</h2>
               {selectedPlayer.player_id !== AllPlayer.player_id ? (
                 <Comment
                   teamID={teamID}
