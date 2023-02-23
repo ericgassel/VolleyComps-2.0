@@ -27,11 +27,6 @@ const Teams = () => {
     setModalOpen(false);
   };
 
-  const onSubmit = (event: any) => {
-    event.preventDefault(event);
-    setModalOpen(false);
-  };
-
   const state = useAppContext();
   const dispatch = useAppDispatchContext();
 
@@ -41,7 +36,7 @@ const Teams = () => {
    // Modal for adding school
   const onSubmitTeam = async (e: any) => {
     setLoading(true)
-    console.log(loadingInProgress)
+    // console.log(loadingInProgress)
     e.preventDefault()
 
     let newTeam = e.target[0].value
@@ -59,6 +54,8 @@ const Teams = () => {
       getTeams(dispatch, getTeamsAPI).then(() => setLoading(false));
     }
   }, [teams]);
+
+  // console.log(teams)
 
   return (
     <div className='Teams'>
@@ -96,6 +93,16 @@ const Teams = () => {
         ) : (
     <div>
       <table className="TeamsTable">
+        {/* <thead className="ScheduleTableHead">
+          <tr>
+            <th className="ScheduleTableTh">School</th>
+            <th className="ScheduleTableTh">Manage Roster</th>
+            <th className="ScheduleTableTh">View Report</th>
+            <th className="ScheduleTableTh">Edit Report</th>
+          </tr>
+        </thead> */}
+
+
         <tbody>        
         
         {teams.map((val:any, key:any) => {
@@ -103,8 +110,8 @@ const Teams = () => {
             <tr className='TeamsTableTr' key={key}>
               <td className='TeamsTableTd TeamName'>{val.name}</td>
               <td className='TeamsTableTd'> <Link className='teamManagementLink' to={`/management/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Manage Roster</Link></td>
-              <td className='TeamsTableTd'><Link className='teamReportLink' to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Scout Report</Link></td>
-              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Add Report</a></td>
+              <td className='TeamsTableTd'><Link className='teamReportLink' to={`/report/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>View Scouting Report</Link></td>
+              <td className='TeamsTableTd'><a className='shotEntryLink' href={`/ShotEntry/${val.id}`} onClick={() => updateCurrentTeam(dispatch, {name:val.name, id: val.id})}>Edit Scouting Report</a></td>
             </tr>
           )
         })}

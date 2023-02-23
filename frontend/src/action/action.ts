@@ -144,6 +144,8 @@ export const getTeams = async (dispatch: any, api: string) => {
       if (response.status == 200) {
         const fetchedData = response.data;
         let formattedTeams = changeTeams(fetchedData);
+        // remove first row of the data, which is the header
+        formattedTeams.shift()
         dispatch({ type: ACTIONS.FECTH_TEAMS_SUCCESS, data: formattedTeams });
         return;
       }

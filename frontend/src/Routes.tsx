@@ -26,33 +26,33 @@ const MainRoutes = () => (
 	<Routes>
 		{/** Protected Routes */}
 		{/** Wrap all Route under ProtectedRoutes element */}
-		<Route path="/" element={<ProtectedRoutes />}>
-			<Route path="/" element={<InnerContent />}>
-				<Route path="/" element={<Navigate replace to="home" />} />
-				<Route path="home" element={<Home />} />
-				<Route path="knights" element={<Knights />} />
-				<Route path="management/:teamID" element={<ManageTeam />} />
-				<Route path="teams" element={<Teams />} />
-				<Route path="report/:teamID" element={<Tabs />}>
-					<Route path="/report/:teamID" element={<Navigate replace to="playerStatsTab" />} />
-					<Route path="playerStatsTab" element={<PlayerStatsTab />} />
-					<Route path="teamStatsTab" element={<TeamStatsTab />} />
-					<Route path="rotationsTab" element={<RotationsTab />} />
-				</Route>
-				<Route path="history" element={<History />} />
-				<Route path="ShotEntry/:id" element={<ShotEntry/>}/>
-				<Route path="Rotations/:id" element={<Rotations/>}/>
+		{/* <Route path="/" element={<PublicRoutes />}> */}
+		<Route path="/" element={<InnerContent />}>
+			<Route path="/" element={<Navigate replace to="home" />} />
+			<Route path="home" element={<Home />} />
+			<Route path="knights" element={<Knights />} />
+			<Route path="management/:teamID" element={<ManageTeam />} />
+			<Route path="teams" element={<Teams />} />
+			<Route path="report/:teamID" element={<Tabs />}>
+				<Route path="/report/:teamID" element={<Navigate replace to="playerStatsTab" />} />
+				<Route path="playerStatsTab" element={<PlayerStatsTab />} />
+				<Route path="teamStatsTab" element={<TeamStatsTab />} />
+				<Route path="rotationsTab" element={<RotationsTab />} />
 			</Route>
+			<Route path="history" element={<History />} />
+			<Route path="ShotEntry/:id" element={<ShotEntry/>}/>
+			<Route path="Rotations/:id" element={<Rotations/>}/>
 		</Route>
+		{/* </Route> */}
 
-		{/** Public Routes */}
+		{/* * Public Routes */}
 		{/** Wrap all Route under PublicRoutes element */}
-		<Route path="login" element={<PublicRoutes />}>
+		{/* <Route path="login" element={<PublicRoutes />}>
 			<Route path="/login" element={<Login />} />
-		</Route>
+		</Route> */}
 
 		{/** Permission denied route */}
-		<Route path="/denied" element={<PermissionDenied />} />
+		{/* <Route path="/denied" element={<PermissionDenied />} /> */}
 	</Routes>
 )
 

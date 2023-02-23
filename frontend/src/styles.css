@@ -54,27 +54,41 @@ body{
     display: flex;
 }
 .sidebar{
-    width:200px;
-    background-color: #365262;
+    width:17%;
+    background-color: #003E7E;
     color: #EBF8FE;
-    padding-top:200px;
-    padding-left:20px;
+    padding-top:140px;
+    padding-left:28px;
     height:100vh;
-    
 }
+
+.sidebar_title {
+    margin-bottom:40px;
+    /* font-weight: bold; */
+    font-size:23px;
+}
+
 .sidebar__items{
     display: flex;
     flex-direction: column;
-
 }
 .sidebar__items a{
     color: #EBF8FE;
-    font-size:20px;
-    margin-bottom:40px;
     text-decoration: none;
 }
 .sidebar_active{
     text-decoration: underline!important;
+}
+.sidebar_team{
+    font-weight: bold;
+    margin-bottom: 18%;
+    margin-left: 2%;
+    font-size: 20px;
+}
+.sidebar_team_options{
+    margin-bottom:20px;
+    margin-left: 12%;
+    font-size: 18px;
 }
 .tab-nav{
  margin-top: 20px;
@@ -122,7 +136,7 @@ h2{
 }
 .users__card{
     margin-top:40px;
-    border:1px solid #365262;
+    border:1px solid #003E7E;
     padding:20px;
 }
 .users__card p{
@@ -191,6 +205,6 @@ h2{
     margin-top:20px;
 }
 .btn-primary{
-    background-color:#365262;
+    background-color:#003E7E;
     color:white;
 }

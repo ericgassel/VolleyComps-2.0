@@ -5,7 +5,7 @@ const TabNav = () => {
   const location = useLocation()
   // const teamID = 0;
   const { teamID } = useParams();
-  console.log('teamID:', teamID)
+  // console.log('teamID:', teamID)
   return <div className='tab-nav'>
     <Link to={`/report/${teamID}/playerStatsTab`} className={location.pathname===`/report/${teamID}/playerStatsTab` ?'tab_active':''}>Player Stats</Link>
     <Link to={`/report/${teamID}/teamStatsTab`} className={location.pathname===`/report/${teamID}/teamStatsTab` ?'tab_active':''}>Team Stats</Link>
