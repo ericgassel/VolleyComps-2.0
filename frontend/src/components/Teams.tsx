@@ -13,18 +13,27 @@ import AddModal from './AddModal'
 import "./teamtable.css"
 import ManageTeam from './ManageTeam'
 import {  FadeLoader } from 'react-spinners';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
 
 const Teams = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [loadingInProgress, setLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
 
   const openModal = () => {
     setModalOpen(true);
   };
   const closeModal = () => {
     setModalOpen(false);
+  };
+
+  const handleSearch = (e: any) => {
+    e.preventDefault();
+    let lowerCase = e.target.value
+    setSearchInput(lowerCase);
   };
 
   const state = useAppContext();
@@ -55,6 +64,14 @@ const Teams = () => {
     }
   }, [teams]);
 
+  let selectedTeams = teams;
+
+  if (searchInput.length > 0) {
+    selectedTeams = teams.filter((team: any) => {
+      return team.name.toLowerCase().includes(searchInput.toLowerCase())
+    })
+  }
+
   // console.log(teams)
 
   return (
@@ -62,6 +79,19 @@ const Teams = () => {
 
     <div className="teamsTitle">
       <h1>Teams</h1>
+
+      <i className="fa-duotone fa-user"></i>
+
+      <div className="over_table">
+      <input
+        className='search-container fontAwesome'
+        type="search"
+        placeholder="Search Team"
+        onChange={handleSearch}
+        value={searchInput} />
+
+      <FontAwesomeIcon className='icon' icon={faMagnifyingGlass} bounce size='lg' />
+
       <div className="TeamModal">
         <React.Fragment>
           <h2><button className='AddTeamButton' onClick={openModal}>Add Team</button></h2>
@@ -81,6 +111,7 @@ const Teams = () => {
 
 
         </React.Fragment>
+      </div>
       </div>
     </div>
 
@@ -105,7 +136,7 @@ const Teams = () => {
 
         <tbody>        
         
-        {teams.map((val:any, key:any) => {
+        {selectedTeams.map((val:any, key:any) => {
           return (
             <tr className='TeamsTableTr' key={key}>
               <td className='TeamsTableTd TeamName'>{val.name}</td>
