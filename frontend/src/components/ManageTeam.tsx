@@ -63,7 +63,7 @@ const ManageTeam = () => {
       // 1. Fetch api
       if (!roster.length && fetchedRoster === false) {
         setLoading(true)
-        getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`).then(() => setLoading(false));
+        getRoster(dispatch, `${api_base_url}/data/${teamID}`).then(() => setLoading(false));
       }
     }, [roster, teams])
 
