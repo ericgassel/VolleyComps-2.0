@@ -4,6 +4,8 @@ By: Eric Gassel, Joshua Song, Michael Dreger, Sam Gloss, Sam Rosenburg, Daniel K
 
 # Frontend Documentation
 
+## Homes
+
 ## Teams
 
 ## Scouting Report
