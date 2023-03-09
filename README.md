@@ -1,14 +1,8 @@
 # VolleyComps-2.0
 
 By: Eric Gassel, Joshua Song, Michael Dreger, Sam Gloss, Sam Rosenburg, Daniel Kim
-## How to start up the existing code
 
-### Frontend
-
-### Backend
-
-
-# Frontend Help
+# Frontend Documentation
 
 ## Teams
 
@@ -18,7 +12,14 @@ By: Eric Gassel, Joshua Song, Michael Dreger, Sam Gloss, Sam Rosenburg, Daniel K
 
 ## Rotation Entry
 
-# Backend Help
+# Backend Documentation
 
+## Data Storage
 
+## Scraping
 
+## How to start up the existing code
+
+### Frontend
+
+### Backend
