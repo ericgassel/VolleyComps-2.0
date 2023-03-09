@@ -18,7 +18,7 @@ By: Eric Gassel, Joshua Song, Michael Dreger, Sam Gloss, Sam Rosenburg, Daniel K
 
 ## Scraping
 
-## How to start up the existing code
+# How to start up the existing code
 
 ### Frontend
 
