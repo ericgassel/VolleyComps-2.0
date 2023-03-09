@@ -7,9 +7,18 @@ By: Eric Gassel, Joshua Song, Michael Dreger, Sam Gloss, Sam Rosenburg, Daniel K
 
 ### Backend
 
-## Shot Entry Page
+
+# Frontend Help
+
+## Teams
+
+## Scouting Report
+
+## Shot Entry
+
+## Rotation Entry
+
+# Backend Help
 
 
-
-## Rotation Entry Page
 
