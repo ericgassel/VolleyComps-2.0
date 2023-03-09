@@ -49,7 +49,6 @@ export interface Point{
 // represents the 6 players that are currently selected as part of the rotation
 let current_players_on_rotation : Player[] = [];
 
-
 // represents the current selected color in the rotation
 globalThis.current_color = "";
 
@@ -58,65 +57,15 @@ let colors : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b
 
 // represents the colors not used by rotation yet
 let colors_available : string[] = ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","#f6b928"];
-//                                ["#5b535b","#ae3927","#923b9b","#009ec1","#009a6f","f6b928"]
+
 // the rotation that the user selects --> is the index of rotation in all_existing_rotations.
 let current_rotation_selected: number | null = null;
 
 // all rotations that exist for scouting report
-let rotation1 : Rotation = {
-    rotation_number : 1,
-    players_in_rotation : [{player_num:8,player_id:"d33fceaeb51f135d"},{player_num:24,player_id:"04baab5ac56162cc"},{player_num:12,player_id:"137a7bf09e7393e7"},{player_num:92,player_id:"daa381b7fb1a799f"},{player_num:36,player_id:"727dcdeddca6d072"},{player_num:88,player_id:"8bed1eaafe0abfe5"}],
-    movement_colors : ["","","","","",""],
-    notes : {additional_notes : "string",
-        blocking_scheme : "string",
-        serve_primary : "string",
-        serve_secondary : "string",
-        serve_tertiary : "string",
-        transition_primary : "string",
-        transition_secondary : "string",
-        transition_tertiary : "string",},
-    points: []
-
-}
-
-let rotation2 : Rotation = {
-    rotation_number : 1,
-    players_in_rotation : [{player_num:1,player_id:"abc123"},{player_num:2,player_id:"abc123"},{player_num:3,player_id:"abc123"},{player_num:4,player_id:"abc123"},{player_num:5,player_id:"abc123"},{player_num:6,player_id:"abc123"}],
-    movement_colors : ["","","","","",""],
-    notes : {additional_notes : "string",
-        blocking_scheme : "string",
-        serve_primary : "string",
-        serve_secondary : "string",
-        serve_tertiary : "string",
-        transition_primary : "string",
-        transition_secondary : "string",
-        transition_tertiary : "string",},
-    points : []
-
-}
-
-let rotation3 : Rotation = {
-    rotation_number : 1,
-    players_in_rotation : [{player_num:11,player_id:"abc123"},{player_num:22,player_id:"abc123"},{player_num:33,player_id:"abc123"},{player_num:44,player_id:"abc123"},{player_num:55,player_id:"abc123"},{player_num:66,player_id:"abc123"}],
-    movement_colors : ["","","","","",""],
-    notes : {additional_notes : "string",
-        blocking_scheme : "string",
-        serve_primary : "string",
-        serve_secondary : "string",
-        serve_tertiary : "string",
-        transition_primary : "string",
-        transition_secondary : "string",
-        transition_tertiary : "string",},
-    points : []
-}
-
-let all_existing_rotations : Rotation[] = [rotation1,rotation2,rotation3];
-
-// all colors/movements assigned to given player in all_existing_rotations
-
+let all_existing_rotations : Rotation[] = [];
 
 // all players on the team
-let all_players : Player[] = [{player_id:"test",player_num:5}];
+let all_players : Player[] = [];
 
 // selected player to add to a rotation
 let add_rotation_player_selected : string= "";
@@ -243,6 +192,9 @@ const saveTransitionServeNotes = () : void => {
     
 }
 
+// INPUT: N/A
+// OUTPUT: hides the save text for serve/transition notes
+//      - effectively provides the animation on the save text
 function hideSaveServeTransition() {
     let saveButton : HTMLParagraphElement = document.getElementById("SavedTextServeTransition") as HTMLParagraphElement;
     saveButton.style.transition = "all 1s";
@@ -250,6 +202,9 @@ function hideSaveServeTransition() {
     saveButton.style.opacity = "0%";
 }
 
+// INPUT: N/A
+// OUTPUT: hides the save text for blocking notes
+//      - effectively provides the animation on the save text
 function hideSaveBlockingNotes() {
     let saveButton : HTMLParagraphElement = document.getElementById("SavedTextBlockingNotes") as HTMLParagraphElement;
     saveButton.style.transition = "all 1s";
@@ -370,6 +325,8 @@ const selectSpotInRotation = (spotInRotation : string) => {
    
 }
 
+// INPUT: N/A
+// OUTPUT: the school name for the ID passed in through URL.
 async function getSchoolName() {
     let url : string = window.location.href;
     let id : string = url.substring(url.lastIndexOf("/") + 1);
@@ -828,8 +785,6 @@ const selectRotation = (rotationInput : Rotation) => {
 //      - also sets default button names for buttons with id "AddButton" and "EditOrCancelButton"
 //      - also displays all main html page elements
 const allRotationButtonsUpper = (allRotations : Rotation[]) => {
-    
-    
     // ----------------
     // set defaults for buttons with ids "AddButton" and "EditOrCancelButton"
     let addButton : HTMLButtonElement = document.getElementById("AddButton") as HTMLButtonElement;
@@ -1002,6 +957,8 @@ const addRoute = () : void=> {
 
 }
 
+// INPUT: hex color code
+// OUTPUT: rgb format color code
 function hexToRgb(hex:string) {
     // from: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -1063,8 +1020,6 @@ const deleteRoute = () => {
         disableButton("deleteRouteButton");
         // set ability to addRoute to false until select new player
         globalThis.able_to_add_rotation = false;
-
-
 
     } else {
         alert("Please select a player.");
@@ -1143,11 +1098,6 @@ async function getRotations() : Promise<Rotation[]>{
             }
             
         }
-      
-        
-    
-       
-        
         // set up rotation recieved from database
         let serve_recieve : string[] = JSON.parse(response[i].serve_recieve);
         let transition : string[] = JSON.parse(response[i].transition);
@@ -1177,18 +1127,8 @@ async function getRotations() : Promise<Rotation[]>{
       return rotationList.sort(function(rot1 : Rotation, rot2: Rotation) : number {return rot1.rotation_number - rot2.rotation_number});
   }
 
-  /*
-// interface representing a rotation object
-export interface Rotation{
-    rotation_id : string;
-    rotation_number : number;
-    players_in_rotation : Player[];
-    movement_colors : string[];
-    notes : Notes;
-    colors_available : string[];
-}
-*/
-    // THIS IS THE LAST THING THAT IS MISSING.
+    // INPUT: rotation object
+    // OUTPUT: updates the rotation with rotation number contained in the rotation object that is passed in
     export const sendEditRotation = (rotation : Rotation) : void => {
         // ------------------
         // get sheets id
@@ -1234,24 +1174,7 @@ export interface Rotation{
         newTransition.var = "transition";
         newTransition.value = JSON.stringify([rotation.notes.transition_primary, rotation.notes.transition_secondary,rotation.notes.transition_tertiary]);
 
-
-
         data.newvalue = [newPlayerID,newPlayerNum,newColors,newLine,newNotes,newBlockingScheme,newServeRecieve,newTransition];
-        
-        /*
-        newValue.line = rotation.points;
-        
-        newValue.player_id = playerIDs;
-        newValue.player_number = playerNums;
-        newValue.movement_colors = rotation.movement_colors;
-        
-        newValue.notes = rotation.notes.additional_notes;
-        newValue.blocking_scheme = rotation.notes.blocking_scheme;
-        
-        newValue.serve_recieve = [rotation.notes.serve_primary, rotation.notes.serve_secondary,rotation.notes.serve_tertiary];
-        newValue.transition = [rotation.notes.transition_primary, rotation.notes.transition_secondary,rotation.notes.transition_tertiary];
-        */
-        
         
         fetch('http://cs400volleyball.mathcs.carleton.edu:5000/write/'+ id +'/rotations/edit', {
         method: 'POST',
@@ -1264,6 +1187,10 @@ export interface Rotation{
         .then(response => response.json())
 
     }
+
+    // INPUT: a rotation object
+    // OUTPUT: N/A
+    //      - sends a new rotation to the DB that is then added
     export const sendNewRotation = (rotation : Rotation) : void => {
           // ------------------
         // get sheets id
@@ -1289,6 +1216,7 @@ export interface Rotation{
         .then(response => response.json())
        
     }
+
 // adds the appropriate items to the page if Rotations is loaded
 window.addEventListener("load", async (event) => {
     

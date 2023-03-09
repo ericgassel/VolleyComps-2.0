@@ -16,12 +16,19 @@ declare global {
   var okay_to_add : boolean;
 }
 
-let tooltipInfo = 'Select player, shot options, and spots on court.';
-let rotation_current_player: Player | null = null;
+// the player currently selected
+let current_player: Player | null = null;
+
+// the shot type that is selected
 let shot_type_current_button: string = "";
+
+// the result button that is selected
 let result_current_button: string = "";
+
+// the order of which players appear in shot entry
 let player_order : Player[] = [];
 
+// color for selecting a player in the rotation
 let selection_color : string = "#51558B";
 
 
@@ -31,8 +38,6 @@ let selection_color : string = "#51558B";
 //    - () in output means that may or may not return with digit there
 //    - for example, could return 1/13/2023, 5/1/2023, or 12/30/2023
 const getDateString = (date : Date) : string => {
-
-
   return (date.getMonth() + 1).toString() + "/" + (date.getDate()).toString() + "/" + date.getFullYear().toString().substring(2,4);
 }
 
@@ -138,7 +143,7 @@ const clearAllButtons = (btn_ids: string[]) => {
     let input = document.getElementById("player" + player_order[i].player_id) as HTMLButtonElement;
     input.style.background = "";
   }
-  rotation_current_player = null;
+  current_player = null;
   shot_type_current_button = "";
   result_current_button = "";
 
@@ -147,11 +152,11 @@ const clearAllButtons = (btn_ids: string[]) => {
 
 const addShot = (btn_ids_toClear: string[]) => {
 
-  if (rotation_current_player != null && shot_type_current_button != "" && result_current_button != "") {
+  if (current_player != null && shot_type_current_button != "" && result_current_button != "") {
     
-    addShotToSvg(shot_type_current_button,result_current_button,rotation_current_player.player_id);
+    addShotToSvg(shot_type_current_button,result_current_button,current_player.player_id);
 
-    let deletedPlayer : Player | null = deleteSelectedPlayer(rotation_current_player);
+    let deletedPlayer : Player | null = deleteSelectedPlayer(current_player);
     
     if (deletedPlayer != null){
       player_order.unshift(deletedPlayer);
@@ -165,7 +170,7 @@ const addShot = (btn_ids_toClear: string[]) => {
     let player_btns = document.getElementById("playerOptions") as HTMLDivElement;
     player_btns.scrollTop = 0;
     disableFields();
-  } else if (rotation_current_player == null){
+  } else if (current_player == null){
     alert("Please select a player.");
   }
   else if (shot_type_current_button == ""){
@@ -186,16 +191,20 @@ const deleteSelectedPlayer = (player: Player) : Player | null => {
   }
   return null;
 }
+
+// INPUT: player
+// OUTPUT: N/A
+//      - sets the current_player to player. Also enables next level of data entry
 const selectPlayer = (player: Player) => {
   
   let playerHTML = document.getElementById("player" + player.player_id) as HTMLButtonElement;
  
   playerHTML.style.background = selection_color;
-    if (rotation_current_player != null && player != rotation_current_player) {
-      let old_selected = document.getElementById("player" + rotation_current_player.player_id) as HTMLButtonElement;
+    if (current_player != null && player != current_player) {
+      let old_selected = document.getElementById("player" + current_player.player_id) as HTMLButtonElement;
       old_selected.style.background = "";
     } 
-    rotation_current_player = player;
+    current_player = player;
     
     enableButton("shot");
     enableButton("serve");
@@ -254,6 +263,8 @@ const changeSVG = () => {
   fullNewLoadSvg(getDateString(date));
 }
 
+// INPUT: N/A
+// OUTPUT: the school name for the ID passed in through URL.
 async function getSchoolName() {
   let url : string = window.location.href;
   let id : string = url.substring(url.lastIndexOf("/") + 1);
@@ -395,11 +406,6 @@ async function deleteShot() : Promise<void> {
 
 
 
-// TODO: 
-
-// change data-tooltip depending on what is currently selected to tell user
-// what they still need to do.
-
 const ShotEntry=() =>{
     return <div className='ShotEntry' id="allHTML">
           
@@ -448,7 +454,7 @@ const ShotEntry=() =>{
                       <tr>
                         <td>
                           
-                          <button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}} data-tooltip={tooltipInfo}>ADD SHOT</button>
+                          <button id='addShot' className='tableButton' onClick={() => {addShot(["serve","shot","kill","returned","out"]);}} data-tooltip="Select player, shot options, and spots on court.">ADD SHOT</button>
                           
                           </td>
                         <td><button id='delete' className='tableButton' onClick={deleteShot} data-tooltip="Select a shot to delete.">Delete</button></td>

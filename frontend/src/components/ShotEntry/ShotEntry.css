@@ -145,7 +145,7 @@ https://css-tricks.com/different-transitions-for-hover-on-hover-off/
     content: attr(data-tooltip);
     position: absolute;
     left: 5%;
-    bottom: -30%; /* put it on the top */
+    bottom: -30%; 
     color: black;
     width: max-content;
     opacity: 0;
