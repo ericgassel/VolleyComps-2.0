@@ -162,9 +162,6 @@ const addShot = (btn_ids_toClear: string[]) => {
       player_order.unshift(deletedPlayer);
     }
     
-
-
-
     playerOptions(player_order);
     clearAllButtons(btn_ids_toClear);
     let player_btns = document.getElementById("playerOptions") as HTMLDivElement;

@@ -875,7 +875,10 @@ const buttonClickCurrentRotation = (player : Player) => {
     {
         // player with existing rotation selected
         globalThis.current_color = button.style.background;
-        enableButton("deleteRouteButton");
+        if (all_existing_rotations[current_rotation_selected!].movement_colors.indexOf(globalThis.current_color) != -1){
+            enableButton("deleteRouteButton");
+        }
+        
     }
     
     
@@ -932,20 +935,24 @@ const addRoute = () : void=> {
        
         addRotationToSVG(all_existing_rotations[current_rotation_selected!]);
         
-        let rgbColors : any = hexToRgb(colors_available[0]);
-        let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
-        
-        if (current_button.style.background == rgbString){
-            colors_available.shift();
-        } 
+        if(colors_available.length > 0) {
+            let rgbColors : any = hexToRgb(colors_available[0]);
+            let rgbString : string = "rgb("+rgbColors.r+", "+rgbColors.g+", "+rgbColors.b+")";
+            
+            if (current_button.style.background == rgbString){
+                colors_available.shift();
+            } 
+        }
+       
         // remove current_selected_player
         globalThis.current_selected_player = null;
         // remove the button border
         current_button.style.border = "none";
         // remove the current color
         globalThis.current_color="";
-        // disable addRotation button
+        // disable buttons
         disableButton("addRouteButton");
+        disableButton("deleteRouteButton");
         // set ability to addRoute to false until select new player
         globalThis.able_to_add_rotation = false;
     } else {
@@ -1280,7 +1287,7 @@ const getShotEntryURL = () : string => {
 const getScountingReportURL = () : string => {
     let url : string = window.location.href;
     let id : string = url.substring(url.lastIndexOf("/") + 1);
-    return "/report/" + id + "/playerStatsTab";
+    return "/report/" + id + "/rotationsTab";
   }
 
 //rotationNotesText needs to be applied if there is a rotation.
