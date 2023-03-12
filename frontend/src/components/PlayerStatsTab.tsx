@@ -87,15 +87,15 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[
         )}
         {/* Shot */}
         <line x1={0} x2={50} y1={520} y2={520} stroke='black' strokeWidth={2}></line>
-        <text x={60} y={525}>Shot / Serve</text>
+        <text x={60} y={525}>Shot</text>
 
         {/* Serve */}
         <line x1={0} x2={50} y1={540} y2={540} stroke='black' strokeWidth={2} strokeDasharray={'5,5'}></line>
-        <text x={60} y={525}>Shot</text>
+        <text x={60} y={545}>Serve</text>
 
         {/* Out */}
         <line x1={0} x2={50} y1={560} y2={560} stroke='red' strokeWidth={2}></line>
-        <text x={60} y={545}>Serve</text>
+        <text x={60} y={565}>Out</text>
 
         {/* Kill */}
         <circle cx={10} cy={580} r={7} stroke='black' fill='white' strokeWidth={2}></circle>
@@ -140,8 +140,6 @@ const PlayerStatsTab = () => {
   useEffect(() => {
     // 1. Fetch api
     getRoster(dispatch, `${api_base_url}/data/${teamID}`);
-    // getRoster(dispatch, `${api_base_url}/data/${teamID}/roster`);
-    // getPlayerImg(dispatch, `${api_base_url}/data/${teamID}/ind_data?col=Player_ID,Image`);
       // 2. Load svg
     getSprayChart(dispatch, `${api_base_url}/data/${teamID}/spray_chart`);
   
@@ -199,7 +197,8 @@ const PlayerStatsTab = () => {
               ) : (
                 <>
                   <p className='selectedPlayerInfoText'>Name: {selectedPlayer.name}</p>
-                  <p className='selectedPlayerInfoText'>Position: {selectedPlayer.position}</p>
+                  <p className='selectedPlayerInfoText'>Position: {selectedPlayer.height}</p>
+                  {/* <p className='selectedPlayerInfoText'>Position: {selectedPlayer.position}</p> */}
                   <p className='selectedPlayerInfoText'>Number: {selectedPlayer.number}</p>
                 </>
               ) : (
