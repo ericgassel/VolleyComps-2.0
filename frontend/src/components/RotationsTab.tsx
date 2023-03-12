@@ -16,31 +16,22 @@ const  RotationsTab = () => {
     getRotation(dispatch, `${api_base_url}/data/${teamID}/rotations`)
   }, [])
   
-  const numOfColumns = 2;
-  const numOfRows = Math.ceil(rotations.length / numOfColumns);
-  const columnData = [];
-  for (let i = 0; i < numOfColumns; i++) {
-    columnData.push(rotations.slice(i * numOfRows, (i + 1) * numOfRows));
-  }
-
-
-
   return (
     <div className='rotationsTab'>
-      {rotations.length ? (
+      {rotations.every(column => column.length === 0) ? (
+        <div className='noAPIContainer'>
+          <div>There is no Rotation to show!</div>
+          <a className='shotEntryLink' href={`/Rotations/${teamID}`}>Add Rotation</a>
+        </div>
+      ) : (
         <div className='rotationsTab__columns'>
-          {columnData.map((column: rotation_type[], i) => (
+          {rotations.map((column: rotation_type[], i) => (
             <div className='rotationsTab__column' key={i}>
               {column.map((rotation: rotation_type, j: React.Key) => (
                 <Rotation key={j} rotation={rotation} />
               ))}
             </div>
           ))}
-        </div>
-      ) : (
-        <div className='noAPIContainer'>
-          <div>There is no Rotation to show!</div>
-          <a className='shotEntryLink' href={`/Rotations/${teamID}`}>Add Rotation</a>
         </div>
       )}
     </div>

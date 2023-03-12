@@ -76,7 +76,7 @@ type State = {
     spray_chart: spray_line[];
     teams_stats: team_stats[];
     stats: any;
-    rotations: rotation_type[];
+    rotations: [rotation_type[]];
     teams: any;
     currTeamData: {name:string; id:string}, 
     isCurrTeamFilled: boolean
@@ -175,9 +175,14 @@ const appReducer = (state: any, action: Action) => {
             }
             return parsedRotation;
           })
+
+          const columnData = [];
+          columnData.push(convertedData.filter((rotation: rotation_type, i:number) => i % 2 === 0));
+          columnData.push(convertedData.filter((rotation: rotation_type, i:number) => i % 2 === 1));
+
           return {
             ...state,
-            rotations: convertedData,
+            rotations: columnData,
           }
         }
         case "schedule_success": {
