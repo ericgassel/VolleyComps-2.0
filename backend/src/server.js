@@ -373,7 +373,6 @@ app.post("/write/:spreadsheetId/:sheet", express.json(), async (req, res) =>{
         console.log(error)
         res.status(500).send(error)
     }
-
 })
 
 function addIdToTeams(teamObjs, idObj) {

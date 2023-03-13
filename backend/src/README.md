@@ -1,17 +1,19 @@
-# Backend API Documentation
+# VolleyVision API Documentation
 
-The API currently connects to port 5000 on our server and can be accessed at 
+You need a Google service acount to successfuly use this API. This the bottom of this documentation for more details.
+
+## Accessing the API
+
+The API currently connects to port 5000 on our VM and can be accessed at 
 `http://cs400volleyball.mathcs.carleton.edu:5000`.
 
 You must be connected to eduroam or the Carleton VPN to access this API. 
 
-## What if the server is down?
-
-If the server is down, you unfortunately cannot access it as I (Eric Gassel) am running it in a tmux session that only I can access. If you need to use the API, what you can do is run the API locally.
+### Run the API locally
 
 To run the API on your local machine, navigate to `VolleyComps-2.0/backend` and run the command `npm run start`. 
 
-*Please note that connecting to the Google Sheets API will fail if you are running the API locally and connected to eduroam, as there are Carleton firewalls set up preventing this.
+*Please note that there are certain Wifi's, such as Carleton's eduroam, that contain certain firewalls that prevent my API from establishing a connection to the Google Sheets API, and thus the API won't work. This may be the case for you if your API calls are timing out.
 
 ## Sheet Design
 
@@ -252,7 +254,7 @@ For example, the response object for the example call made above would be:
 
 ```
     [
-        ["3e8926e37d187359", "Goofy Goober"	"60", "5'11", "OPP"	"Sr", "Hits really hard!"],
+        ["3e8926e37d187359", "Goofy Goober", "60", "5'11", "OPP", "Sr", "Hits really hard!"],
         ["025429f22a36965e", "Sally Sample", "34", "5'7" "OH", "Jr", "great passer, looks to score off of set /n bad returner"]
     ]
 ```
@@ -343,11 +345,14 @@ You can do this by adding the query `recent`, so if you want to delete the most 
 `POST delete/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/spray_chart?player_id=4f1162f40d063c5d&recent=1`
     
 ---------------------------------------------------------------------------
-To be implemented:
-- filter by date
----------------------------------------------------------------------------
 
-PLEASE NOTE, there are usage limits for the google sheets API (how frequently it can be used). Here is a quick overview:
+## Google Sheets API info
+
+You must have a google service account with the google sheets API enabled to use this API. Learn more here: `https://cloud.google.com/iam/docs/service-accounts-create`.
+
+Create a service account key that allows you to authenticate yourself for the google sheets API, and put the json key in the `api_credentials.json` file.
+
+PLEASE NOTE, there are usage limits for the Google Sheets API (how frequently it can be used). Here is a quick overview:
 
 Read requests:
 - Per day per project:	Unlimited
