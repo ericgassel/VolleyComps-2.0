@@ -59,5 +59,51 @@ You may navigate to the Scouting Report and Shot Entry pages via the navagation 
 # How to start up the existing code
 
 ### Frontend
+To start up the frontend of VolleyVision, first find the file in your command line interface.
+
+At this point, on Mac, your terminal should look something like this:
+(MacOS)
+```sh
+...[personal computer info] VolleyComps-2.0 %
+```
+or
+(Windows)
+```sh
+...[personal computer info]/VolleyComps-2.0$
+```
+
+After reaching this point, run the following command in the terminal to get into the frontend folder:
+
+```sh
+cd frontend
+```
+
+Then, if this the first time completing these steps, install npm by running: 
+```sh
+npm install
+```
+
+Next, you should be able to start the project with:
+```sh
+npm start
+```
+If you get an error that says something along the lines of:
+```sh
+opensslErrorStack: [ 'error:03000086:digital envelope routines::initialization error' ],
+  library: 'digital envelope routines',
+  reason: 'unsupported',
+  code: 'ERR_OSSL_EVP_UNSUPPORTED'
+}
+```
+Run the following command in your terminal:
+```sh
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+Then run the following command again:  
+```sh
+npm start
+```
+
+After following these steps, you should have a VolleyVision should open as a tab in your browser.
 
 ### Backend
