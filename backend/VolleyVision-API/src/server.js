@@ -24,7 +24,7 @@
  })
 
  app.get("/help", async (req, res) =>{
-    fs.readFile('src/README.md', 'utf8', (err, data) => {
+    fs.readFile('README.md', 'utf8', (err, data) => {
         if (err) {
             res.send(err)
         } else {
