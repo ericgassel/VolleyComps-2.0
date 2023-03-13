@@ -104,6 +104,6 @@ Then run the following command again:
 npm start
 ```
 
-After following these steps, you should have a VolleyVision should open as a tab in your browser.
+After following these steps, VolleyVision should open as a tab in your browser.
 
 ### Backend
