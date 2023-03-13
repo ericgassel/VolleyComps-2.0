@@ -146,6 +146,8 @@ Each Google Sheets contain the following five sheets "pages":
     - [Team, Kills,	Errors,	Attempts, Percent,	Kills_Per_Set,	Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Errors, Aces_Per_Set, Errors, Errors_Per_Set, Digs, Digs_Per_Set, Solo, Assists, Errors, Blocks, Blocks_Per_Set]
 - "ind_stats"
     -[Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
+
+An example spreadsheet for a Dummy School can be viewed [here](https://docs.google.com/spreadsheets/d/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/edit#gid=1012899245).
   
 In addition the these spreadsheets, there is a "Schools" and  "Schedule" spreadsheet.
 - "Schools" : contains the following 3 columns:
