@@ -102,7 +102,7 @@ const currentRotationButtonsLower = (rotation: Rotation) : void => {
         let element : HTMLButtonElement = document.createElement("button");
       
         element.id = "player" + players[i].player_num.toString();
-        element.type = "rotationButton";
+        element.className = "rotationButton";
         element.innerHTML=players[i].player_num.toString();
         element.style.background = rotation.movement_colors[i]
         element.onclick = () => buttonClickCurrentRotation(players[i]);
@@ -115,7 +115,7 @@ const currentRotationButtonsLower = (rotation: Rotation) : void => {
     for(let i : number = 3; i < 6; i++){
         let element : HTMLButtonElement= document.createElement("button");
         element.id = "player" + players[i].player_num.toString();
-        element.type = "rotationButton";
+        element.className = "rotationButton";
         element.innerHTML=players[i].player_num.toString();
         element.style.background = rotation.movement_colors[i]
         element.onclick = () => buttonClickCurrentRotation(players[i]);
@@ -502,7 +502,7 @@ const addNewRotationButtonSelected = ()=>{
                 let element = document.createElement("button");
                 // id is player[*player number*]
                 element.id = "player" + all_players[i].player_num.toString();
-                element.type = "rotationButton";
+                element.className = "rotationButton";
                 element.innerHTML=all_players[i].player_num.toString();
                 element.onclick = () => selectPlayer(all_players[i].player_num.toString());
                 divElement.append(element);
@@ -521,7 +521,7 @@ const addNewRotationButtonSelected = ()=>{
     for(let i : number = 0; i < 3; i++){
         let element : HTMLButtonElement = document.createElement("button");
         element.id = "ele" + i.toString();
-        element.type = "rotationButton";
+        element.className = "rotationButton";
         element.innerHTML="";
         element.onclick = () => selectSpotInRotation(i.toString());
         addDivRotation.append(element);
@@ -532,7 +532,7 @@ const addNewRotationButtonSelected = ()=>{
     for(let i : number = 3; i < 6; i++){
         let element : HTMLButtonElement= document.createElement("button");
         element.id = "ele" + i.toString();
-        element.type = "rotationButton";
+        element.className = "rotationButton";
         element.innerHTML="";
         element.onclick = () => selectSpotInRotation(i.toString());
         addDivRotation.append(element); 
@@ -703,7 +703,7 @@ const editASelectedRotation = (current_rotation : number) => {
             let element = document.createElement("button");
             // id is player[*player number*]
             element.id = "player" + all_players[i].player_num.toString();
-            element.type = "rotationButton";
+            element.className = "rotationButton";
             element.innerHTML=all_players[i].player_num.toString();
             element.onclick = () => selectPlayer(all_players[i].player_num.toString());
             divElement.append(element);
@@ -723,7 +723,7 @@ const editASelectedRotation = (current_rotation : number) => {
     for(let i : number = 0; i < 3; i++){
         let element : HTMLButtonElement = document.createElement("button");
         element.id = "ele" + i.toString();
-        element.type = "rotationButton";
+        element.className = "rotationButton";
         element.innerHTML=playerOnRotation[i].player_num.toString();
         element.onclick = () => selectSpotInRotation(i.toString());
         addDivRotation.append(element);
@@ -734,7 +734,7 @@ const editASelectedRotation = (current_rotation : number) => {
     for(let i : number = 3; i < 6; i++){
         let element : HTMLButtonElement= document.createElement("button");
         element.id = "ele" + i.toString();
-        element.type = "rotationButton";
+        element.className = "rotationButton";
         element.innerHTML=playerOnRotation[i].player_num.toString();
         element.onclick = () => selectSpotInRotation(i.toString());
         addDivRotation.append(element); 
@@ -829,7 +829,7 @@ const allRotationButtonsUpper = (allRotations : Rotation[]) => {
             if (i < allRotations.length){
                 let element = document.createElement("button");
                 element.id = "rotation" + allRotations[i].rotation_number.toString();
-                element.type = "rotationButton";
+                element.className = "rotationButton";
                 element.innerHTML=(allRotations[i].rotation_number).toString();
                 // the rotation number is 1 + its index
                 element.onclick = () => selectRotation(allRotations[i]);
@@ -914,16 +914,10 @@ const buttonClickCurrentRotation = (player : Player) => {
 const addRoute = () : void=> {
     if (globalThis.current_selected_player != null) {
         let current_button : HTMLButtonElement = document.getElementById("player"+globalThis.current_selected_player.player_num) as HTMLButtonElement;
-        // move the temp drawn info on SVG to rotation storage
-        // include the notes in this call
-
-        
-        
         // ------------------
         // find index in rotation that is the spot of the player
         let rotation : Rotation = all_existing_rotations[current_rotation_selected!];
         
-
         let index : number = 0;
         for(let i : number = 0; i< rotation.players_in_rotation.length;i++){
             if(globalThis.current_selected_player.player_num == rotation.players_in_rotation[i].player_num){

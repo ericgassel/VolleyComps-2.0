@@ -94,7 +94,7 @@ th,tr[class="rotationTable"] {
     background-color: #4a3882
 }
 
-button[type="rotationButton"]{
+button[class="rotationButton"]{
     background-color: #797B9F; /* Green */
     border: none;
     color: white;
@@ -106,7 +106,7 @@ button[type="rotationButton"]{
     margin: 4px 2px;
     border-radius: 8px;
 }
-button[type="rotationButton"]:hover{
+button[class="rotationButton"]:hover{
     transform: translate(0px, 3px);
     -webkit-transform: translate(0px, 3px);
     box-shadow: 0px 1px 0px 0px;
