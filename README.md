@@ -29,7 +29,7 @@ You may navigate to the Scouting Report and Rotation Entry pages via the navagat
 
 ## Rotation Entry
 The Rotation Entry page is where you can add rotations for a team. 
-> The areas mentioned for selecting different parts of a rotation and adding/editing them may appear below the drawing box or to the right. In this documentation, the area will be referred to as being on the right on the screen.
+> The areas mentioned for selecting different parts of a rotation and adding/editing them may appear below the drawing box or to the right depending on your computer monitor. In this documentation, the area will be referred to as being on the right on the screen.
 
 Initially, if there are no rotations added, to the right you will see text that says "No Rotations Added" and a button that says "Add Rotation". By pressing "Add Rotation" you will be able to add any player that has been added to the rotation by selecting the player and then selecting the spot in the rotation where you wish to add the player. Note, each player in the rotation has to be unique (i.e no duplicate players in the rotation). If there are less than 6 players available, the page will ask you to add players to the team.
 
