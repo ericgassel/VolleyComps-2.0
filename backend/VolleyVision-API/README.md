@@ -19,7 +19,7 @@ To run the API on your local machine, navigate to `VolleyComps-2.0/backend/Volle
 
 The data base is composed of separate Google Sheets files that each represent one team. For example, there will be a Google Sheets titled "St. Olaf", and another Google Sheets titled "Macalaster".
 
-Each Google Sheets contain the following four sheets "pages":
+Each Google Sheets contain the following five sheets "pages":
 
 - "roster"
     - columns in roster: [player_id, name, number, height, position, class, notes]
