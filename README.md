@@ -63,7 +63,7 @@ Schedule (https://docs.google.com/spreadsheets/d/1s79U6G7kGcdViYJ51JzY-DG2DIR7fx
 --College Name, Date of Game, Location of Game, and Game Result (if applicable)
 Dummy_School (https://docs.google.com/spreadsheets/d/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/edit#gid=158875928):
 -This is a baseline sheet that is an example of the 427 differet schools we currently supports sheets. 
--This sheet has 5 different pages:
+-This sheet has 5 different pages: \n
 --Roster:
 --- player_id, name, number, height, position, class, notes
 --Spray-Chart:
