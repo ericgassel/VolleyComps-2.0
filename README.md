@@ -6,7 +6,55 @@ By: Eric Gassel, Joshua Song, Michael Dreger, Sam Gloss, Sam Rosenburg, Daniel K
 
 ## Home
 
+The home page is where we can see the schedule of the Carleton Women's Volleyball team. 
+
+![Home Page](./readme_assets/homepage.png)
+
+User can click on the team name to directly go to the team's scouting report. 
+
+
 ## Teams
+
+The teams page is where we can see all the teams that are part of NCAA D3. 
+
+![Teams Page](./readme_assets/teams.png)
+
+### Search Bar
+User can use the search bar to search a team of choice. 
+
+### Add Team
+
+![Add Team](./readme_assets/addTeam.png)
+
+User can manually add a team by using the "Add Team" button.
+
+### Manage Roster
+
+User can click the manage roster button to navigate to a page that handles roster management. 
+
+![Manage Roster](./readme_assets/manageRoster.png)
+
+In this page, user can view, add and delete a member from the team's roster. 
+The team's roster is dynamically rendered based on the saved data given from the server. 
+
+### View Scouting Report
+
+Clicking this button will directly lead the user to the team's scouting report. 
+
+### Shot Entry
+
+Clicking this button will directly lead the user to the team's shot entry page. 
+
+### Rotations
+
+Clicking this button will directly lead the user to the team's rotations page.
+
+### Side Navigation Bar
+
+Once a user is in a team specific page after clicking a button, the side navigation bar is activated for an easier navigation between pages.
+
+![Side Navigation](./readme_assets/sideNavigation.png)
+
 
 ## Scouting Report
 
