@@ -5,7 +5,7 @@ import { useAppContext, useAppDispatchContext } from "../context/appContext";
 
 import TavNav from "./TabNav"
 
-import './TabStyles.css';
+import '../TabStyles.css';
 
 const Tabs = () => {
 	const state = useAppContext();

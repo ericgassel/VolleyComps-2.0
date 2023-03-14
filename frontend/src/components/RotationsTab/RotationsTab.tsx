@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getRotation } from '../action/action';
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { rotation_type } from '../context/appContext';
+import { getRotation } from '../../action/action';
+import { useAppContext, useAppDispatchContext } from '../../context/appContext';
+import { rotation_type } from '../../context/appContext';
 import Rotation from './Rotation';
-import './TabStyles.css';
+import '../../TabStyles.css';
 
 const  RotationsTab = () => {
   const state = useAppContext();

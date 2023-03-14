@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, SetStateAction, Dispatch } from 'react';
-import { spray_line, player, useAppContext, useAppDispatchContext } from '../context/appContext';
-import './TabStyles.css'
-import { getRoster, getSprayChart } from '../action/action';
+import { spray_line, player, useAppContext, useAppDispatchContext } from '../../context/appContext';
+import '../../TabStyles.css'
+import { getRoster, getSprayChart } from '../../action/action';
 import * as d3 from 'd3';
 import Comment from './Comment';
 import { useParams } from 'react-router-dom';
@@ -110,8 +110,7 @@ const SprayChart = ({spray_chart, selected_player_id}: {spray_chart: spray_line[
   )
 }
 
-
-const PlayerStatsTab = () => {
+const SprayChartTab = () => {
   const state = useAppContext();
   const { roster, spray_chart, api_base_url } = state;
   const dispatch = useAppDispatchContext();
@@ -138,9 +137,9 @@ const PlayerStatsTab = () => {
   }
 
   useEffect(() => {
-    // 1. Fetch api
+    // 1. Fetch roster data
     getRoster(dispatch, `${api_base_url}/data/${teamID}`);
-      // 2. Load svg
+    // 2. Fetch spray chart data
     getSprayChart(dispatch, `${api_base_url}/data/${teamID}/spray_chart`);
   
     // 3. Clean up function: clean localStorage
@@ -152,16 +151,12 @@ const PlayerStatsTab = () => {
   }, [])
 
   useEffect(() => {
-    // Setting up local states: selectedPlayer and notes
-    // If there was previously selected player, set it as selectedPlayer
+    /* Setting up local states: selectedPlayer and notes
+       If there was previously selected player, set it as selectedPlayer */
     const previousPlayer = localStorage.getItem('selectedPlayer');
     if (previousPlayer) {
       setSelectedPlayer(JSON.parse(previousPlayer));
-    } 
-    // else if (roster[0]) {
-    //   setSelectedPlayer(roster[0]);
-    // } 
-    else {
+    } else {
       setSelectedPlayer(AllPlayer);
     }
   }, [roster])
@@ -178,7 +173,7 @@ const PlayerStatsTab = () => {
 
   return (
     (roster && selectedPlayer ? (
-      <div className='playerStatsTab'>
+      <div className='SprayChartTab'>
 
         <div className='playersInfoContainer'>
           <div className='selectedPlayerContainer'>
@@ -268,4 +263,4 @@ const PlayerStatsTab = () => {
   );
 }
 
-export default PlayerStatsTab;
+export default SprayChartTab;

@@ -2,9 +2,9 @@ import React from "react"
 import {Routes, Route, Navigate} from "react-router-dom"
 
 import Home from "./components/Home"
-import PlayerStatsTab from "./components/PlayerStatsTab"
-import TeamStatsTab from "./components/TeamStatsTab"
-import RotationsTab from "./components/RotationsTab"
+import SprayChartTab from "./components/SprayChartTab/SprayChartTab"
+import TeamStatsTab from "./components/TeamStatsTab/TeamStatsTab"
+import RotationsTab from "./components/RotationsTab/RotationsTab"
 import ManageTeam from './components/ManageTeam'
 
 
@@ -34,8 +34,8 @@ const MainRoutes = () => (
 			<Route path="management/:teamID" element={<ManageTeam />} />
 			<Route path="teams" element={<Teams />} />
 			<Route path="report/:teamID" element={<Tabs />}>
-				<Route path="/report/:teamID" element={<Navigate replace to="playerStatsTab" />} />
-				<Route path="playerStatsTab" element={<PlayerStatsTab />} />
+				<Route path="/report/:teamID" element={<Navigate replace to="sprayChartTab" />} />
+				<Route path="sprayChartTab" element={<SprayChartTab />} />
 				<Route path="teamStatsTab" element={<TeamStatsTab />} />
 				<Route path="rotationsTab" element={<RotationsTab />} />
 			</Route>

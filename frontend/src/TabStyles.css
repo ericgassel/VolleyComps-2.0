@@ -12,9 +12,9 @@
   height: 80vh;
 }
 
-/* PlayerStatsTab Styles */
+/* SprayChartTab Styles */
 
-.playerStatsTab {
+.SprayChartTab {
   display: flex;
   flex-direction: row;
   width: 100%;

@@ -209,7 +209,6 @@ export const getStats = async (dispatch: any, api: string) => {
       let response: AxiosResponse = await axios.get(api);
       if (response.status == 200) {
         const fetchedData = response.data;
-        // console.log('stats:', fetchedData);
         dispatch({ type: ACTIONS.FECTH_STATS_SUCCESS, data: fetchedData });
         return;
       }

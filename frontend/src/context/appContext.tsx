@@ -216,7 +216,6 @@ const appReducer = (state: any, action: Action) => {
         }
         case "stats_success": {
           const { data } = action;
-          // console.log('data:', data)
           const formatedData = data.map((stats: any) => {
             for (const key in stats) {
               if (key !== 'Height' && key !== "Image" && key !== 'Name' && 

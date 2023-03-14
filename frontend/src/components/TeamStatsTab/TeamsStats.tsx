@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { team_stats } from '../context/appContext';
+import { team_stats } from '../../context/appContext';
 
 type TeamsStatsTableProps = { teams_stats: team_stats[] }
 
@@ -7,6 +7,7 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
   const [carleton, opponent] = teams_stats;
   return (
     <table className='teamsStatsTable'>
+
       <thead>
         <tr className='headerRow'>
           <th className='teamsStatsHeader'>Team Stats</th>
@@ -14,6 +15,7 @@ const TeamsStatsTable: FC<TeamsStatsTableProps> = ({teams_stats}: TeamsStatsTabl
           <th className='teamsStatsHeader'>{opponent.Team}</th>
         </tr>
       </thead>
+      
       <tbody>
         <tr><td className='teamStatsCell teamStatsTitle' colSpan={3}>Attack</td></tr> 
         <tr>  

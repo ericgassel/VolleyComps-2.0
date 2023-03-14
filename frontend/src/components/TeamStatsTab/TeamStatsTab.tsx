@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import TeamsStats from './TeamsStats';
 import IndividualStats from './IndividualStats';
 import { useParams } from 'react-router-dom';
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { getTeamStats, getStats } from '../action/action';
+import { useAppContext, useAppDispatchContext } from '../../context/appContext';
+import { getTeamStats, getStats } from '../../action/action';
 
 const  TeamStatsTab=() => {
   const state = useAppContext();

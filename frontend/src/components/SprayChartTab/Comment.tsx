@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import { updateComment } from '../action/action';
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
+import { updateComment } from '../../action/action';
+import { useAppContext, useAppDispatchContext } from '../../context/appContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons'
-import './TabStyles.css';
+import '../../TabStyles.css';
 
 const Comment = ({ teamID, notes, selectedPlayer, isEditing, setIsEditing }: any) => {
   const state = useAppContext();

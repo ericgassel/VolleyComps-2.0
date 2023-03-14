@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react'
 import * as d3 from 'd3';
-import { rotation_type, rotation_line } from '../context/appContext';
-import { svgPath, bezierCommand } from './Rotations/RotationsSVG';
+import { rotation_type, rotation_line } from '../../context/appContext';
+import { svgPath, bezierCommand } from '../Rotations/RotationsSVG';
 
 type RotationProps = { rotation: rotation_type }
 

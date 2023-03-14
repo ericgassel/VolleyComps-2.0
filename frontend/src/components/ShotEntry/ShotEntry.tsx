@@ -351,7 +351,7 @@ const getRotationsURL = () : string => {
 const getScountingReportURL = () : string => {
   let url : string = window.location.href;
   let id : string = url.substring(url.lastIndexOf("/") + 1);
-  return "/report/" + id + "/playerStatsTab";
+  return "/report/" + id + "/sprayChartTab";
 }
 
 // INPUT: N/A
