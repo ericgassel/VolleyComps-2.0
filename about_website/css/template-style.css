@@ -130,8 +130,17 @@ section h3 {
 	margin: 0.8rem 0;
 	text-transform: uppercase;
 }
+section div {
+	/* font-size: 0.8rem; */
+	font-size: 1.1rem;
+}
+section li {
+	/* font-size: 0.8rem; */
+	font-size: 1.1rem;
+}
 section p {
-	font-size: 0.8rem;
+	/* font-size: 0.8rem; */
+	font-size: 1.1rem;
 }
 section h1 {
 	color: #fff;
@@ -206,6 +215,14 @@ form.customform input, form.customform select, form.customform textarea {
 }
 #map-block iframe {
 	display: block;
+}
+.profile_img_div {
+	text-align: center;
+	text-align: -webkit-center;
+}
+.profile_img {
+	width: 300px;
+	height: 300px;
 }
 @media screen and (max-width: 768px) {
   body {
