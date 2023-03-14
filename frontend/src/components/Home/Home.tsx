@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import "./Home.css"
 import "./hometable.css"
 import {Link} from 'react-router-dom'
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { getSchedule, updateCurrentTeam } from '../action/action';
+import { useAppContext, useAppDispatchContext } from '../../context/appContext';
+import { getSchedule, updateCurrentTeam } from '../../action/action';
 import {  FadeLoader } from 'react-spinners';
 
 const Home=() =>{
@@ -26,8 +26,6 @@ const Home=() =>{
     }
 
     }, [schedule]);
-
-  // console.log(schedule)
 
   return <div className='Home'>
      <h1>Schedules</h1>

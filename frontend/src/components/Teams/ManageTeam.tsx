@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import "./manageteamtable.css"
 import AddModal from './AddModal'
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { addMember, deleteMember, getRoster, getTeams, updateCurrentTeam } from '../action/action';
+import { useAppContext, useAppDispatchContext } from '../../context/appContext';
+import { addMember, deleteMember, getRoster, getTeams, updateCurrentTeam } from '../../action/action';
 import { useParams } from 'react-router-dom';
 import {  FadeLoader } from 'react-spinners';
 
@@ -23,10 +23,6 @@ const ManageTeam = () => {
     let {teamID} = useParams()
 
     let currTeam = isCurrTeamFilled ? currTeamData : getCurrentTeamFromURL()
-
-    const onSubmitForm = (event: any) => {
-      event.preventDefault(event);
-    };
 
     const [modalOpen, setModalOpen] = useState(false);
 

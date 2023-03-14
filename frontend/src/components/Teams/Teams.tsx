@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react'
 
-import {Outlet} from "react-router-dom"
-import {Link, useLocation} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
-import { useAppContext, useAppDispatchContext } from '../context/appContext';
-import { addTeam, getTeams, updateCurrentTeam } from '../action/action';
+import { useAppContext, useAppDispatchContext } from '../../context/appContext';
+import { addTeam, getTeams, updateCurrentTeam } from '../../action/action';
 
-import TavNav from "./TabNav"
 import AddModal from './AddModal'
 
-// import "./Teams.css"
 import "./teamtable.css"
-import ManageTeam from './ManageTeam'
 import {  FadeLoader } from 'react-spinners';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
@@ -45,7 +41,6 @@ const Teams = () => {
    // Modal for adding school
   const onSubmitTeam = async (e: any) => {
     setLoading(true)
-    // console.log(loadingInProgress)
     e.preventDefault()
 
     let newTeam = e.target[0].value
@@ -71,8 +66,6 @@ const Teams = () => {
       return team.name.toLowerCase().includes(searchInput.toLowerCase())
     })
   }
-
-  // console.log(teams)
 
   return (
     <div className='Teams'>
@@ -124,15 +117,6 @@ const Teams = () => {
         ) : (
     <div>
       <table className="TeamsTable">
-        {/* <thead className="ScheduleTableHead">
-          <tr>
-            <th className="ScheduleTableTh">School</th>
-            <th className="ScheduleTableTh">Manage Roster</th>
-            <th className="ScheduleTableTh">View Report</th>
-            <th className="ScheduleTableTh">Edit Report</th>
-          </tr>
-        </thead> */}
-
 
         <tbody>        
         

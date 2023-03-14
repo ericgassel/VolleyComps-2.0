@@ -21,7 +21,7 @@ const Tabs = () => {
 
 	const getCurrentTeamFromURL = () => {
 		let {teamID} = useParams()
-		let currTeam = teams.find((team: {name:string; id:string}) => team.id === teamID) || {name: "Cool School", id: "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM"}
+		let currTeam = teams.find((team: {name:string; id:string}) => team.id === teamID) || {name: "Dummy_school", id: "1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM"}
 		return currTeam.name;
 	}
 

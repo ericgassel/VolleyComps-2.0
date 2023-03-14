@@ -1,26 +1,19 @@
 import React from "react"
 import {Routes, Route, Navigate} from "react-router-dom"
 
-import Home from "./components/Home"
+import Home from "./components/Home/Home"
 import SprayChartTab from "./components/SprayChartTab/SprayChartTab"
 import TeamStatsTab from "./components/TeamStatsTab/TeamStatsTab"
 import RotationsTab from "./components/RotationsTab/RotationsTab"
-import ManageTeam from './components/ManageTeam'
+import ManageTeam from './components/Teams/ManageTeam'
 
 
 import InnerContent from "./components/InnerContent"
 
 import Tabs from "./components/Tabs"
-import Teams from "./components/Teams"
-import Login from "./components/Login"
-import History from "./components/History"
-import Knights from "./components/Knights"
+import Teams from "./components/Teams/Teams"
 import ShotEntry from "./components/ShotEntry/ShotEntry"
 import Rotations from "./components/Rotations/Rotations"
-
-import ProtectedRoutes from "./components/ProtectedRoutes"
-import PublicRoutes from "./components/PublicRoutes"
-import PermissionDenied from "./components/PermissionDenied"
 
 const MainRoutes = () => (
 	<Routes>
@@ -30,7 +23,6 @@ const MainRoutes = () => (
 		<Route path="/" element={<InnerContent />}>
 			<Route path="/" element={<Navigate replace to="home" />} />
 			<Route path="home" element={<Home />} />
-			<Route path="knights" element={<Knights />} />
 			<Route path="management/:teamID" element={<ManageTeam />} />
 			<Route path="teams" element={<Teams />} />
 			<Route path="report/:teamID" element={<Tabs />}>
@@ -39,20 +31,9 @@ const MainRoutes = () => (
 				<Route path="teamStatsTab" element={<TeamStatsTab />} />
 				<Route path="rotationsTab" element={<RotationsTab />} />
 			</Route>
-			<Route path="history" element={<History />} />
 			<Route path="ShotEntry/:id" element={<ShotEntry/>}/>
 			<Route path="Rotations/:id" element={<Rotations/>}/>
 		</Route>
-		{/* </Route> */}
-
-		{/* * Public Routes */}
-		{/** Wrap all Route under PublicRoutes element */}
-		{/* <Route path="login" element={<PublicRoutes />}>
-			<Route path="/login" element={<Login />} />
-		</Route> */}
-
-		{/** Permission denied route */}
-		{/* <Route path="/denied" element={<PermissionDenied />} /> */}
 	</Routes>
 )
 
