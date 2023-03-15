@@ -471,7 +471,7 @@ const ShotEntry=() =>{
                           <a href={getScountingReportURL()}>
                           <button className='switchButton'>Scouting Report</button></a>
                           </td>
-                      </tr>
+                      </tr> 
                       </tbody>
                     </table>
                 </div>
