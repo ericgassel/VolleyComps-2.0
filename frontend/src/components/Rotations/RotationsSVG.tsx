@@ -12,6 +12,7 @@ let lock = 0;
 // the current dateID for the page
 let current_date_ID : string = "";
 
+//scales for the svg infomation
 let x_scale = d3.scaleLinear()
         .domain([0, 100])
         .range([200, 700]);
@@ -32,6 +33,8 @@ let new_rotation : any = [];
 //let rotation : Array<Array<Array<number>>> = [];
 
 let rotation : Point[] = [];
+
+// source for the following path equations: https://francoisromain.medium.com/smooth-a-svg-path-with-cubic-bezier-curves-e37b49d46c74
 
 export const svgPath = (points: any, command:any, color: any) => {
     // build the d attributes by looping over the points
@@ -82,6 +85,8 @@ export const bezierCommand = (point:any, i:any, a:any) => {
 
 let points = [[5, 10], [10, 40], [40, 30], [60, 5], [90, 45], [120, 10], [150, 45], [400, 10]]
 
+// Input: rotation input
+//Output: Create a rotation svg appended to the website.
 export const createRotSvg = (rotationInput : Rotation) => {
     
     rotation = rotationInput.points; 
@@ -117,10 +122,12 @@ export const createRotSvg = (rotationInput : Rotation) => {
             }
             else
             {
+                console.log("new_points")
+                console.log(new_points)
                 let first_points = new_points[0]
                 let second_point = new_points[1]
                 console.log("first point: ")
-                console.log(first_points)
+                console.log(second_point[0])
                 svg.append("text")
                     .text(cur_player)
                     .attr("x", function(d) {if (first_points[0] > second_point[0]) {return first_points[0] - 11} else {return first_points[0] + 6}})
@@ -145,21 +152,7 @@ export const createRotSvg = (rotationInput : Rotation) => {
 
         
     }
-
-
-/*
-    svg.append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "black")
-    .attr("stroke-width", 1.5)
-    .attr("d", d3.line()
-      .curve(d3.curveBasis) // Just add that to have a curve instead of segments
-      .x(function(d) { return d.x })
-      .y(function(d) { return d.y })
-      )
-*/
-
+// Mouse input to create rotations
     svg.on("pointerdown", function(event) {
         if (lock == 0 && globalThis.current_color != "")
         {
@@ -198,6 +191,39 @@ export const createRotSvg = (rotationInput : Rotation) => {
         }
     })
     svg.on("pointerup", function() {
+        if (globalThis.current_color != "")
+            {
+            if (point_tracking) {
+                let vals = d3.pointer(event, svg.node());
+                console.log(vals)
+                let to_add : {x: number, y:number, color:string, player_number:string} = {x:0, y:0, color:"", player_number:""}
+                if(typeof globalThis.current_color !== "undefined")
+                {
+                to_add["x"] = vals[0]
+                to_add["y"] = vals[1]
+                to_add["color"] = globalThis.current_color
+                to_add["player_number"] = globalThis.current_selected_player!.player_num.toString()
+                }
+                new_rotation.push(to_add);
+                const clone = structuredClone(to_add);
+                const clone2 = structuredClone(to_add);
+                new_rotation.push(clone);
+                new_rotation.push(clone2);
+
+                svg.append("rect")
+                    .attr("id", "court")
+                    .attr("x", vals[0])
+                    .attr("y", vals[1])
+                    .attr("width", 4)
+                    .attr("height", 4)
+                    .attr("fill", globalThis.current_color)
+                    .attr("stroke", globalThis.current_color)
+                    .attr("stroke-width", 2);
+            }
+        }
+        console.log("new_rotation")
+        console.log(new_rotation)
+
         point_tracking = false;
         if(globalThis.able_to_add_rotation == true){
             enableButton("addRouteButton");
@@ -267,4 +293,3 @@ export async function sendAndReset(rotationNumber : number) {
 
 
 }
-
