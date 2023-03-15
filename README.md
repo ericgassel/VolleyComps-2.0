@@ -126,48 +126,41 @@ You may navigate to the Scouting Report and Shot Entry pages via the navagation 
 
 # Backend Documentation
 
+## VolleyVision API
+
+Due to the length of this documentation, the Readme for the VolleyVision API can be found in [/backend/VolleyVision-API](https://github.com/ericgassel/VolleyComps-2.0/tree/main/backend/VolleyVision-API). This documentation contains very detailed instructions on how to interact with the API.
+
 ## Data Storage
-Data is stored in 429 (and counting) distinct google sheets. Each google sheet contains critical information that holds all our compiled data and team information
 
-There are three key sheets to reference though: Schools, Schedule, and Dummy_school
+The data base is composed of 429 (and counting) distinct Google Sheets files that each represent one team. For example, there will be a Google Sheets titled "St. Olaf", and another Google Sheets titled "Macalaster".
 
-Schools (https://docs.google.com/spreadsheets/d/1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss/edit?usp=sharing):
+Each Google Sheets contain the following five sheets "pages":
 
--Has 3 Main Catagories: 
+- "roster"
+    - columns in roster: [player_id, name, number, height, position, class, notes]
+- "spray_chart"
+    - columns in spray_chart: [player_id, type, result, start_x, start_y, end_x, end_y, date]
+- "rotations"
+    - columns in rotations: [rotation_number, line, notes, blocking_scheme, serve_recieve, transition]
+- "team_stats"
+    - [Team, Kills,	Errors,	Attempts, Percent,	Kills_Per_Set,	Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Errors, Aces_Per_Set, Errors, Errors_Per_Set, Digs, Digs_Per_Set, Solo, Assists, Errors, Blocks, Blocks_Per_Set]
+- "ind_stats"
+    -[Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S]
 
---School Name, School Spread Sheet Id (i.e. redirect to Dummy_school), and school logo
+An example spreadsheet for a Dummy School can be viewed [here](https://docs.google.com/spreadsheets/d/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/edit#gid=1012899245).
+  
+In addition the these spreadsheets, there is a "Schools" and  "Schedule" spreadsheet.
+- "Schools" : contains the following 3 columns:
+  - School Name
+  - Spreadsheet ID for the school (which is how we store which spreadsheets represent which teams)
+  - School Logo
 
-Carleton Schedule (https://docs.google.com/spreadsheets/d/1mvABHHmHdPpfyBM3RXDKs5hU-XvAc6EV1mhrDc4T-rk/edit?usp=sharing):
+- "Schedule" : contains the following 4 columns:
+  - College Name
+  - Date of Game
+  - Location of Game
+  - Game Result (if applicable)
 
--Has 4 Main Catagories:
-
---College Name, Date of Game, Location of Game, and Game Result (if applicable)
-
-Dummy_School (https://docs.google.com/spreadsheets/d/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/edit?usp=sharing):
-
--This is a baseline sheet that is an example of the 427 differet schools we currently supports sheets. 
-
--This sheet has 5 different pages:
-
---Roster:
-
---- player_id, name, number, height, position, class, notes
-
---Spray-Chart:
-
----player_id, type, result, start_x, start_y, end_x, end_y, date
-
---Rotations:
-
----rotation_number, player_id, player_number, movement_colors, line, notes, blocking_scheme, serve_recieve, transition
-
---team_stats:
-
----Team Kills, Attack_Errors, Attempts, Percent, Kills_Per_Set, Set_Assists, Assists_Per_Set, Ball_Handling_Errors, Aces, Aces_Errors, Aces_Per_Set, Serve_Errors, Serve_Errors_Per_Set, Digs, Digs_Per_Set, Solo, Blocking_Assists, Blocking_Errors Blocks, Blocks_Per_Set
-
---ind_stats (individual statistics):
-
----Player_ID, Image, Season, Name, Number, Position(s), Height, Year, SP, MP, K, K/S, E, TA, PCT, A, A/S, SA, SA/S, SE, DIG, D/S, RE, BS, BA, TB, B/S, BE, BHE, PTS, PTS/S
 
 ## Scraping
 The scrapig runs in two components. Volleyball Logos and VolleyScraperMain. Volleyball Logos is a once a year needed run. It gets the years list of teams, team logos, and school pages on the NCAA site. VolleyScraperMain is the meat of the scraping protocols and needs to be run daily during the Volleyball Season in order to give the most accurate and up to date information. 
@@ -234,3 +227,11 @@ npm start
 After following these steps, VolleyVision should open as a tab in your browser.
 
 ### Backend
+
+## Running the VolleyVision API Locally
+
+To run the API on your local machine, navigate to `VolleyComps-2.0/backend/VolleyVision-API` and run the command `npm run start`. 
+
+You should have `nodemon` and `Node.js` installed on your machine.
+
+*Please note that there are certain Wifi's, such as Carleton's eduroam, that contain certain firewalls that prevent my API from establishing a connection to the Google Sheets API, and thus the API won't work. This may be the case for you if your API calls are timing out.
