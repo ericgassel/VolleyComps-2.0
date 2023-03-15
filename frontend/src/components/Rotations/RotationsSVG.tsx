@@ -122,12 +122,9 @@ export const createRotSvg = (rotationInput : Rotation) => {
             }
             else
             {
-                console.log("new_points")
-                console.log(new_points)
                 let first_points = new_points[0]
                 let second_point = new_points[1]
-                console.log("first point: ")
-                console.log(second_point[0])
+
                 svg.append("text")
                     .text(cur_player)
                     .attr("x", function(d) {if (first_points[0] > second_point[0]) {return first_points[0] - 11} else {return first_points[0] + 6}})
@@ -135,8 +132,7 @@ export const createRotSvg = (rotationInput : Rotation) => {
                     .attr("fill", rotation[j-1].color)
                     .attr('style', "font-size: 25px;");
 
-                console.log("drawing path!")
-                console.log(new_points)
+
                 //console.log(new_points)
                 const svg_int = document.querySelector('g')
                 svg_int!.innerHTML = svg_int!.innerHTML + svgPath(new_points, bezierCommand, rotation[j-1].color)
@@ -167,7 +163,6 @@ export const createRotSvg = (rotationInput : Rotation) => {
             {
             if (point_tracking) {
                 let vals = d3.pointer(event, svg.node());
-                console.log(vals)
                 let to_add : {x: number, y:number, color:string, player_number:string} = {x:0, y:0, color:"", player_number:""}
                 if(typeof globalThis.current_color !== "undefined")
                 {
@@ -195,7 +190,7 @@ export const createRotSvg = (rotationInput : Rotation) => {
             {
             if (point_tracking) {
                 let vals = d3.pointer(event, svg.node());
-                console.log(vals)
+
                 let to_add : {x: number, y:number, color:string, player_number:string} = {x:0, y:0, color:"", player_number:""}
                 if(typeof globalThis.current_color !== "undefined")
                 {
@@ -221,9 +216,6 @@ export const createRotSvg = (rotationInput : Rotation) => {
                     .attr("stroke-width", 2);
             }
         }
-        console.log("new_rotation")
-        console.log(new_rotation)
-
         point_tracking = false;
         if(globalThis.able_to_add_rotation == true){
             enableButton("addRouteButton");
