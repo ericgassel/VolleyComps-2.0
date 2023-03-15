@@ -1,7 +1,4 @@
-import { useAppContext} from '../context/appContext';
-import { useParams } from 'react-router-dom';
-
-
+// initial navigation side bar
 const NavigationItems = (currTeam: any) => {
   const navigationItems: any = {
     sidebar: [
@@ -22,6 +19,7 @@ const NavigationItems = (currTeam: any) => {
     currTeamInfo: []
   }
 
+  // side bar navigation
   if (currTeam) {
     navigationItems.currTeamName = currTeam.name
     let currTeamInfo = [

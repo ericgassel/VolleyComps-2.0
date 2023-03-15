@@ -1,3 +1,4 @@
+// format teams in correct form
 export function changeTeams(teams: any): {name: string; id: string; logo: string;}[] {
     let formattedTeams = []
     for (let team in teams) {
@@ -7,6 +8,7 @@ export function changeTeams(teams: any): {name: string; id: string; logo: string
     return formattedTeams
 }
 
+// function for formatting members before sending via API
 export function formatMember(memberData: string[]): {player_id: string; name:string; number:string; height:string; position:string; class:string, notes: string} {
     return {
         player_id:memberData[0], 

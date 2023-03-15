@@ -14,7 +14,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
 
 const Teams = () => {
-
+  // component state responsible for modal, loading and search bar
   const [modalOpen, setModalOpen] = useState(false);
   const [loadingInProgress, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -26,12 +26,14 @@ const Teams = () => {
     setModalOpen(false);
   };
 
+  // function for search bar
   const handleSearch = (e: any) => {
     e.preventDefault();
     let lowerCase = e.target.value
     setSearchInput(lowerCase);
   };
 
+  // bring context and action dispatch
   const state = useAppContext();
   const dispatch = useAppDispatchContext();
 
@@ -61,6 +63,7 @@ const Teams = () => {
 
   let selectedTeams = teams;
 
+  // filter names based on search bar input
   if (searchInput.length > 0) {
     selectedTeams = teams.filter((team: any) => {
       return team.name.toLowerCase().includes(searchInput.toLowerCase())
@@ -107,7 +110,6 @@ const Teams = () => {
       </div>
       </div>
     </div>
-
 
     {loadingInProgress ? (
 

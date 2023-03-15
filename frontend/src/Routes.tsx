@@ -15,11 +15,10 @@ import Teams from "./components/Teams/Teams"
 import ShotEntry from "./components/ShotEntry/ShotEntry"
 import Rotations from "./components/Rotations/Rotations"
 
+// General outline for navigation of pages
 const MainRoutes = () => (
 	<Routes>
-		{/** Protected Routes */}
-		{/** Wrap all Route under ProtectedRoutes element */}
-		{/* <Route path="/" element={<PublicRoutes />}> */}
+
 		<Route path="/" element={<InnerContent />}>
 			<Route path="/" element={<Navigate replace to="home" />} />
 			<Route path="home" element={<Home />} />

@@ -7,12 +7,14 @@ import { useParams } from 'react-router-dom';
 import {  FadeLoader } from 'react-spinners';
 
 const ManageTeam = () => {
-
+    // bring context and action dispatch
     const state = useAppContext();
     const dispatch = useAppDispatchContext();
 
+    // component state responsible for loading
     const [loadingInProgress, setLoading] = useState(false);
 
+    // bring states from storage
     const {api_base_url, roster, currTeamData, teams, isCurrTeamFilled, fetchedRoster} = state;
 
     const getCurrentTeamFromURL = () => {
@@ -20,10 +22,12 @@ const ManageTeam = () => {
       let currTeam = teams.find((team: {name:string; id:string}) => team.id === teamID)
       return currTeam;
     }
+    // read teamID from url
     let {teamID} = useParams()
 
     let currTeam = isCurrTeamFilled ? currTeamData : getCurrentTeamFromURL()
 
+    // component state responsible for the visibility of modal
     const [modalOpen, setModalOpen] = useState(false);
 
     const openModal = () => {
@@ -52,6 +56,7 @@ const ManageTeam = () => {
     useEffect(() => {
       if (!teams.length) {
         let getTeamsAPI = `${api_base_url}/data/schools`
+        // initiate loading icon
         setLoading(true)
         getTeams(dispatch, getTeamsAPI).then(() => setLoading(false));
       }

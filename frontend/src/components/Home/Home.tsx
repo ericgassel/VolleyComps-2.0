@@ -7,14 +7,13 @@ import { getSchedule, updateCurrentTeam } from '../../action/action';
 import {  FadeLoader } from 'react-spinners';
 
 const Home=() =>{
-
+  // bring state and action dispatch
   const state = useAppContext();
   const dispatch = useAppDispatchContext();
 
+  // component state responsible for loading
   const [loadingInProgress, setLoading] = useState(false);
-
-  
-
+  // bring state from storage
   const {api_base_url, schedule} = state;
 
   let scheduleAPI = `${api_base_url}/data/carleton/schedule`

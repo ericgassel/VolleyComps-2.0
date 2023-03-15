@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { Outlet, useLocation, useParams } from "react-router-dom"
+import React, { useEffect } from "react"
+import { Outlet, useParams } from "react-router-dom"
 import { getTeams } from "../action/action";
 import { useAppContext, useAppDispatchContext } from "../context/appContext";
 

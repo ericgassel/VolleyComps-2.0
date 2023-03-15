@@ -259,6 +259,7 @@ const appReducer = (state: any, action: Action) => {
 const AppStateContext = createContext<State | null>(null);
 const AppDispatchContext = createContext<AppDispatch | null>(null);
 
+// Provider to allow context to be used wherever in code
 export function AppProvider({children}: {children: React.ReactNode}) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 

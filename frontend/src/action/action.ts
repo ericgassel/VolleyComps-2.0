@@ -2,6 +2,7 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { changeTeams, formatMember } from "../helper/changeFormat";
 
+// types for Action functions
 export type Action = 
 | { type: "post_team_success", data: any } 
 | { type: "delete_roster_success", data: any } 
