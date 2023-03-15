@@ -131,19 +131,19 @@ Data is stored in 429 (and counting) distinct google sheets. Each google sheet c
 
 There are three key sheets to reference though: Schools, Schedule, and Dummy_school
 
-Schools (https://docs.google.com/spreadsheets/d/1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss/edit#gid=530332686):
+Schools (https://docs.google.com/spreadsheets/d/1h1gG2-I7gka9li1u3U04zbM4AOtwauEa9AdnVhoyfss/edit?usp=sharing):
 
 -Has 3 Main Catagories: 
 
 --School Name, School Spread Sheet Id (i.e. redirect to Dummy_school), and school logo
 
-Schedule (https://docs.google.com/spreadsheets/d/1s79U6G7kGcdViYJ51JzY-DG2DIR7fxEFPpq_XwbQCnI/edit#gid=0):
+Carleton Schedule (https://docs.google.com/spreadsheets/d/1mvABHHmHdPpfyBM3RXDKs5hU-XvAc6EV1mhrDc4T-rk/edit?usp=sharing):
 
 -Has 4 Main Catagories:
 
 --College Name, Date of Game, Location of Game, and Game Result (if applicable)
 
-Dummy_School (https://docs.google.com/spreadsheets/d/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/edit#gid=158875928):
+Dummy_School (https://docs.google.com/spreadsheets/d/1D5DQnXIo3drLnXyzIxB9F4wPRgJIc1antzWAXFlCijM/edit?usp=sharing):
 
 -This is a baseline sheet that is an example of the 427 differet schools we currently supports sheets. 
 
@@ -179,7 +179,7 @@ VolleyScraperMain has a three of major functions:
   -Creation of Every team in D3's spreadsheet with proper headers etc. 
 
   -Population of most teams rosters, individual statistics, and team statistics. 
-  
+
 All Data that is scraped is then stored on that individual teams spreadsheet which is on Google Sheets that the Scraper directly interacts with.
 
 
